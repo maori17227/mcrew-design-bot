@@ -1,15 +1,11 @@
 services:
   - type: web
-    name: mcrew-design-bot
+    name: mcrew-design-bot-secure
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: python bot.py
+    startCommand: python bot_secure.py
     envVars:
-      - key: BOT_TOKEN
-        value: 8363446053:AAGfig_At866R3bVU9rNrY4AOuJQxnz_t2M
-      - key: ADMIN_USERNAME
-        value: mcrewdm
-      - key: YOUR_USERNAME
-        value: mcrewdm
-      - key: PORTFOLIO_CHANNEL
-        value: "@mindescrew"
+      - key: MASTER_PASSWORD
+        value: MCREW_SECURE_2024!
+      - key: PORT
+        value: 10000
