@@ -51,7 +51,3 @@
 ## 📊 Status
 
 **Ready for commercial use** - Stable, fast, and fully functional.
-
----
-
-**Portfolio**: @mindescrew | **Contact**: @mcrewdm
