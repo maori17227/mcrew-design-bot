@@ -1,0 +1,52 @@
+# Git команды для загрузки MCREW Bot на GitHub
+
+# 1. Инициализация репозитория
+git init
+
+# 2. Настройка пользователя (замени на свои данные)
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+
+# 3. Добавление всех файлов
+git add .
+
+# 4. Первый коммит
+git commit -m "Initial commit - MCREW Design Bot"
+
+# 5. Переименование ветки в main
+git branch -M main
+
+# 6. Подключение к GitHub (замени YOUR_USERNAME на свой GitHub username)
+git remote add origin https://github.com/YOUR_USERNAME/mcrew-design-bot.git
+
+# 7. Загрузка на GitHub
+git push -u origin main
+
+# ========================================
+# ОБНОВЛЕНИЕ БОТА (для будущих изменений)
+# ========================================
+
+# Добавить изменения
+git add .
+
+# Коммит с описанием
+git commit -m "Update bot features"
+
+# Загрузить на GitHub
+git push
+
+# ========================================
+# ПОЛЕЗНЫЕ КОМАНДЫ
+# ========================================
+
+# Проверить статус
+git status
+
+# Посмотреть историю
+git log --oneline
+
+# Проверить подключенные репозитории
+git remote -v
+
+# Проверить версию Git
+git --version
