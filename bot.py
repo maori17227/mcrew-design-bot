@@ -1,5 +1,5 @@
 """
-MↃREW Design Studio Bot - FINAL WORKING VERSION
+MↃREW Bot - FINAL WORKING VERSION
 ✅ All buttons work perfectly
 ✅ Fast navigation 
 ✅ Images display correctly
@@ -33,7 +33,7 @@ user_languages = {}  # Хранение языка для каждого пол�
 # Texts in different languages
 TEXTS = {
     'en': {
-        'welcome': """🔥 <b>Welcome to MↃREW Design Studio!</b>
+        'welcome': """🔥 <b>Welcome to MↃREW!</b>
 
 We create:
 • Covers, snippets, visuals
@@ -62,7 +62,7 @@ We create:
 ✅ All future orders will be delivered here
 
 🚀 Bot is ready for commercial use!""",
-        'menu_title': """🔥 <b>MↃREW Design Studio</b>
+        'menu_title': """🔥 <b>MↃREW</b>
 
 <b>Choose what interests you:</b>""",
         'graphic_design': '🎨 Graphic Design',
@@ -177,7 +177,7 @@ To create the perfect design, please provide:
         'contact_us': '📞 Contact Us'
     },
     'ru': {
-        'welcome': """🔥 <b>Добро пожаловать в MↃREW Design Studio!</b>
+        'welcome': """🔥 <b>Добро пожаловать в MↃREW!</b>
 
 Мы создаем:
 • Обложки, сниппеты, визуалы
@@ -206,7 +206,7 @@ To create the perfect design, please provide:
 ✅ Все будущие заказы будут доставляться сюда
 
 🚀 Бот готов к коммерческому использованию!""",
-        'menu_title': """🔥 <b>MↃREW Design Studio</b>
+        'menu_title': """🔥 <b>MↃREW</b>
 
 <b>Выберите что вас интересует:</b>""",
         'graphic_design': '🎨 Графический дизайн',
@@ -294,7 +294,7 @@ To create the perfect design, please provide:
         'portfolio_unique': 'Каждый проект уникален и создается под ваши потребности!',
         'portfolio_contact_us': 'Свяжитесь с нами, чтобы увидеть конкретные примеры для вашего типа проекта.',
         'view_examples': '🖼️ Посмотреть примеры',
-        'contact_for_more': '📞 Связаться для больших примеров',
+        'contact_for_more': '📞 Связаться для больше примеров',
         # Contact texts
         'contact_title': '📞 СВЯЗАТЬСЯ С НАМИ',
         'contact_telegram': 'Телеграм:',
@@ -337,8 +337,8 @@ IMAGES = {
 # Portfolio examples - photos and videos
 PORTFOLIO_EXAMPLES = [
     # Photos
-    {'type': 'photo', 'path': 'images/logo_example1.jpg'},
-    {'type': 'photo', 'path': 'images/brand_example1.jpg'},
+    {'type': 'photo', 'path': 'images/covers_example.jpg'},
+    {'type': 'photo', 'path': 'images/poster_example.jpg'},
     
     # Videos
     {'type': 'video', 'path': 'videos/motion_example.mp4'},
@@ -843,15 +843,71 @@ def handle_show_examples(chat_id, message_id):
     # Send examples (photos and videos)
     for i, item in enumerate(PORTFOLIO_EXAMPLES):
         if i == 0:
-            caption = f"🎨 <b>{get_text(chat_id, 'examples_work')}</b>\n\n{get_text(chat_id, 'examples_logo')}"
-        elif i == 1:
-            caption = f"🎨 {get_text(chat_id, 'examples_logo')}"
-        else:
-            # For videos - add text like in screenshot
-            if item['type'] == 'video':
-                caption = f"� {get_text(chat_id, 'examples_video')}\n\n📸 {get_text(chat_id, 'examples_more')} {PORTFOLIO_CHANNEL}"
+            # First photo - Covers
+            if lang == 'ru':
+                caption = """<blockquote>🎨 <b>ОБЛОЖКИ И АРТВОРКИ</b></blockquote>
+
+<b>Примеры работ:</b>
+• Обложки альбомов
+• Сниппеты для треков
+• Визуалы для релизов
+
+<i>Каждая обложка создается индивидуально под ваш стиль</i>"""
             else:
-                caption = f"✨ {get_text(chat_id, 'examples_work')}"
+                caption = """<blockquote>🎨 <b>COVERS & ARTWORK</b></blockquote>
+
+<b>Work examples:</b>
+• Album covers
+• Track snippets
+• Release visuals
+
+<i>Each cover is created individually for your style</i>"""
+        
+        elif i == 1:
+            # Second photo - Posters
+            if lang == 'ru':
+                caption = """<blockquote>📄 <b>ПОСТЕРЫ И АФИШИ</b></blockquote>
+
+<b>Примеры работ:</b>
+• Концертные афиши
+• Промо постеры
+• Ивент дизайн
+
+<i>Яркие и запоминающиеся дизайны</i>"""
+            else:
+                caption = """<blockquote>📄 <b>POSTERS & FLYERS</b></blockquote>
+
+<b>Work examples:</b>
+• Concert posters
+• Promo materials
+• Event design
+
+<i>Bright and memorable designs</i>"""
+        
+        else:
+            # Video
+            if lang == 'ru':
+                caption = f"""<blockquote>🎬 <b>ВИДЕОМОНТАЖ И МОУШН</b></blockquote>
+
+<b>Примеры работ:</b>
+• Монтаж видео
+• Моушн графика
+• VFX эффекты
+
+<i>Динамичные и профессиональные ролики</i>
+
+📸 <b>Больше примеров:</b> {PORTFOLIO_CHANNEL}"""
+            else:
+                caption = f"""<blockquote>🎬 <b>VIDEO EDITING & MOTION</b></blockquote>
+
+<b>Work examples:</b>
+• Video editing
+• Motion graphics
+• VFX effects
+
+<i>Dynamic and professional videos</i>
+
+📸 <b>More examples:</b> {PORTFOLIO_CHANNEL}"""
         
         # Send photo or video
         if item['type'] == 'video':
@@ -859,13 +915,23 @@ def handle_show_examples(chat_id, message_id):
         else:
             send_photo(chat_id, item['path'], caption)
         
-        time.sleep(0.3)  # Small delay
+        time.sleep(0.4)  # Small delay
     
     # Final message with buttons
-    text = f"""✨ <b>{get_text(chat_id, 'examples_like')}</b>
+    if lang == 'ru':
+        text = """<blockquote>✨ <b>Нравится то, что видите?</b></blockquote>
 
-📸 {get_text(chat_id, 'examples_full')}
-💬 {get_text(chat_id, 'examples_ready')}"""
+📸 <b>Полное портфолио:</b> @mindescrew
+💬 <b>Готовы заказать?</b> Свяжитесь с нами!
+
+<i>Каждый проект уникален и создается под ваши потребности</i>"""
+    else:
+        text = """<blockquote>✨ <b>Like what you see?</b></blockquote>
+
+📸 <b>Full portfolio:</b> @mindescrew
+💬 <b>Ready to order?</b> Contact us!
+
+<i>Each project is unique and tailored to your needs</i>"""
     
     keyboard = {
         'inline_keyboard': [
@@ -873,8 +939,6 @@ def handle_show_examples(chat_id, message_id):
             [{'text': get_text(chat_id, 'contact_us'), 'callback_data': 'show_contact'}]
         ]
     }
-    
-    return send_message(chat_id, text, keyboard)
     
     return send_message(chat_id, text, keyboard)
 
