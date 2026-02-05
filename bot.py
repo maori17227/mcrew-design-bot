@@ -334,16 +334,16 @@ IMAGES = {
     'motion': 'images/motion_graphics_example.jpg'
 }
 
-# Portfolio examples with support for images and videos
-PORTFOLIO_MEDIA = [
-    {'type': 'photo', 'path': 'images/logo_example1.jpg', 'caption_en': '🎨 Logo Design & Brand Identity', 'caption_ru': '🎨 Дизайн логотипов и фирменный стиль'},
-    {'type': 'photo', 'path': 'images/brand_example1.jpg', 'caption_en': '🎨 Brand Identity Package', 'caption_ru': '🎨 Пакет фирменного стиля'},
-    {'type': 'photo', 'path': 'images/ui_example1.jpg', 'caption_en': '📱 UI/UX Design & Mobile Apps', 'caption_ru': '📱 UI/UX дизайн и мобильные приложения'},
-    {'type': 'photo', 'path': 'images/video_edit_example1.jpg', 'caption_en': '🎬 Video Editing & Motion Graphics', 'caption_ru': '🎬 Видеомонтаж и моушн графика'},
-    {'type': 'photo', 'path': 'images/motion_example.jpg', 'caption_en': '🎭 Motion Design & Animation', 'caption_ru': '🎭 Моушн дизайн и анимация'},
-    # Add your video files here:
-    # {'type': 'video', 'path': 'videos/logo_animation.mp4', 'caption_en': '🎬 Logo Animation Example', 'caption_ru': '🎬 Пример анимации логотипа'},
-    # {'type': 'video', 'path': 'videos/promo_video.mp4', 'caption_en': '🎥 Promo Video Example', 'caption_ru': '🎥 Пример промо видео'},
+# Portfolio examples - photos and videos
+PORTFOLIO_EXAMPLES = [
+    # Photos
+    {'type': 'photo', 'path': 'images/logo_example1.jpg'},
+    {'type': 'photo', 'path': 'images/brand_example1.jpg'},
+    {'type': 'photo', 'path': 'images/ui_example1.jpg'},
+    
+    # Add your videos here (uncomment and add your video files):
+    # {'type': 'video', 'path': 'videos/motion_example.mp4'},
+    # {'type': 'video', 'path': 'videos/vfx_example.mp4'},
 ]
 
 def send_photo(chat_id, photo_path, caption="", reply_markup=None):
@@ -391,19 +391,10 @@ def send_video(chat_id, video_path, caption="", reply_markup=None):
                 response = requests.post(url, files=files, data=data, timeout=60)
                 return response.json()
         else:
-            # Fallback to text message if video not found
             return send_message(chat_id, caption, reply_markup)
     except Exception as e:
         print(f"Error sending video: {e}")
-        # Fallback to text message
         return send_message(chat_id, caption, reply_markup)
-
-def send_media(chat_id, media_type, media_path, caption="", reply_markup=None):
-    """Universal function to send photo or video"""
-    if media_type == 'video':
-        return send_video(chat_id, media_path, caption, reply_markup)
-    else:
-        return send_photo(chat_id, media_path, caption, reply_markup)
 
 def send_message(chat_id, text, reply_markup=None):
     """Send message with error handling"""
@@ -848,21 +839,33 @@ def handle_portfolio(chat_id, message_id):
     return edit_message_with_photo(chat_id, message_id, IMAGES['main_photo'], text, keyboard)
 
 def handle_show_examples(chat_id, message_id):
-    """Show portfolio examples with images and videos"""
+    """Show portfolio examples with photos and videos"""
     lang = get_user_language(chat_id)
     
-    # Send media examples (photos and videos)
-    for i, media in enumerate(PORTFOLIO_MEDIA[:5]):  # Show first 5 examples
-        caption = media[f'caption_{lang}']
+    # Send examples (photos and videos)
+    for i, item in enumerate(PORTFOLIO_EXAMPLES):
+        if i == 0:
+            caption = f"🎨 <b>{get_text(chat_id, 'examples_work')}</b>\n\n{get_text(chat_id, 'examples_logo')}"
+        elif i == 1:
+            caption = f"📱 {get_text(chat_id, 'examples_ui')}"
+        elif i == 2:
+            caption = f"🎬 {get_text(chat_id, 'examples_video')}\n\n📸 {get_text(chat_id, 'examples_more')} {PORTFOLIO_CHANNEL}"
+        else:
+            # For videos or additional items
+            if item['type'] == 'video':
+                caption = f"🎥 {get_text(chat_id, 'examples_video')}"
+            else:
+                caption = f"✨ {get_text(chat_id, 'examples_work')}"
         
-        # Add additional info for last item
-        if i == len(PORTFOLIO_MEDIA[:5]) - 1:
-            caption += f"\n\n📸 {get_text(chat_id, 'examples_more')} {PORTFOLIO_CHANNEL}"
+        # Send photo or video
+        if item['type'] == 'video':
+            send_video(chat_id, item['path'], caption)
+        else:
+            send_photo(chat_id, item['path'], caption)
         
-        send_media(chat_id, media['type'], media['path'], caption)
-        time.sleep(0.5)  # Small delay between messages
+        time.sleep(0.3)  # Small delay
     
-    # Send final message with navigation
+    # Final message with buttons
     text = f"""✨ <b>{get_text(chat_id, 'examples_like')}</b>
 
 📸 {get_text(chat_id, 'examples_full')}
@@ -874,6 +877,8 @@ def handle_show_examples(chat_id, message_id):
             [{'text': get_text(chat_id, 'contact_us'), 'callback_data': 'show_contact'}]
         ]
     }
+    
+    return send_message(chat_id, text, keyboard)
     
     return send_message(chat_id, text, keyboard)
 
