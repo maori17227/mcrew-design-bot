@@ -150,7 +150,7 @@ To create the perfect design, please provide:
         'portfolio_unique': 'Each project is unique and tailored to your needs!',
         'portfolio_contact_us': 'Contact us to see specific examples for your project type.',
         'view_examples': '🖼️ View Examples',
-        'contact_for_more': '📞 Contact for More',
+        'contact_for_more': '📞 Contact for More Examples',
         # Contact texts
         'contact_title': '📞 CONTACT US',
         'contact_telegram': 'Telegram:',
@@ -294,7 +294,7 @@ To create the perfect design, please provide:
         'portfolio_unique': 'Каждый проект уникален и создается под ваши потребности!',
         'portfolio_contact_us': 'Свяжитесь с нами, чтобы увидеть конкретные примеры для вашего типа проекта.',
         'view_examples': '🖼️ Посмотреть примеры',
-        'contact_for_more': '📞 Связаться для получения большего',
+        'contact_for_more': '📞 Связаться для больших примеров',
         # Contact texts
         'contact_title': '📞 СВЯЗАТЬСЯ С НАМИ',
         'contact_telegram': 'Телеграм:',
@@ -339,7 +339,6 @@ PORTFOLIO_EXAMPLES = [
     # Photos
     {'type': 'photo', 'path': 'images/logo_example1.jpg'},
     {'type': 'photo', 'path': 'images/brand_example1.jpg'},
-    {'type': 'photo', 'path': 'images/ui_example1.jpg'},
     
     # Videos
     {'type': 'video', 'path': 'videos/motion_example.mp4'},
@@ -846,13 +845,11 @@ def handle_show_examples(chat_id, message_id):
         if i == 0:
             caption = f"🎨 <b>{get_text(chat_id, 'examples_work')}</b>\n\n{get_text(chat_id, 'examples_logo')}"
         elif i == 1:
-            caption = f"📱 {get_text(chat_id, 'examples_ui')}"
-        elif i == 2:
-            caption = f"🎬 {get_text(chat_id, 'examples_video')}\n\n📸 {get_text(chat_id, 'examples_more')} {PORTFOLIO_CHANNEL}"
+            caption = f"🎨 {get_text(chat_id, 'examples_logo')}"
         else:
-            # For videos or additional items
+            # For videos - add text like in screenshot
             if item['type'] == 'video':
-                caption = f"🎥 {get_text(chat_id, 'examples_video')}"
+                caption = f"� {get_text(chat_id, 'examples_video')}\n\n📸 {get_text(chat_id, 'examples_more')} {PORTFOLIO_CHANNEL}"
             else:
                 caption = f"✨ {get_text(chat_id, 'examples_work')}"
         
