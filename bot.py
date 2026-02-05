@@ -880,8 +880,7 @@ def handle_show_examples(chat_id, message_id):
     
     keyboard = {
         'inline_keyboard': [
-            [{'text': get_text(chat_id, 'place_order'), 'callback_data': 'main_menu'}],
-            [{'text': get_text(chat_id, 'contact_us'), 'callback_data': 'show_contact'}]
+            [{'text': get_text(chat_id, 'back'), 'callback_data': 'main_menu'}]
         ]
     }
     
