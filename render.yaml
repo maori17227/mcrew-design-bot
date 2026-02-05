@@ -3,7 +3,7 @@ services:
     name: mcrew-design-bot-secure
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: python bot_secure.py
+    startCommand: python bot.py
     envVars:
       - key: MASTER_PASSWORD
         value: MCREW_SECURE_2024!

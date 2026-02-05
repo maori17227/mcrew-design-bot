@@ -1,53 +1,155 @@
-# MↃREW Design Studio Bot
+# 🔥 MↃREW Design Studio Bot
 
-🔥 **Professional Telegram bot for MↃREW Design Studio**
+Telegram bot для дизайн-студии MↃREW с полным функционалом портфолио, заказов и мультиязычной поддержкой.
 
-## ✨ Features
+## ✨ Возможности
 
-- **Multilingual**: English & Russian interface
-- **Complete Price List**: All services with exact Euro pricing
-- **Portfolio Integration**: Showcase work examples with images
-- **Order Management**: Detailed order forms with admin notifications
-- **Professional Design**: Clean interface with studio branding
-- **Commercial Ready**: Stable 24/7 operation
+- 🎨 **5 категорий услуг**: Графический дизайн, UI/UX, Печать, Монтаж/VFX, Моушн дизайн
+- 💼 **Портфолио с фото и видео**: Показ работ в виде изображений и видеороликов
+- 🌐 **Двуязычность**: Английский и русский интерфейс
+- 📝 **Система заказов**: Детальная форма заказа с отправкой админу
+- 📞 **Контакты и цены**: Полная информация о студии
+- 🚀 **Готов к деплою**: Настроен для Render.com
 
-## 🚀 Services
+## 📁 Структура проекта
 
-- **Graphic Design**: Logos, Brand Identity, Illustrations
-- **UI/UX Design**: Websites, Mobile Apps, Landing Pages  
-- **Print/Publishing**: Business Cards, Presentations, Social Media
-- **Video Editing**: TikTok/Reels, YouTube, Color Correction
-- **Motion Design**: Logo Animation, 2D Animation, Promo Videos
+```
+mcrew-design-bot/
+├── bot.py                 # Основной файл бота
+├── requirements.txt       # Зависимости Python
+├── Procfile              # Конфигурация для Render
+├── render.yaml           # Настройки деплоя
+├── .env.example          # Пример переменных окружения
+├── .gitignore            # Игнорируемые файлы
+├── images/               # Папка с изображениями
+│   ├── mcrew_logo.jpg
+│   ├── logo_example1.jpg
+│   └── ...
+└── videos/               # Папка с видео (создайте при необходимости)
+    ├── logo_animation.mp4
+    └── promo_video.mp4
+```
 
-## 🌐 Live Bot
+## 🎬 Как добавить видео в портфолио
 
-**Telegram**: https://t.me/mindescrew_bot
+1. **Создайте папку videos** (если её нет):
+```bash
+mkdir videos
+```
 
-## 📱 Usage
+2. **Добавьте ваши видео** в папку `videos/`
 
-1. Send `/start` to begin
-2. Choose language (English/Russian)
-3. Browse services and pricing
-4. Place orders with detailed requirements
-5. Admin receives instant notifications
+3. **Откройте bot.py** и найдите секцию `PORTFOLIO_MEDIA`
 
-## 🛠 Tech Stack
+4. **Добавьте видео** в список:
+```python
+PORTFOLIO_MEDIA = [
+    # Существующие фото...
+    {'type': 'photo', 'path': 'images/logo_example1.jpg', ...},
+    
+    # Добавьте ваши видео:
+    {'type': 'video', 'path': 'videos/logo_animation.mp4', 
+     'caption_en': '🎬 Logo Animation Example', 
+     'caption_ru': '🎬 Пример анимации логотипа'},
+    
+    {'type': 'video', 'path': 'videos/promo_video.mp4', 
+     'caption_en': '🎥 Promo Video Example', 
+     'caption_ru': '🎥 Пример промо видео'},
+]
+```
 
-- **Python 3.x**
-- **Telegram Bot API** (requests library)
-- **Image Support** for portfolio examples
-- **Multi-language** system with user preferences
-- **Error Handling** and auto-recovery
+5. **Сохраните** и перезапустите бота
 
-## 🎯 Commercial Features
+## 🚀 Установка и запуск
 
-- ✅ **Fast Navigation** - All buttons work instantly
-- ✅ **Image Portfolio** - Visual examples of work
-- ✅ **Order Forms** - Detailed client requirements
-- ✅ **Admin Notifications** - Real-time order alerts
-- ✅ **Language Support** - English & Russian
-- ✅ **Professional UI** - Studio branding throughout
+### Локально
 
-## 📊 Status
+1. **Клонируйте репозиторий**:
+```bash
+git clone https://github.com/maori17227/mcrew-design-bot.git
+cd mcrew-design-bot
+```
 
-**Ready for commercial use** - Stable, fast, and fully functional.
+2. **Установите зависимости**:
+```bash
+pip install -r requirements.txt
+```
+
+3. **Настройте переменные окружения**:
+```bash
+copy .env.example .env
+```
+Отредактируйте `.env` и добавьте ваши данные:
+```
+BOT_TOKEN=your_bot_token_here
+ADMIN_USERNAME=your_admin_username
+YOUR_USERNAME=your_studio_username
+PORTFOLIO_CHANNEL=@your_channel
+```
+
+4. **Запустите бота**:
+```bash
+python bot.py
+```
+
+### На Render.com
+
+1. **Создайте новый Web Service** на [Render.com](https://render.com)
+
+2. **Подключите GitHub репозиторий**
+
+3. **Настройте переменные окружения** в Render:
+   - `BOT_TOKEN` - токен вашего бота
+   - `ADMIN_USERNAME` - username админа
+   - `YOUR_USERNAME` - username студии
+   - `PORTFOLIO_CHANNEL` - канал портфолио
+
+4. **Deploy** - Render автоматически развернёт бота
+
+## 📝 Переменные окружения
+
+| Переменная | Описание | Пример |
+|------------|----------|--------|
+| `BOT_TOKEN` | Токен Telegram бота | `123456:ABC-DEF...` |
+| `ADMIN_USERNAME` | Username админа (без @) | `mcrewdm` |
+| `YOUR_USERNAME` | Username студии (без @) | `mcrewdm` |
+| `PORTFOLIO_CHANNEL` | Канал портфолио | `@mindescrew` |
+| `PORT` | Порт для HTTP сервера | `10000` (авто) |
+
+## 🎨 Добавление изображений
+
+Все изображения хранятся в папке `images/`. Чтобы добавить новые:
+
+1. Поместите файл в `images/`
+2. Обновите путь в `bot.py` в секции `IMAGES` или `PORTFOLIO_MEDIA`
+
+## 🌐 Языки
+
+Бот поддерживает:
+- 🇺🇸 **English** (по умолчанию)
+- 🇷🇺 **Русский**
+
+Пользователи могут переключать язык через кнопку "🌐 Language"
+
+## 💰 Цены
+
+Все цены указаны в евро (€) и соответствуют прайс-листу студии:
+- Графический дизайн: €9-1100
+- UI/UX дизайн: €28-850
+- Печать/Издательство: €7-195
+- Монтаж и VFX: €15-350
+- Моушн дизайн: €70-150+
+
+## 📞 Поддержка
+
+Если возникли вопросы:
+- Telegram: [@mcrewdm](https://t.me/mcrewdm)
+- Портфолио: [@mindescrew](https://t.me/mindescrew)
+
+## 📄 Лицензия
+
+© 2024 MↃREW Design Studio. Все права защищены.
+
+---
+
+**Бот готов к коммерческому использованию!** 🚀
