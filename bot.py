@@ -430,7 +430,7 @@ def send_message(chat_id, text, reply_markup=None):
         return {'ok': False}
 
 def edit_message_with_photo(chat_id, message_id, photo_path, caption="", reply_markup=None):
-    """Edit message media (photo) with error handling"""
+    """Edit message media (photo) with error handling - NO FALLBACK to prevent duplicates"""
     url = f"{BASE_URL}/editMessageMedia"
     
     try:
@@ -461,18 +461,28 @@ def edit_message_with_photo(chat_id, message_id, photo_path, caption="", reply_m
                     return result
                 else:
                     print(f"Edit media error: {result}")
-                    # Fallback to caption edit only
-                    return edit_message(chat_id, message_id, caption, reply_markup)
+                    # Try to edit just the caption and keyboard
+                    url_caption = f"{BASE_URL}/editMessageCaption"
+                    data_caption = {
+                        'chat_id': chat_id,
+                        'message_id': message_id,
+                        'caption': caption,
+                        'parse_mode': 'HTML'
+                    }
+                    if reply_markup:
+                        data_caption['reply_markup'] = json.dumps(reply_markup)
+                    
+                    response2 = http.post(url_caption, data=data_caption, timeout=10)
+                    return response2.json()
         else:
-            # Fallback to text edit if image not found
-            return edit_message(chat_id, message_id, caption, reply_markup)
+            print(f"Photo not found: {photo_path}")
+            return {'ok': False, 'error': 'Photo not found'}
             
     except Exception as e:
         print(f"Error editing message media: {e}")
-        # Fallback to text edit
-        return edit_message(chat_id, message_id, caption, reply_markup)
+        return {'ok': False, 'error': str(e)}
 def edit_message(chat_id, message_id, text, reply_markup=None):
-    """Edit message with error handling"""
+    """Edit message text - NO FALLBACK to prevent duplicates"""
     url = f"{BASE_URL}/editMessageText"
     data = {
         'chat_id': chat_id,
@@ -488,14 +498,10 @@ def edit_message(chat_id, message_id, text, reply_markup=None):
         result = response.json()
         if not result.get('ok'):
             print(f"Edit message error: {result}")
-            # If edit fails, try sending new message
-            if result.get('error_code') == 400:
-                return send_message(chat_id, text, reply_markup)
         return result
     except Exception as e:
         print(f"Error editing message: {e}")
-        # Fallback to new message
-        return send_message(chat_id, text, reply_markup)
+        return {'ok': False, 'error': str(e)}
 
 def answer_callback_query(callback_query_id, text=""):
     """Answer callback query"""
