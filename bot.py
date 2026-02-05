@@ -9,6 +9,19 @@ MↃREW Bot - FINAL WORKING VERSION
 
 import json
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+# Setup retry strategy
+retry_strategy = Retry(
+    total=3,
+    backoff_factor=1,
+    status_forcelist=[429, 500, 502, 503, 504]
+)
+adapter = HTTPAdapter(max_retries=retry_strategy)
+http = requests.Session()
+http.mount("https://", adapter)
+http.mount("http://", adapter)
 import time
 import os
 from datetime import datetime
@@ -361,7 +374,7 @@ def send_photo(chat_id, photo_path, caption="", reply_markup=None):
                 if reply_markup:
                     data['reply_markup'] = json.dumps(reply_markup)
                 
-                response = requests.post(url, files=files, data=data, timeout=15)
+                response = http.post(url, files=files, data=data, timeout=30)
                 return response.json()
         else:
             # Fallback to text message if image not found
@@ -387,7 +400,7 @@ def send_video(chat_id, video_path, caption="", reply_markup=None):
                 if reply_markup:
                     data['reply_markup'] = json.dumps(reply_markup)
                 
-                response = requests.post(url, files=files, data=data, timeout=60)
+                response = http.post(url, files=files, data=data, timeout=120)
                 return response.json()
         else:
             return send_message(chat_id, caption, reply_markup)
@@ -407,7 +420,7 @@ def send_message(chat_id, text, reply_markup=None):
         data['reply_markup'] = json.dumps(reply_markup)
     
     try:
-        response = requests.post(url, data=data, timeout=10)
+        response = http.post(url, data=data, timeout=10)
         result = response.json()
         if not result.get('ok'):
             print(f"Send message error: {result}")
@@ -441,7 +454,7 @@ def edit_message_with_photo(chat_id, message_id, photo_path, caption="", reply_m
                 if reply_markup:
                     data['reply_markup'] = json.dumps(reply_markup)
                 
-                response = requests.post(url, files=files, data=data, timeout=15)
+                response = http.post(url, files=files, data=data, timeout=30)
                 result = response.json()
                 
                 if result.get('ok'):
@@ -471,7 +484,7 @@ def edit_message(chat_id, message_id, text, reply_markup=None):
         data['reply_markup'] = json.dumps(reply_markup)
     
     try:
-        response = requests.post(url, data=data, timeout=10)
+        response = http.post(url, data=data, timeout=10)
         result = response.json()
         if not result.get('ok'):
             print(f"Edit message error: {result}")
@@ -492,7 +505,7 @@ def answer_callback_query(callback_query_id, text=""):
         'text': text
     }
     try:
-        requests.post(url, data=data, timeout=5)
+        http.post(url, data=data, timeout=5)
     except:
         pass
 
@@ -543,7 +556,7 @@ def handle_start(chat_id):
         # Получаем информацию о пользователе
         url = f"{BASE_URL}/getChat"
         data = {'chat_id': chat_id}
-        response = requests.post(url, data=data, timeout=5)
+        response = http.post(url, data=data, timeout=5)
         result = response.json()
         
         if result.get('ok'):
@@ -1055,7 +1068,7 @@ def send_message_to_admin(text):
             'parse_mode': 'HTML'
         }
         
-        response = requests.post(url, data=data, timeout=10)
+        response = http.post(url, data=data, timeout=10)
         result = response.json()
         
         if result.get('ok'):
@@ -1188,7 +1201,7 @@ def run_bot():
                 'limit': 100
             }
             
-            response = requests.get(url, params=params, timeout=35)
+            response = http.get(url, params=params, timeout=35)
             data = response.json()
             
             if data.get('ok'):
