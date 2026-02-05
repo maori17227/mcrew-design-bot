@@ -577,25 +577,25 @@ def handle_graphic_design(chat_id, message_id):
     lang = get_user_language(chat_id)
     
     if lang == 'ru':
-        text = """<blockquote><b>🎨 ГРАФИЧЕСКИЙ ДИЗАЙН</b>
+        text = """<b>🎨 ГРАФИЧЕСКИЙ ДИЗАЙН</b>
 
 <b>Logo</b> — €110-180
 <b>Brand identity</b> (logo, colors, typography) — €270-550
 <b>Full brandbook</b> — €550-1100
 <b>Icon</b> (1 pc.) — €9-22
 <b>Simple illustration</b> (cover art, etc.) — €45-90
-<b>Detailed illustration</b> (cover art, etc.) — €110-230</blockquote>
+<b>Detailed illustration</b> (cover art, etc.) — €110-230
 
 <i>Выберите услугу для оформления заказа</i>"""
     else:
-        text = """<blockquote><b>🎨 GRAPHIC DESIGN</b>
+        text = """<b>🎨 GRAPHIC DESIGN</b>
 
 <b>Logo</b> — €110-180
 <b>Brand identity</b> (logo, colors, typography) — €270-550
 <b>Full brandbook</b> — €550-1100
 <b>Icon</b> (1 pc.) — €9-22
 <b>Simple illustration</b> (cover art, etc.) — €45-90
-<b>Detailed illustration</b> (cover art, etc.) — €110-230</blockquote>
+<b>Detailed illustration</b> (cover art, etc.) — €110-230
 
 <i>Choose a service to place an order</i>"""
     
@@ -617,23 +617,23 @@ def handle_ui_design(chat_id, message_id):
     lang = get_user_language(chat_id)
     
     if lang == 'ru':
-        text = """<blockquote><b>📱 UI/UX ДИЗАЙН</b>
+        text = """<b>📱 UI/UX ДИЗАЙН</b>
 
 <b>Landing page</b> (1 page) — €140-280
 <b>Multi-page website</b> (5-7 pages) — €460-850
 
 <b>Mobile app</b> (single screen) — €28-55
-<b>Mobile app full UI</b> (10-15 screens) — €370-850</blockquote>
+<b>Mobile app full UI</b> (10-15 screens) — €370-850
 
 <i>Выберите услугу для оформления заказа</i>"""
     else:
-        text = """<blockquote><b>📱 UI/UX DESIGN</b>
+        text = """<b>📱 UI/UX DESIGN</b>
 
 <b>Landing page</b> (1 page) — €140-280
 <b>Multi-page website</b> (5-7 pages) — €460-850
 
 <b>Mobile app</b> (single screen) — €28-55
-<b>Mobile app full UI</b> (10-15 screens) — €370-850</blockquote>
+<b>Mobile app full UI</b> (10-15 screens) — €370-850
 
 <i>Choose a service to place an order</i>"""
     
@@ -654,21 +654,21 @@ def handle_print(chat_id, message_id):
     lang = get_user_language(chat_id)
     
     if lang == 'ru':
-        text = """<blockquote><b>📄 ПЕЧАТЬ / ИЗДАТЕЛЬСТВО</b>
+        text = """<b>📄 ПЕЧАТЬ / ИЗДАТЕЛЬСТВО</b>
 
 <b>Business card</b> — €13-22
 <b>Presentation</b> (1 slide) — €7-14
 <b>Full presentation</b> (10-20 slides) — €70-165
-<b>Monthly package</b> (8-12 posts + stories) — €130-195</blockquote>
+<b>Monthly package</b> (8-12 posts + stories) — €130-195
 
 <i>Выберите услугу для оформления заказа</i>"""
     else:
-        text = """<blockquote><b>📄 PRINT / PUBLISHING</b>
+        text = """<b>📄 PRINT / PUBLISHING</b>
 
 <b>Business card</b> — €13-22
 <b>Presentation</b> (1 slide) — €7-14
 <b>Full presentation</b> (10-20 slides) — €70-165
-<b>Monthly package</b> (8-12 posts + stories) — €130-195</blockquote>
+<b>Monthly package</b> (8-12 posts + stories) — €130-195
 
 <i>Choose a service to place an order</i>"""
     
@@ -688,21 +688,21 @@ def handle_vfx(chat_id, message_id):
     lang = get_user_language(chat_id)
     
     if lang == 'ru':
-        text = """<blockquote><b>🎬 МОНТАЖ И VFX</b>
+        text = """<b>🎬 МОНТАЖ И VFX</b>
 
 <b>Video editing</b> (up to 1 min) — €40-60
 <b>Video editing</b> (up to 5 min) — €80-200
 <b>Video editing</b> (5-15 min) — €200-350
-<b>CC / SFX</b> — €15-25</blockquote>
+<b>CC / SFX</b> — €15-25
 
 <i>Выберите услугу для оформления заказа</i>"""
     else:
-        text = """<blockquote><b>🎬 EDITING & VFX</b>
+        text = """<b>🎬 EDITING & VFX</b>
 
 <b>Video editing</b> (up to 1 min) — €40-60
 <b>Video editing</b> (up to 5 min) — €80-200
 <b>Video editing</b> (5-15 min) — €200-350
-<b>CC / SFX</b> — €15-25</blockquote>
+<b>CC / SFX</b> — €15-25
 
 <i>Choose a service to place an order</i>"""
     
@@ -723,21 +723,21 @@ def handle_motion(chat_id, message_id):
     lang = get_user_language(chat_id)
     
     if lang == 'ru':
-        text = """<blockquote><b>🎭 МОУШН ДИЗАЙН</b>
+        text = """<b>🎭 МОУШН ДИЗАЙН</b>
 
 <b>Logo animation</b> — €80
 <b>Simple 2D animation</b> (10-20 sec) — €70-80
 <b>Promo/advertising animation</b> (up to 30 sec) — €100-150
-<b>Event screens/visuals</b> — from €120</blockquote>
+<b>Event screens/visuals</b> — from €120
 
 <i>Выберите услугу для оформления заказа</i>"""
     else:
-        text = """<blockquote><b>🎭 MOTION DESIGN</b>
+        text = """<b>🎭 MOTION DESIGN</b>
 
 <b>Logo animation</b> — €80
 <b>Simple 2D animation</b> (10-20 sec) — €70-80
 <b>Promo/advertising animation</b> (up to 30 sec) — €100-150
-<b>Event screens/visuals</b> — from €120</blockquote>
+<b>Event screens/visuals</b> — from €120
 
 <i>Choose a service to place an order</i>"""
     
@@ -790,7 +790,7 @@ def handle_show_examples(chat_id, message_id):
         if i == 0:
             # First photo - Covers
             if lang == 'ru':
-                caption = """<blockquote>🎨 <b>ОБЛОЖКИ И АРТВОРКИ</b></blockquote>
+                caption = """🎨 <b>ОБЛОЖКИ И АРТВОРКИ</b>
 
 <b>Примеры работ:</b>
 • Обложки альбомов
@@ -799,7 +799,7 @@ def handle_show_examples(chat_id, message_id):
 
 <i>Каждая обложка создается индивидуально под ваш стиль</i>"""
             else:
-                caption = """<blockquote>🎨 <b>COVERS & ARTWORK</b></blockquote>
+                caption = """🎨 <b>COVERS & ARTWORK</b>
 
 <b>Work examples:</b>
 • Album covers
@@ -811,7 +811,7 @@ def handle_show_examples(chat_id, message_id):
         elif i == 1:
             # Second photo - Posters
             if lang == 'ru':
-                caption = """<blockquote>📄 <b>ПОСТЕРЫ И АФИШИ</b></blockquote>
+                caption = """📄 <b>ПОСТЕРЫ И АФИШИ</b>
 
 <b>Примеры работ:</b>
 • Концертные афиши
@@ -820,7 +820,7 @@ def handle_show_examples(chat_id, message_id):
 
 <i>Яркие и запоминающиеся дизайны</i>"""
             else:
-                caption = """<blockquote>📄 <b>POSTERS & FLYERS</b></blockquote>
+                caption = """📄 <b>POSTERS & FLYERS</b>
 
 <b>Work examples:</b>
 • Concert posters
@@ -832,7 +832,7 @@ def handle_show_examples(chat_id, message_id):
         else:
             # Video
             if lang == 'ru':
-                caption = f"""<blockquote>🎬 <b>ВИДЕОМОНТАЖ И МОУШН</b></blockquote>
+                caption = f"""🎬 <b>ВИДЕОМОНТАЖ И МОУШН</b>
 
 <b>Примеры работ:</b>
 • Монтаж видео
@@ -843,7 +843,7 @@ def handle_show_examples(chat_id, message_id):
 
 📸 <b>Больше примеров:</b> {PORTFOLIO_CHANNEL}"""
             else:
-                caption = f"""<blockquote>🎬 <b>VIDEO EDITING & MOTION</b></blockquote>
+                caption = f"""🎬 <b>VIDEO EDITING & MOTION</b>
 
 <b>Work examples:</b>
 • Video editing
@@ -864,14 +864,14 @@ def handle_show_examples(chat_id, message_id):
     
     # Final message with buttons
     if lang == 'ru':
-        text = """<blockquote>✨ <b>Нравится то, что видите?</b></blockquote>
+        text = """✨ <b>Нравится то, что видите?</b>
 
 📸 <b>Полное портфолио:</b> @mindescrew
 💬 <b>Готовы заказать?</b> Свяжитесь с нами!
 
 <i>Каждый проект уникален и создается под ваши потребности</i>"""
     else:
-        text = """<blockquote>✨ <b>Like what you see?</b></blockquote>
+        text = """✨ <b>Like what you see?</b>
 
 📸 <b>Full portfolio:</b> @mindescrew
 💬 <b>Ready to order?</b> Contact us!
