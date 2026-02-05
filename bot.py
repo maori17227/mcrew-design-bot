@@ -325,6 +325,7 @@ To create the perfect design, please provide:
 # Media paths (images and videos)
 IMAGES = {
     'main_photo': 'images/mcrew_logo.jpg',
+    'pricelist': 'images/pricelist.jpg',
     'welcome': 'images/welcome.jpg',
     'logo': 'images/mcrew_logo.jpg',
     'graphic_design': 'images/graphic_design_example.jpg',
@@ -576,45 +577,27 @@ def handle_graphic_design(chat_id, message_id):
     lang = get_user_language(chat_id)
     
     if lang == 'ru':
-        text = """🎨 <b>ГРАФИЧЕСКИЙ ДИЗАЙН</b>
+        text = """<blockquote expandable><b>🎨 ГРАФИЧЕСКИЙ ДИЗАЙН</b>
 
-• <b>Логотип</b> — €110-180
-  Создание логотипа
+<b>Logo</b> — €110-180
+<b>Brand identity</b> (logo, colors, typography) — €270-550
+<b>Full brandbook</b> — €550-1100
+<b>Icon</b> (1 pc.) — €9-22
+<b>Simple illustration</b> (cover art, etc.) — €45-90
+<b>Detailed illustration</b> (cover art, etc.) — €110-230</blockquote>
 
-• <b>Фирменный стиль</b> — €270-550
-  Логотип, цвета, типографика
-
-• <b>Полный брендбук</b> — €550-1100
-  Полное руководство по бренду
-
-• <b>Иконка (1 шт.)</b> — €9-22
-  Дизайн одной иконки
-
-• <b>Простая иллюстрация</b> — €45-90
-  Обложки, простые иллюстрации
-
-• <b>Детальная иллюстрация</b> — €110-230
-  Сложные иллюстрации"""
+<i>Выберите услугу для оформления заказа</i>"""
     else:
-        text = """🎨 <b>GRAPHIC DESIGN</b>
+        text = """<blockquote expandable><b>🎨 GRAPHIC DESIGN</b>
 
-• <b>Logo</b> — €110-180
-  Custom logo creation
+<b>Logo</b> — €110-180
+<b>Brand identity</b> (logo, colors, typography) — €270-550
+<b>Full brandbook</b> — €550-1100
+<b>Icon</b> (1 pc.) — €9-22
+<b>Simple illustration</b> (cover art, etc.) — €45-90
+<b>Detailed illustration</b> (cover art, etc.) — €110-230</blockquote>
 
-• <b>Brand Identity</b> — €270-550
-  Logo, colors, typography
-
-• <b>Full Brandbook</b> — €550-1100
-  Complete brand guidelines
-
-• <b>Icon (1 pc.)</b> — €9-22
-  Single icon design
-
-• <b>Simple Illustration</b> — €45-90
-  Cover art, simple illustrations
-
-• <b>Detailed Illustration</b> — €110-230
-  Complex illustrations"""
+<i>Choose a service to place an order</i>"""
     
     keyboard = {
         'inline_keyboard': [
@@ -634,33 +617,25 @@ def handle_ui_design(chat_id, message_id):
     lang = get_user_language(chat_id)
     
     if lang == 'ru':
-        text = """📱 <b>UI/UX ДИЗАЙН</b>
+        text = """<blockquote expandable><b>📱 UI/UX ДИЗАЙН</b>
 
-• <b>Лендинг (1 страница)</b> — €140-280
-  Одностраничный сайт
+<b>Landing page</b> (1 page) — €140-280
+<b>Multi-page website</b> (5-7 pages) — €460-850
 
-• <b>Многостраничный сайт (5-7 страниц)</b> — €460-850
-  Полный дизайн сайта
+<b>Mobile app</b> (single screen) — €28-55
+<b>Mobile app full UI</b> (10-15 screens) — €370-850</blockquote>
 
-• <b>Мобильное приложение (1 экран)</b> — €28-55
-  Один экран приложения
-
-• <b>Полный UI мобильного приложения (10-15 экранов)</b> — €370-850
-  Полный дизайн приложения"""
+<i>Выберите услугу для оформления заказа</i>"""
     else:
-        text = """📱 <b>UI/UX DESIGN</b>
+        text = """<blockquote expandable><b>📱 UI/UX DESIGN</b>
 
-• <b>Landing Page (1 page)</b> — €140-280
-  Single page website
+<b>Landing page</b> (1 page) — €140-280
+<b>Multi-page website</b> (5-7 pages) — €460-850
 
-• <b>Multi-page Website (5-7 pages)</b> — €460-850
-  Full website design
+<b>Mobile app</b> (single screen) — €28-55
+<b>Mobile app full UI</b> (10-15 screens) — €370-850</blockquote>
 
-• <b>Mobile App (single screen)</b> — €28-55
-  One app screen
-
-• <b>Mobile App Full UI (10-15 screens)</b> — €370-850
-  Complete app design"""
+<i>Choose a service to place an order</i>"""
     
     keyboard = {
         'inline_keyboard': [
@@ -679,33 +654,23 @@ def handle_print(chat_id, message_id):
     lang = get_user_language(chat_id)
     
     if lang == 'ru':
-        text = """📄 <b>ПЕЧАТЬ / ИЗДАТЕЛЬСТВО</b>
+        text = """<blockquote expandable><b>📄 ПЕЧАТЬ / ИЗДАТЕЛЬСТВО</b>
 
-• <b>Визитка</b> — €13-22
-  Профессиональная визитка
+<b>Business card</b> — €13-22
+<b>Presentation</b> (1 slide) — €7-14
+<b>Full presentation</b> (10-20 slides) — €70-165
+<b>Monthly package</b> (8-12 posts + stories) — €130-195</blockquote>
 
-• <b>Презентация (1 слайд)</b> — €7-14
-  Дизайн одного слайда
-
-• <b>Полная презентация (10-20 слайдов)</b> — €70-165
-  Полная презентация
-
-• <b>Месячный пакет (8-12 постов + сторис)</b> — €130-195
-  Пакет для социальных сетей"""
+<i>Выберите услугу для оформления заказа</i>"""
     else:
-        text = """📄 <b>PRINT / PUBLISHING</b>
+        text = """<blockquote expandable><b>📄 PRINT / PUBLISHING</b>
 
-• <b>Business Card</b> — €13-22
-  Professional business card
+<b>Business card</b> — €13-22
+<b>Presentation</b> (1 slide) — €7-14
+<b>Full presentation</b> (10-20 slides) — €70-165
+<b>Monthly package</b> (8-12 posts + stories) — €130-195</blockquote>
 
-• <b>Presentation (1 slide)</b> — €7-14
-  Single slide design
-
-• <b>Full Presentation (10-20 slides)</b> — €70-165
-  Complete presentation
-
-• <b>Monthly Package (8-12 posts + stories)</b> — €130-195
-  Social media package"""
+<i>Choose a service to place an order</i>"""
     
     keyboard = {
         'inline_keyboard': [
@@ -723,33 +688,23 @@ def handle_vfx(chat_id, message_id):
     lang = get_user_language(chat_id)
     
     if lang == 'ru':
-        text = """🎬 <b>МОНТАЖ И VFX</b>
+        text = """<blockquote expandable><b>🎬 МОНТАЖ И VFX</b>
 
-• <b>Видеомонтаж (до 1 мин)</b> — €40-60
-  TikTok/Reels/Shorts
+<b>Video editing</b> (up to 1 min) — €40-60
+<b>Video editing</b> (up to 5 min) — €80-200
+<b>Video editing</b> (5-15 min) — €200-350
+<b>CC / SFX</b> — €15-25</blockquote>
 
-• <b>Видеомонтаж (до 5 мин)</b> — €80-200
-  Видео средней длины
-
-• <b>Видеомонтаж (5-15 мин)</b> — €200-350
-  YouTube, клипы, обзоры
-
-• <b>Цветокоррекция / Звук</b> — €15-25
-  Цветокоррекция / Звуковые эффекты"""
+<i>Выберите услугу для оформления заказа</i>"""
     else:
-        text = """🎬 <b>EDITING & VFX</b>
+        text = """<blockquote expandable><b>🎬 EDITING & VFX</b>
 
-• <b>Video Editing (up to 1 min)</b> — €40-60
-  TikTok/Reels/Shorts
+<b>Video editing</b> (up to 1 min) — €40-60
+<b>Video editing</b> (up to 5 min) — €80-200
+<b>Video editing</b> (5-15 min) — €200-350
+<b>CC / SFX</b> — €15-25</blockquote>
 
-• <b>Video Editing (up to 5 min)</b> — €80-200
-  Medium length videos
-
-• <b>Video Editing (5-15 min)</b> — €200-350
-  YouTube, clips, reviews
-
-• <b>CC / SFX</b> — €15-25
-  Color correction / Sound effects"""
+<i>Choose a service to place an order</i>"""
     
     keyboard = {
         'inline_keyboard': [
@@ -768,33 +723,23 @@ def handle_motion(chat_id, message_id):
     lang = get_user_language(chat_id)
     
     if lang == 'ru':
-        text = """🎭 <b>МОУШН ДИЗАЙН</b>
+        text = """<blockquote expandable><b>🎭 МОУШН ДИЗАЙН</b>
 
-• <b>Анимация логотипа</b> — €80
-  Анимированная последовательность логотипа
+<b>Logo animation</b> — €80
+<b>Simple 2D animation</b> (10-20 sec) — €70-80
+<b>Promo/advertising animation</b> (up to 30 sec) — €100-150
+<b>Event screens/visuals</b> — from €120</blockquote>
 
-• <b>Простая 2D анимация (10-20 сек)</b> — €70-80
-  2D анимация
-
-• <b>Рекламная анимация (до 30 сек)</b> — €100-150
-  Промо видео
-
-• <b>Визуалы для событий</b> — от €120
-  Визуалы для живых событий"""
+<i>Выберите услугу для оформления заказа</i>"""
     else:
-        text = """🎭 <b>MOTION DESIGN</b>
+        text = """<blockquote expandable><b>🎭 MOTION DESIGN</b>
 
-• <b>Logo Animation</b> — €80
-  Animated logo sequence
+<b>Logo animation</b> — €80
+<b>Simple 2D animation</b> (10-20 sec) — €70-80
+<b>Promo/advertising animation</b> (up to 30 sec) — €100-150
+<b>Event screens/visuals</b> — from €120</blockquote>
 
-• <b>Simple 2D Animation (10-20 sec)</b> — €70-80
-  2D animation
-
-• <b>Promo/Advertising Animation (up to 30 sec)</b> — €100-150
-  Promotional video
-
-• <b>Event Screens/Visuals</b> — from €120
-  Live event visuals"""
+<i>Choose a service to place an order</i>"""
     
     keyboard = {
         'inline_keyboard': [
