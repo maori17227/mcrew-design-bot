@@ -798,6 +798,14 @@ def handle_show_examples(chat_id, message_id):
     """Show portfolio examples with photos and videos"""
     lang = get_user_language(chat_id)
     
+    # First, delete the original message to avoid duplication
+    try:
+        url = f"{BASE_URL}/deleteMessage"
+        data = {'chat_id': chat_id, 'message_id': message_id}
+        http.post(url, data=data, timeout=5)
+    except:
+        pass
+    
     # Send examples (photos and videos)
     for i, item in enumerate(PORTFOLIO_EXAMPLES):
         if i == 0:
@@ -873,7 +881,7 @@ def handle_show_examples(chat_id, message_id):
         else:
             send_photo(chat_id, item['path'], caption)
         
-        time.sleep(0.4)  # Small delay
+        time.sleep(0.5)  # Small delay between messages
     
     # Final message with buttons
     if lang == 'ru':
@@ -1112,9 +1120,10 @@ def process_update(update):
             chat_id = query['message']['chat']['id']
             message_id = query['message']['message_id']
             callback_data = query['data']
+            callback_id = query['id']
             
-            # Answer callback query immediately
-            answer_callback_query(query['id'], "Processing...")
+            # Answer callback query immediately to prevent duplicate processing
+            answer_callback_query(callback_id, "")
             
             # Route to appropriate handler
             if callback_data == 'cat_graphic':
@@ -1190,6 +1199,7 @@ def run_bot():
     
     offset = 0
     error_count = 0
+    processed_updates = set()  # Track processed update IDs to prevent duplicates
     
     while True:
         try:
@@ -1208,8 +1218,24 @@ def run_bot():
                 updates = data['result']
                 
                 for update in updates:
+                    update_id = update['update_id']
+                    
+                    # Skip if already processed
+                    if update_id in processed_updates:
+                        print(f"⚠️ Skipping duplicate update {update_id}")
+                        offset = update_id + 1
+                        continue
+                    
+                    # Process update
                     process_update(update)
-                    offset = update['update_id'] + 1
+                    
+                    # Mark as processed
+                    processed_updates.add(update_id)
+                    offset = update_id + 1
+                    
+                    # Keep only last 1000 processed IDs to prevent memory issues
+                    if len(processed_updates) > 1000:
+                        processed_updates.clear()
                     
                 if updates:
                     print(f"✅ Processed {len(updates)} updates")
