@@ -859,27 +859,23 @@ def handle_show_examples(chat_id, message_id):
         else:
             # Video
             if lang == 'ru':
-                caption = f"""🎬 <b>ВИДЕОМОНТАЖ И МОУШН</b>
+                caption = """🎬 <b>ВИДЕОМОНТАЖ И МОУШН</b>
 
 <b>Примеры работ:</b>
 • Монтаж видео
 • Моушн графика
 • VFX эффекты
 
-<i>Динамичные и профессиональные ролики</i>
-
-📸 <b>Больше примеров:</b> {PORTFOLIO_CHANNEL}"""
+<i>Динамичные и профессиональные ролики</i>"""
             else:
-                caption = f"""🎬 <b>VIDEO EDITING & MOTION</b>
+                caption = """🎬 <b>VIDEO EDITING & MOTION</b>
 
 <b>Work examples:</b>
 • Video editing
 • Motion graphics
 • VFX effects
 
-<i>Dynamic and professional videos</i>
-
-📸 <b>More examples:</b> {PORTFOLIO_CHANNEL}"""
+<i>Dynamic and professional videos</i>"""
         
         # Send photo or video
         if item['type'] == 'video':
