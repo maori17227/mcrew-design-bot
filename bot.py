@@ -341,9 +341,8 @@ PORTFOLIO_EXAMPLES = [
     {'type': 'photo', 'path': 'images/brand_example1.jpg'},
     {'type': 'photo', 'path': 'images/ui_example1.jpg'},
     
-    # Add your videos here (uncomment and add your video files):
-    # {'type': 'video', 'path': 'videos/motion_example.mp4'},
-    # {'type': 'video', 'path': 'videos/vfx_example.mp4'},
+    # Videos
+    {'type': 'video', 'path': 'videos/motion_example.mp4'},
 ]
 
 def send_photo(chat_id, photo_path, caption="", reply_markup=None):
