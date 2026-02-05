@@ -577,7 +577,7 @@ def handle_graphic_design(chat_id, message_id):
     lang = get_user_language(chat_id)
     
     if lang == 'ru':
-        text = """<blockquote expandable><b>🎨 ГРАФИЧЕСКИЙ ДИЗАЙН</b>
+        text = """<blockquote><b>🎨 ГРАФИЧЕСКИЙ ДИЗАЙН</b>
 
 <b>Logo</b> — €110-180
 <b>Brand identity</b> (logo, colors, typography) — €270-550
@@ -588,7 +588,7 @@ def handle_graphic_design(chat_id, message_id):
 
 <i>Выберите услугу для оформления заказа</i>"""
     else:
-        text = """<blockquote expandable><b>🎨 GRAPHIC DESIGN</b>
+        text = """<blockquote><b>🎨 GRAPHIC DESIGN</b>
 
 <b>Logo</b> — €110-180
 <b>Brand identity</b> (logo, colors, typography) — €270-550
@@ -617,7 +617,7 @@ def handle_ui_design(chat_id, message_id):
     lang = get_user_language(chat_id)
     
     if lang == 'ru':
-        text = """<blockquote expandable><b>📱 UI/UX ДИЗАЙН</b>
+        text = """<blockquote><b>📱 UI/UX ДИЗАЙН</b>
 
 <b>Landing page</b> (1 page) — €140-280
 <b>Multi-page website</b> (5-7 pages) — €460-850
@@ -627,7 +627,7 @@ def handle_ui_design(chat_id, message_id):
 
 <i>Выберите услугу для оформления заказа</i>"""
     else:
-        text = """<blockquote expandable><b>📱 UI/UX DESIGN</b>
+        text = """<blockquote><b>📱 UI/UX DESIGN</b>
 
 <b>Landing page</b> (1 page) — €140-280
 <b>Multi-page website</b> (5-7 pages) — €460-850
@@ -654,7 +654,7 @@ def handle_print(chat_id, message_id):
     lang = get_user_language(chat_id)
     
     if lang == 'ru':
-        text = """<blockquote expandable><b>📄 ПЕЧАТЬ / ИЗДАТЕЛЬСТВО</b>
+        text = """<blockquote><b>📄 ПЕЧАТЬ / ИЗДАТЕЛЬСТВО</b>
 
 <b>Business card</b> — €13-22
 <b>Presentation</b> (1 slide) — €7-14
@@ -663,7 +663,7 @@ def handle_print(chat_id, message_id):
 
 <i>Выберите услугу для оформления заказа</i>"""
     else:
-        text = """<blockquote expandable><b>📄 PRINT / PUBLISHING</b>
+        text = """<blockquote><b>📄 PRINT / PUBLISHING</b>
 
 <b>Business card</b> — €13-22
 <b>Presentation</b> (1 slide) — €7-14
@@ -688,7 +688,7 @@ def handle_vfx(chat_id, message_id):
     lang = get_user_language(chat_id)
     
     if lang == 'ru':
-        text = """<blockquote expandable><b>🎬 МОНТАЖ И VFX</b>
+        text = """<blockquote><b>🎬 МОНТАЖ И VFX</b>
 
 <b>Video editing</b> (up to 1 min) — €40-60
 <b>Video editing</b> (up to 5 min) — €80-200
@@ -697,7 +697,7 @@ def handle_vfx(chat_id, message_id):
 
 <i>Выберите услугу для оформления заказа</i>"""
     else:
-        text = """<blockquote expandable><b>🎬 EDITING & VFX</b>
+        text = """<blockquote><b>🎬 EDITING & VFX</b>
 
 <b>Video editing</b> (up to 1 min) — €40-60
 <b>Video editing</b> (up to 5 min) — €80-200
@@ -723,7 +723,7 @@ def handle_motion(chat_id, message_id):
     lang = get_user_language(chat_id)
     
     if lang == 'ru':
-        text = """<blockquote expandable><b>🎭 МОУШН ДИЗАЙН</b>
+        text = """<blockquote><b>🎭 МОУШН ДИЗАЙН</b>
 
 <b>Logo animation</b> — €80
 <b>Simple 2D animation</b> (10-20 sec) — €70-80
@@ -732,7 +732,7 @@ def handle_motion(chat_id, message_id):
 
 <i>Выберите услугу для оформления заказа</i>"""
     else:
-        text = """<blockquote expandable><b>🎭 MOTION DESIGN</b>
+        text = """<blockquote><b>🎭 MOTION DESIGN</b>
 
 <b>Logo animation</b> — €80
 <b>Simple 2D animation</b> (10-20 sec) — €70-80
@@ -947,9 +947,21 @@ def handle_order(chat_id, message_id, service):
     
     text = get_text(chat_id, 'order_form', service_name=service_name)
     
+    # Determine which category this service belongs to
+    category_map = {
+        'ord_logo': 'cat_graphic', 'ord_brand': 'cat_graphic', 'ord_book': 'cat_graphic',
+        'ord_icon': 'cat_graphic', 'ord_illust': 'cat_graphic',
+        'ord_landing': 'cat_ui', 'ord_website': 'cat_ui', 'ord_mobile': 'cat_ui', 'ord_fullui': 'cat_ui',
+        'ord_card': 'cat_print', 'ord_present': 'cat_print', 'ord_monthly': 'cat_print',
+        'ord_short': 'cat_vfx', 'ord_medium': 'cat_vfx', 'ord_long': 'cat_vfx', 'ord_ccsfx': 'cat_vfx',
+        'ord_logoanim': 'cat_motion', 'ord_2danim': 'cat_motion', 'ord_promo': 'cat_motion', 'ord_event': 'cat_motion'
+    }
+    
+    back_category = category_map.get(service, 'main_menu')
+    
     keyboard = {
         'inline_keyboard': [
-            [{'text': get_text(chat_id, 'back'), 'callback_data': 'main_menu'}]
+            [{'text': get_text(chat_id, 'back'), 'callback_data': back_category}]
         ]
     }
     
