@@ -685,12 +685,20 @@ function handleOrder(userId, service) {
 }
 
 
+// Telegram file_id (faster and more reliable than URLs)
+const MEDIA_FILE_IDS = {
+  logo: 'AgACAgIAAxkDAAN1aYO_kiHKSkVSM7Yy3avMyLIi0S8AAicWaxuDVhhIhD0t8uGw-P0BAAMCAAN4AAM4BA',
+  covers: 'AgACAgIAAxkDAAO8aYUIGz5J7UVpOauIT5KcvjXivGMAAvgTaxuz9ilIU2cMkhILjcMBAAMCAAN5AAM4BA',
+  posters: 'AgACAgIAAxkDAAO9aYUIHaym1b3ubLUGzPEFpytkyYkAAvkTaxuz9ilIhLgYx1Zmy7QBAAMCAAN5AAM4BA',
+  video: 'BAACAgIAAxkDAAIBTWmFy5jzcZDsBQXiHwrcWzwE1gABqgAC9ocAArP2MUgIFpUzdZd27TgE'
+}
+
 // Portfolio media URLs (using GitHub raw URLs or Telegram file_id)
 // You can replace these with your actual media URLs
 const PORTFOLIO_MEDIA = {
-  covers: 'https://raw.githubusercontent.com/maori17227/mcrew-design-bot/main/images/covers_example.jpg',
-  posters: 'https://raw.githubusercontent.com/maori17227/mcrew-design-bot/main/images/poster_example.jpg',
-  video: 'https://raw.githubusercontent.com/maori17227/mcrew-design-bot/main/videos/motion_example.mp4'
+  covers: MEDIA_FILE_IDS.covers,
+  posters: MEDIA_FILE_IDS.posters,
+  video: MEDIA_FILE_IDS.video
 }
 
 async function handleShowExamples(chatId, userId, token) {
@@ -832,7 +840,8 @@ async function handleRequest(request, env) {
           const welcomeText = getText(userId, 'welcome')
           const keyboard = getMainMenuKeyboard(userId)
           
-          await sendMessage(chatId, welcomeText, keyboard, BOT_TOKEN)
+          // Send welcome message with logo photo
+          await sendPhoto(chatId, MEDIA_FILE_IDS.logo, welcomeText, keyboard, BOT_TOKEN)
         } else if (text) {
           // Handle order text message
           const orderText = getText(userId, 'new_order', {
