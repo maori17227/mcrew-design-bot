@@ -2,9 +2,9 @@ name = "mcrew-bot"
 main = "worker.js"
 compatibility_date = "2024-01-01"
 
-# Environment variables (set these in Cloudflare dashboard)
-# BOT_TOKEN = "your_bot_token_here"
-# ADMIN_CHAT_ID = "your_admin_chat_id_here"
-
-[env.production]
-name = "mcrew-bot"
+# Add your environment variables in Cloudflare Dashboard:
+# Workers & Pages → Your Worker → Settings → Variables
+# 
+# Required variables:
+# BOT_TOKEN = "8363446053:AAGfig_At866R3bVU9rNrY4AOuJQxnz_t2M"
+# ADMIN_CHAT_ID = "your_chat_id" (get from @userinfobot)

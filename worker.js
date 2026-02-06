@@ -4,7 +4,7 @@
  */
 
 addEventListener('fetch', event => {
-  event.respondWith(handleRequest(event.request))
+  event.respondWith(handleRequest(event.request, event.env || {}))
 })
 
 // Language system - store in KV or memory
@@ -624,7 +624,7 @@ function handleOrder(userId, service) {
 
 
 // Main request handler
-async function handleRequest(request) {
+async function handleRequest(request, env) {
   const BOT_TOKEN = env.BOT_TOKEN
   const ADMIN_CHAT_ID = env.ADMIN_CHAT_ID
   
