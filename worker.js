@@ -267,6 +267,32 @@ async function deleteMessage(chatId, messageId, token) {
   })
 }
 
+async function editMessageMedia(chatId, messageId, photoFileId, caption, replyMarkup, token) {
+  const url = `https://api.telegram.org/bot${token}/editMessageMedia`
+  const body = {
+    chat_id: chatId,
+    message_id: messageId,
+    media: {
+      type: 'photo',
+      media: photoFileId,
+      caption: caption,
+      parse_mode: 'HTML'
+    }
+  }
+  
+  if (replyMarkup) {
+    body.reply_markup = replyMarkup
+  }
+  
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  })
+  
+  return await response.json()
+}
+
 // Telegram API functions
 async function sendMessage(chatId, text, replyMarkup = null, token) {
   const url = `https://api.telegram.org/bot${token}/sendMessage`
@@ -374,7 +400,7 @@ function handleGraphicDesign(userId) {
     ]
   }
   
-  return { text, keyboard }
+  return { text, keyboard, photo: MEDIA_FILE_IDS.pricelist }
 }
 
 function handleUIDesign(userId) {
@@ -410,7 +436,7 @@ function handleUIDesign(userId) {
     ]
   }
   
-  return { text, keyboard }
+  return { text, keyboard, photo: MEDIA_FILE_IDS.pricelist }
 }
 
 function handlePrint(userId) {
@@ -443,7 +469,7 @@ function handlePrint(userId) {
     ]
   }
   
-  return { text, keyboard }
+  return { text, keyboard, photo: MEDIA_FILE_IDS.pricelist }
 }
 
 function handleVFX(userId) {
@@ -477,7 +503,7 @@ function handleVFX(userId) {
     ]
   }
   
-  return { text, keyboard }
+  return { text, keyboard, photo: MEDIA_FILE_IDS.pricelist }
 }
 
 function handleMotion(userId) {
@@ -511,7 +537,7 @@ function handleMotion(userId) {
     ]
   }
   
-  return { text, keyboard }
+  return { text, keyboard, photo: MEDIA_FILE_IDS.pricelist }
 }
 
 function handlePortfolio(userId) {
@@ -557,7 +583,7 @@ function handlePortfolio(userId) {
     ]
   }
   
-  return { text, keyboard }
+  return { text, keyboard, photo: MEDIA_FILE_IDS.logo }
 }
 
 function handleContact(userId) {
@@ -609,7 +635,7 @@ Sat-Sun: 12:00 - 18:00 (UTC+3)
     ]
   }
   
-  return { text, keyboard }
+  return { text, keyboard, photo: MEDIA_FILE_IDS.logo }
 }
 
 function handleLanguageMenu(userId) {
@@ -631,7 +657,7 @@ Choose your preferred language:`
     ]
   }
   
-  return { text, keyboard }
+  return { text, keyboard, photo: MEDIA_FILE_IDS.logo }
 }
 
 function handleOrder(userId, service) {
@@ -681,13 +707,14 @@ function handleOrder(userId, service) {
     ]
   }
   
-  return { text, keyboard }
+  return { text, keyboard, photo: MEDIA_FILE_IDS.pricelist }
 }
 
 
 // Telegram file_id (faster and more reliable than URLs)
 const MEDIA_FILE_IDS = {
   logo: 'AgACAgIAAxkDAAN1aYO_kiHKSkVSM7Yy3avMyLIi0S8AAicWaxuDVhhIhD0t8uGw-P0BAAMCAAN4AAM4BA',
+  pricelist: 'AgACAgIAAxkDAAIBmGmF0cAwGwwPIQjBUL9gAxk1Lw6iAALfDmsbr9gxSKiiObd_5U_KAQADAgADeQADOAQ',
   covers: 'AgACAgIAAxkDAAO8aYUIGz5J7UVpOauIT5KcvjXivGMAAvgTaxuz9ilIU2cMkhILjcMBAAMCAAN5AAM4BA',
   posters: 'AgACAgIAAxkDAAO9aYUIHaym1b3ubLUGzPEFpytkyYkAAvkTaxuz9ilIhLgYx1Zmy7QBAAMCAAN5AAM4BA',
   video: 'BAACAgIAAxkDAAIBTWmFy5jzcZDsBQXiHwrcWzwE1gABqgAC9ocAArP2MUgIFpUzdZd27TgE'
@@ -911,20 +938,23 @@ async function handleRequest(request, env) {
             setUserLanguage(userId, 'en')
             response = { 
               text: getText(userId, 'menu_title'), 
-              keyboard: getMainMenuKeyboard(userId) 
+              keyboard: getMainMenuKeyboard(userId),
+              photo: MEDIA_FILE_IDS.logo
             }
             break
           case 'lang_ru':
             setUserLanguage(userId, 'ru')
             response = { 
               text: getText(userId, 'menu_title'), 
-              keyboard: getMainMenuKeyboard(userId) 
+              keyboard: getMainMenuKeyboard(userId),
+              photo: MEDIA_FILE_IDS.logo
             }
             break
           case 'main_menu':
             response = { 
               text: getText(userId, 'menu_title'), 
-              keyboard: getMainMenuKeyboard(userId) 
+              keyboard: getMainMenuKeyboard(userId),
+              photo: MEDIA_FILE_IDS.logo
             }
             break
           default:
@@ -933,18 +963,21 @@ async function handleRequest(request, env) {
             } else {
               response = { 
                 text: getText(userId, 'menu_title'), 
-                keyboard: getMainMenuKeyboard(userId) 
+                keyboard: getMainMenuKeyboard(userId),
+                photo: MEDIA_FILE_IDS.logo
               }
             }
         }
         
-        // Handle response - delete old message and send new one with photo
+        // Handle response - edit message with new photo and text
         if (response) {
-          // Delete the old message
-          await deleteMessage(chatId, messageId, BOT_TOKEN)
-          
-          // Send new message with logo photo
-          await sendPhoto(chatId, MEDIA_FILE_IDS.logo, response.text, response.keyboard, BOT_TOKEN)
+          if (response.photo) {
+            // Edit message media (change photo and caption)
+            await editMessageMedia(chatId, messageId, response.photo, response.text, response.keyboard, BOT_TOKEN)
+          } else {
+            // Fallback to text edit if no photo specified
+            await editMessageText(chatId, messageId, response.text, response.keyboard, BOT_TOKEN)
+          }
         }
       }
       
