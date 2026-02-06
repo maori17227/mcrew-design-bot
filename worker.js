@@ -938,9 +938,13 @@ async function handleRequest(request, env) {
             }
         }
         
-        // Edit message with response
+        // Handle response - delete old message and send new one with photo
         if (response) {
-          await editMessageText(chatId, messageId, response.text, response.keyboard, BOT_TOKEN)
+          // Delete the old message
+          await deleteMessage(chatId, messageId, BOT_TOKEN)
+          
+          // Send new message with logo photo
+          await sendPhoto(chatId, MEDIA_FILE_IDS.logo, response.text, response.keyboard, BOT_TOKEN)
         }
       }
       
