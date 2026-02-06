@@ -3,9 +3,11 @@
  * Fast, reliable, never goes down
  */
 
-addEventListener('fetch', event => {
-  event.respondWith(handleRequest(event.request, event.env || {}))
-})
+export default {
+  async fetch(request, env, ctx) {
+    return handleRequest(request, env)
+  }
+}
 
 // Language system - store in KV or memory
 const userLanguages = new Map()
@@ -625,8 +627,16 @@ function handleOrder(userId, service) {
 
 // Main request handler
 async function handleRequest(request, env) {
+  // Check if environment variables are set
+  if (!env || !env.BOT_TOKEN) {
+    return new Response('❌ BOT_TOKEN not configured. Add it in Workers Settings → Variables', { 
+      status: 500,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+    })
+  }
+  
   const BOT_TOKEN = env.BOT_TOKEN
-  const ADMIN_CHAT_ID = env.ADMIN_CHAT_ID
+  const ADMIN_CHAT_ID = env.ADMIN_CHAT_ID || null
   
   // Handle GET requests (health check)
   if (request.method === 'GET') {
@@ -645,7 +655,7 @@ async function handleRequest(request, env) {
       if (update.message) {
         const chatId = update.message.chat.id
         const userId = update.message.from.id
-        const text = update.message.text
+        const text = update.message.text || ''
         const user = update.message.from
         
         if (text === '/start') {
@@ -656,7 +666,7 @@ async function handleRequest(request, env) {
           const keyboard = getMainMenuKeyboard(userId)
           
           await sendMessage(chatId, welcomeText, keyboard, BOT_TOKEN)
-        } else {
+        } else if (text) {
           // Handle order text message
           const orderText = getText(userId, 'new_order', {
             name: user.first_name || 'Unknown',
@@ -756,7 +766,18 @@ async function handleRequest(request, env) {
       
     } catch (error) {
       console.error('Error processing update:', error)
-      return new Response('Error', { status: 500 })
+      console.error('Error stack:', error.stack)
+      console.error('Error message:', error.message)
+      
+      // Return detailed error for debugging
+      return new Response(JSON.stringify({
+        error: error.message,
+        stack: error.stack,
+        update: 'Check logs for details'
+      }), { 
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      })
     }
   }
   
