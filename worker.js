@@ -209,6 +209,64 @@ function getText(userId, key, params = {}) {
   return text
 }
 
+async function sendPhoto(chatId, photoUrl, caption = '', replyMarkup = null, token) {
+  const url = `https://api.telegram.org/bot${token}/sendPhoto`
+  const body = {
+    chat_id: chatId,
+    photo: photoUrl,
+    caption: caption,
+    parse_mode: 'HTML'
+  }
+  
+  if (replyMarkup) {
+    body.reply_markup = replyMarkup
+  }
+  
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  })
+  
+  return await response.json()
+}
+
+async function sendVideo(chatId, videoUrl, caption = '', replyMarkup = null, token) {
+  const url = `https://api.telegram.org/bot${token}/sendVideo`
+  const body = {
+    chat_id: chatId,
+    video: videoUrl,
+    caption: caption,
+    parse_mode: 'HTML'
+  }
+  
+  if (replyMarkup) {
+    body.reply_markup = replyMarkup
+  }
+  
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  })
+  
+  return await response.json()
+}
+
+async function deleteMessage(chatId, messageId, token) {
+  const url = `https://api.telegram.org/bot${token}/deleteMessage`
+  const body = {
+    chat_id: chatId,
+    message_id: messageId
+  }
+  
+  await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  })
+}
+
 // Telegram API functions
 async function sendMessage(chatId, text, replyMarkup = null, token) {
   const url = `https://api.telegram.org/bot${token}/sendMessage`
@@ -493,6 +551,8 @@ function handlePortfolio(userId) {
   
   const keyboard = {
     inline_keyboard: [
+      [{ text: lang === 'ru' ? '🖼️ Посмотреть примеры' : '🖼️ View Examples', callback_data: 'show_examples' }],
+      [{ text: lang === 'ru' ? '📞 Связаться для больше примеров' : '📞 Contact for More Examples', callback_data: 'show_contact' }],
       [{ text: getText(userId, 'back'), callback_data: 'main_menu' }]
     ]
   }
@@ -625,6 +685,113 @@ function handleOrder(userId, service) {
 }
 
 
+// Portfolio media URLs (using GitHub raw URLs or Telegram file_id)
+// You can replace these with your actual media URLs
+const PORTFOLIO_MEDIA = {
+  covers: 'https://raw.githubusercontent.com/maori17227/mcrew-design-bot/main/images/covers_example.jpg',
+  posters: 'https://raw.githubusercontent.com/maori17227/mcrew-design-bot/main/images/poster_example.jpg',
+  video: 'https://raw.githubusercontent.com/maori17227/mcrew-design-bot/main/videos/motion_example.mp4'
+}
+
+async function handleShowExamples(chatId, userId, token) {
+  const lang = getUserLanguage(userId)
+  
+  // Send cover example
+  const coverCaption = lang === 'ru'
+    ? `🎨 <b>ОБЛОЖКИ И АРТВОРКИ</b>
+
+<b>Примеры работ:</b>
+• Обложки альбомов
+• Сниппеты для треков
+• Визуалы для релизов
+
+<i>Каждая обложка создается индивидуально под ваш стиль</i>`
+    : `🎨 <b>COVERS & ARTWORK</b>
+
+<b>Work examples:</b>
+• Album covers
+• Track snippets
+• Release visuals
+
+<i>Each cover is created individually for your style</i>`
+  
+  await sendPhoto(chatId, PORTFOLIO_MEDIA.covers, coverCaption, null, token)
+  
+  // Small delay
+  await new Promise(resolve => setTimeout(resolve, 500))
+  
+  // Send poster example
+  const posterCaption = lang === 'ru'
+    ? `📄 <b>ПОСТЕРЫ И АФИШИ</b>
+
+<b>Примеры работ:</b>
+• Концертные афиши
+• Промо постеры
+• Ивент дизайн
+
+<i>Яркие и запоминающиеся дизайны</i>`
+    : `📄 <b>POSTERS & FLYERS</b>
+
+<b>Work examples:</b>
+• Concert posters
+• Promo materials
+• Event design
+
+<i>Bright and memorable designs</i>`
+  
+  await sendPhoto(chatId, PORTFOLIO_MEDIA.posters, posterCaption, null, token)
+  
+  // Small delay
+  await new Promise(resolve => setTimeout(resolve, 500))
+  
+  // Send video example
+  const videoCaption = lang === 'ru'
+    ? `🎬 <b>ВИДЕОМОНТАЖ И МОУШН</b>
+
+<b>Примеры работ:</b>
+• Монтаж видео
+• Моушн графика
+• VFX эффекты
+
+<i>Динамичные и профессиональные ролики</i>`
+    : `🎬 <b>VIDEO EDITING & MOTION</b>
+
+<b>Work examples:</b>
+• Video editing
+• Motion graphics
+• VFX effects
+
+<i>Dynamic and professional videos</i>`
+  
+  await sendVideo(chatId, PORTFOLIO_MEDIA.video, videoCaption, null, token)
+  
+  // Small delay
+  await new Promise(resolve => setTimeout(resolve, 500))
+  
+  // Final message with back button
+  const finalText = lang === 'ru'
+    ? `✨ <b>Нравится то, что видите?</b>
+
+📸 <b>Полное портфолио:</b> @mindescrew
+💬 <b>Готовы заказать?</b> Свяжитесь с нами!
+
+<i>Каждый проект уникален и создается под ваши потребности</i>`
+    : `✨ <b>Like what you see?</b>
+
+📸 <b>Full portfolio:</b> @mindescrew
+💬 <b>Ready to order?</b> Contact us!
+
+<i>Each project is unique and tailored to your needs</i>`
+  
+  const keyboard = {
+    inline_keyboard: [
+      [{ text: getText(userId, 'back'), callback_data: 'main_menu' }]
+    ]
+  }
+  
+  await sendMessage(chatId, finalText, keyboard, token)
+}
+
 // Main request handler
 async function handleRequest(request, env) {
   // Check if environment variables are set
@@ -718,6 +885,12 @@ async function handleRequest(request, env) {
             break
           case 'show_portfolio':
             response = handlePortfolio(userId)
+            break
+          case 'show_examples':
+            // Delete original message and send examples
+            await deleteMessage(chatId, messageId, BOT_TOKEN)
+            await handleShowExamples(chatId, userId, BOT_TOKEN)
+            response = null // Already handled
             break
           case 'show_contact':
             response = handleContact(userId)
