@@ -741,35 +741,83 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Splash screen swipe up
     const splashScreen = document.getElementById('splash-screen');
+    const splashLogo = document.getElementById('splash-logo');
     let touchStartY = 0;
     let touchEndY = 0;
+    let isTransitioning = false;
     
     splashScreen.addEventListener('touchstart', (e) => {
+        if (isTransitioning) return;
         touchStartY = e.touches[0].clientY;
     });
     
     splashScreen.addEventListener('touchmove', (e) => {
+        if (isTransitioning) return;
         touchEndY = e.touches[0].clientY;
+        const swipeDistance = touchStartY - touchEndY;
+        
+        // Transform logo during swipe
+        if (swipeDistance > 0) {
+            const progress = Math.min(swipeDistance / 300, 1); // 300px for full transition
+            
+            // Scale from 320px to 60px
+            const scale = 1 - (progress * 0.8125); // 0.8125 = (320-60)/320
+            
+            // Move up
+            const translateY = -progress * 200;
+            
+            splashLogo.classList.add('shrinking');
+            splashLogo.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+            
+            // Fade out arrow
+            const arrow = document.querySelector('.swipe-arrow');
+            arrow.style.opacity = 1 - progress;
+        }
     });
     
     splashScreen.addEventListener('touchend', () => {
+        if (isTransitioning) return;
         const swipeDistance = touchStartY - touchEndY;
         
-        // If swiped up more than 50px
-        if (swipeDistance > 50) {
+        // If swiped up more than 150px
+        if (swipeDistance > 150) {
             hideSplashScreen();
+        } else {
+            // Reset logo
+            splashLogo.style.transform = '';
+            splashLogo.classList.remove('shrinking');
+            const arrow = document.querySelector('.swipe-arrow');
+            arrow.style.opacity = '';
         }
     });
     
     // Also allow click to dismiss
     splashScreen.addEventListener('click', () => {
-        hideSplashScreen();
+        if (!isTransitioning) {
+            hideSplashScreen();
+        }
     });
     
     function hideSplashScreen() {
-        splashScreen.classList.add('slide-up');
+        isTransitioning = true;
+        splashScreen.classList.add('transitioning');
+        
+        // Animate logo to final position
+        splashLogo.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+        splashLogo.style.transform = 'scale(0.1875) translateY(-250px)'; // 60/320 = 0.1875
+        
+        // Fade out splash screen
+        setTimeout(() => {
+            splashScreen.style.opacity = '0';
+        }, 200);
+        
         setTimeout(() => {
             splashScreen.classList.remove('active');
+            splashScreen.style.opacity = '';
+            splashLogo.style.transform = '';
+            splashLogo.style.transition = '';
+            splashLogo.classList.remove('shrinking');
+            isTransitioning = false;
         }, 600);
     }
     
