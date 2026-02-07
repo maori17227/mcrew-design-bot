@@ -182,7 +182,7 @@ const PORTFOLIO = {
                 artist: 'whylovly',
                 track: 'iwabi! эфирный план',
                 cover: `${GITHUB_BASE}porftolio/covers/whylovly iwabi! эфирный план.jpg`,
-                audio: null // Will be added later
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/Эфирный план - iwabi!.mp3`
             },
             {
                 type: 'track',
@@ -203,56 +203,77 @@ const PORTFOLIO = {
                 artist: 'whylovly',
                 track: 'любят',
                 cover: `${GITHUB_BASE}porftolio/covers/whylovly любят .jpg`,
-                audio: null
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/любят - whylovly.mp3`
+            },
+            {
+                type: 'track',
+                artist: 'whylovly',
+                track: 'нужен покой',
+                cover: `${GITHUB_BASE}porftolio/covers/whylovly lowsignal.jpg`,
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/нужен покой - whylovly.mp3`
+            },
+            {
+                type: 'track',
+                artist: 'whylovly',
+                track: 'прошу',
+                cover: `${GITHUB_BASE}porftolio/covers/whylovly vindictaNots.jpg`,
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/прошу - whylovly.mp3`
             },
             {
                 type: 'track',
                 artist: 'so brody',
-                track: '1take',
+                track: '1TAKE',
                 cover: `${GITHUB_BASE}porftolio/covers/so brody 1take.jpg`,
-                audio: null
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/1TAKE - So brody.mp3`
             },
             {
                 type: 'track',
                 artist: 'so brody',
-                track: 'amecrica 2',
+                track: 'AMERICA2',
                 cover: `${GITHUB_BASE}porftolio/covers/so brody amecrica 2 .jpg`,
-                audio: null
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/AMERICA2 - So brody.mp3`
             },
             {
                 type: 'track',
                 artist: 'lil flash$ ft. Kinderlil',
-                track: 'Best',
+                track: 'best',
                 cover: `${GITHUB_BASE}porftolio/covers/lil flash$ ft. Kinderlil Best.jpg`,
-                audio: null
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/best (ft. kinderlil).mp3`
             },
             {
                 type: 'track',
                 artist: 'angelik',
                 track: 'wya',
                 cover: `${GITHUB_BASE}porftolio/covers/angelik wya.jpg`,
-                audio: null
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/wya - angelik.mp3`
             },
             {
                 type: 'track',
                 artist: 'HELLOVERCAVI, SODA LUV',
                 track: 'СВАГА',
                 cover: `${GITHUB_BASE}porftolio/covers/HELLOVERCAVI, SODA LUV СВАГА.jpg`,
-                audio: null
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/СВАГА - HELLOVERCAVI.mp3`
+            },
+            {
+                type: 'track',
+                artist: 'HELLOVERCAVI',
+                track: 'Калыван кляйн',
+                cover: `${GITHUB_BASE}porftolio/covers/HELLOVERCAVI Калыван кляйн.jpg`,
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/Калыван Кляйн - HELLOVERCAVI.mp3`
             },
             {
                 type: 'track',
                 artist: 'valeksi',
                 track: 'BIRKIN',
                 cover: `${GITHUB_BASE}porftolio/covers/valeksi BIRKIN.jpg`,
-                audio: null
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/BIRKIN - Valeksi.mp3`
             },
             {
                 type: 'track',
                 artist: 'valeksi',
                 track: 'GEEK0INIGHT',
                 cover: `${GITHUB_BASE}porftolio/covers/valeksi GEEK0INIGHT.jpg`,
-                audio: null
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/GEEK0lNIGHT - Valeksi.mp3`
             },
             {
                 type: 'track',
@@ -273,14 +294,35 @@ const PORTFOLIO = {
                 artist: 'valeksi',
                 track: 'ZAPOMNISH',
                 cover: `${GITHUB_BASE}porftolio/covers/valeksi ZAPOMNISH.jpg`,
-                audio: null
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/ZAPOMNISH - Valeksi.mp3`
             },
             {
                 type: 'track',
-                artist: 'Калыван',
-                track: 'кляйн',
-                cover: `${GITHUB_BASE}porftolio/covers/Калыван кляйн.jpg`,
-                audio: null
+                artist: 'valeksi',
+                track: 'FILL ME UP',
+                cover: `${GITHUB_BASE}porftolio/covers/valeksi RAGE LOVER-EP.jpg`,
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/FILL ME UP - Valeksi.mp3`
+            },
+            {
+                type: 'track',
+                artist: 'valeksi',
+                track: 'SELF-LOVER',
+                cover: `${GITHUB_BASE}porftolio/covers/valeksi LAST CASE.jpg`,
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/SELF-LOVER - Valeksi.mp3`
+            },
+            {
+                type: 'track',
+                artist: 'fffuckyousway',
+                track: 'fff',
+                cover: `${GITHUB_BASE}porftolio/covers/fffuckyousway - fff.jpg`,
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/fffuckyousway.mp3`
+            },
+            {
+                type: 'track',
+                artist: 'thot$14er',
+                track: '#курить',
+                cover: `${GITHUB_BASE}porftolio/covers/thot$14er #курить.jpg`,
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/Курить - thot$14er.mp3`
             }
         ]
     },
@@ -538,21 +580,39 @@ async function loadPortfolioCategory(category) {
     grid.innerHTML = '';
     
     // Load items
-    for (const item of portfolioData.items) {
+    for (let i = 0; i < portfolioData.items.length; i++) {
+        const item = portfolioData.items[i];
         const div = document.createElement('div');
         div.className = 'portfolio-item';
         
         if (item.type === 'track') {
-            // Track cover with audio player
+            // Track cover with custom audio player
+            const playerId = `player-${i}`;
             div.innerHTML = `
-                <img src="${item.cover}" alt="${item.artist} - ${item.track}" loading="lazy">
+                <img src="${item.cover}" alt="${item.artist} - ${item.track}" loading="lazy" class="track-cover">
                 <div class="portfolio-caption">
                     <h4>${item.artist}</h4>
                     <p>${item.track}</p>
                     ${item.audio ? `
-                        <audio controls class="track-player">
-                            <source src="${item.audio}" type="audio/mpeg">
-                        </audio>
+                        <div class="custom-player" data-player-id="${playerId}">
+                            <audio id="${playerId}" preload="metadata">
+                                <source src="${item.audio}" type="audio/mpeg">
+                            </audio>
+                            <button class="play-btn" data-audio-id="${playerId}">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </button>
+                            <div class="player-info">
+                                <div class="time-display">
+                                    <span class="current-time">0:00</span>
+                                    <span class="duration">0:00</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                            </div>
+                        </div>
                     ` : ''}
                 </div>
             `;
@@ -577,7 +637,77 @@ async function loadPortfolioCategory(category) {
         grid.appendChild(div);
     }
     
+    // Initialize custom audio players
+    initAudioPlayers();
+    
     showScreen('portfolio-detail');
+}
+
+// Initialize custom audio players
+function initAudioPlayers() {
+    document.querySelectorAll('.play-btn').forEach(btn => {
+        const audioId = btn.dataset.audioId;
+        const audio = document.getElementById(audioId);
+        const player = btn.closest('.custom-player');
+        const progressBar = player.querySelector('.progress-bar');
+        const progressFill = player.querySelector('.progress-fill');
+        const currentTimeEl = player.querySelector('.current-time');
+        const durationEl = player.querySelector('.duration');
+        
+        // Play/Pause button
+        btn.addEventListener('click', () => {
+            // Pause all other players
+            document.querySelectorAll('audio').forEach(a => {
+                if (a.id !== audioId && !a.paused) {
+                    a.pause();
+                    const otherBtn = document.querySelector(`[data-audio-id="${a.id}"]`);
+                    otherBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+                }
+            });
+            
+            if (audio.paused) {
+                audio.play();
+                btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>';
+            } else {
+                audio.pause();
+                btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+            }
+        });
+        
+        // Update duration when loaded
+        audio.addEventListener('loadedmetadata', () => {
+            durationEl.textContent = formatTime(audio.duration);
+        });
+        
+        // Update progress
+        audio.addEventListener('timeupdate', () => {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            progressFill.style.width = progress + '%';
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+        });
+        
+        // Reset on end
+        audio.addEventListener('ended', () => {
+            btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+            progressFill.style.width = '0%';
+            currentTimeEl.textContent = '0:00';
+        });
+        
+        // Seek functionality
+        progressBar.addEventListener('click', (e) => {
+            const rect = progressBar.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            audio.currentTime = pos * audio.duration;
+        });
+    });
+}
+
+// Format time helper
+function formatTime(seconds) {
+    if (isNaN(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
 // Event listeners
