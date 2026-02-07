@@ -276,6 +276,16 @@ function updateLanguage(lang) {
             showServiceDetails(currentCategory);
         }
     }
+    
+    // Update order form if visible
+    const orderScreen = document.getElementById('order-screen');
+    if (orderScreen.classList.contains('active')) {
+        const currentCategory = orderScreen.dataset.category;
+        const serviceIndex = orderScreen.dataset.serviceIndex;
+        if (currentCategory) {
+            showOrderForm(currentCategory, serviceIndex);
+        }
+    }
 }
 
 // Show service details
@@ -291,9 +301,9 @@ function showServiceDetails(category) {
     titleEl.textContent = service.title;
     
     let html = '<div class="price-list">';
-    service.items.forEach(item => {
+    service.items.forEach((item, index) => {
         html += `
-            <div class="price-item">
+            <div class="price-item clickable" data-category="${category}" data-index="${index}">
                 <h4>${item.name}</h4>
                 <span class="price">${item.price}</span>
             </div>
@@ -302,6 +312,18 @@ function showServiceDetails(category) {
     html += '</div>';
     
     contentEl.innerHTML = html;
+    
+    // Add click handlers to go directly to order form
+    setTimeout(() => {
+        document.querySelectorAll('#service-details-screen .price-item.clickable').forEach(item => {
+            item.addEventListener('click', () => {
+                const cat = item.dataset.category;
+                const idx = item.dataset.index;
+                showOrderForm(cat, idx);
+            });
+        });
+    }, 100);
+    
     showScreen('service-details');
 }
 
@@ -326,46 +348,25 @@ function showOrderForm(category, serviceIndex = null) {
     // Clear form
     document.getElementById('order-form').reset();
     
-    // Update placeholders
-    updateLanguage(currentLang);
+    // Update placeholders immediately
+    const detailsField = document.getElementById('order-details');
+    const styleField = document.getElementById('order-style');
+    const deadlineField = document.getElementById('order-deadline');
+    const budgetField = document.getElementById('order-budget');
+    
+    if (currentLang === 'en') {
+        detailsField.placeholder = 'What exactly do you need?';
+        styleField.placeholder = 'Preferred style, colors';
+        deadlineField.placeholder = 'When do you need it?';
+        budgetField.placeholder = 'Your budget';
+    } else {
+        detailsField.placeholder = 'Что именно вам нужно?';
+        styleField.placeholder = 'Предпочитаемый стиль, цвета';
+        deadlineField.placeholder = 'Когда нужно?';
+        budgetField.placeholder = 'Ваш бюджет';
+    }
     
     showScreen('order');
-}
-
-// Show service selection for order
-function showServiceSelection(category) {
-    const service = SERVICES[category][currentLang];
-    const contentEl = document.getElementById('selection-content');
-    const screen = document.getElementById('service-selection-screen');
-    
-    // Store category for language switching
-    screen.dataset.category = category;
-    
-    let html = '<div class="price-list">';
-    service.items.forEach((item, index) => {
-        html += `
-            <div class="price-item clickable" data-category="${category}" data-index="${index}">
-                <h4>${item.name}</h4>
-                <span class="price">${item.price}</span>
-            </div>
-        `;
-    });
-    html += '</div>';
-    
-    contentEl.innerHTML = html;
-    
-    // Add click handlers
-    setTimeout(() => {
-        document.querySelectorAll('.price-item.clickable').forEach(item => {
-            item.addEventListener('click', () => {
-                const cat = item.dataset.category;
-                const idx = item.dataset.index;
-                showOrderForm(cat, idx);
-            });
-        });
-    }, 100);
-    
-    showScreen('service-selection');
 }
 
 // Load portfolio - instant loading from local files
@@ -438,12 +439,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Back buttons
     document.querySelectorAll('.back-btn').forEach(btn => {
         btn.addEventListener('click', goBack);
-    });
-    
-    // Order button - show service selection
-    document.getElementById('order-btn').addEventListener('click', () => {
-        const category = document.getElementById('service-details-screen').dataset.category;
-        showServiceSelection(category);
     });
     
     // Telegram back button
