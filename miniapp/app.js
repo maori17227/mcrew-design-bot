@@ -758,20 +758,16 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Transform logo during swipe
         if (swipeDistance > 0) {
-            const progress = Math.min(swipeDistance / 300, 1); // 300px for full transition
+            const progress = Math.min(swipeDistance / 200, 1);
             
             // Scale from 320px to 60px
-            const scale = 1 - (progress * 0.8125); // 0.8125 = (320-60)/320
+            const scale = 1 - (progress * 0.8125);
             
-            // Move up
-            const translateY = -progress * 200;
+            // Move up from center
+            const translateY = -progress * 300;
             
             splashLogo.classList.add('shrinking');
             splashLogo.style.transform = `scale(${scale}) translateY(${translateY}px)`;
-            
-            // Fade out arrow
-            const arrow = document.querySelector('.swipe-arrow');
-            arrow.style.opacity = 1 - progress;
         }
     });
     
@@ -779,15 +775,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isTransitioning) return;
         const swipeDistance = touchStartY - touchEndY;
         
-        // If swiped up more than 150px
-        if (swipeDistance > 150) {
+        // If swiped up more than 100px
+        if (swipeDistance > 100) {
             hideSplashScreen();
         } else {
             // Reset logo
             splashLogo.style.transform = '';
             splashLogo.classList.remove('shrinking');
-            const arrow = document.querySelector('.swipe-arrow');
-            arrow.style.opacity = '';
         }
     });
     
@@ -802,23 +796,25 @@ document.addEventListener('DOMContentLoaded', () => {
         isTransitioning = true;
         splashScreen.classList.add('transitioning');
         
-        // Animate logo to final position
-        splashLogo.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-        splashLogo.style.transform = 'scale(0.1875) translateY(-250px)'; // 60/320 = 0.1875
+        // Animate logo up and out
+        splashLogo.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        splashLogo.style.transform = 'scale(0.1875) translateY(-400px)';
+        splashLogo.style.opacity = '0';
         
         // Fade out splash screen
         setTimeout(() => {
             splashScreen.style.opacity = '0';
-        }, 200);
+        }, 300);
         
         setTimeout(() => {
             splashScreen.classList.remove('active');
             splashScreen.style.opacity = '';
             splashLogo.style.transform = '';
             splashLogo.style.transition = '';
+            splashLogo.style.opacity = '';
             splashLogo.classList.remove('shrinking');
             isTransitioning = false;
-        }, 600);
+        }, 800);
     }
     
     // Close keyboard when clicking outside input fields
@@ -887,18 +883,23 @@ document.addEventListener('DOMContentLoaded', () => {
             contact: document.getElementById('order-contact').value
         };
         
-        // Format message
+        // Format message for admin
         const message = currentLang === 'en' 
             ? `🔔 NEW ORDER from Mini App!\n\n📋 Service: ${formData.service}\n\n📝 Details:\n${formData.details}\n\n🎨 Style & Colors:\n${formData.style || 'Not specified'}\n\n📐 Requirements:\n${formData.requirements || 'Not specified'}\n\n⏰ Deadline & Budget:\n${formData.deadlineBudget}\n\n🔗 References:\n${formData.references || 'Not specified'}\n\n📞 Contact: ${formData.contact}`
             : `🔔 НОВЫЙ ЗАКАЗ из Mini App!\n\n📋 Услуга: ${formData.service}\n\n📝 Детали:\n${formData.details}\n\n🎨 Стиль и цвета:\n${formData.style || 'Не указано'}\n\n📐 Требования:\n${formData.requirements || 'Не указано'}\n\n⏰ Сроки и бюджет:\n${formData.deadlineBudget}\n\n🔗 Референсы:\n${formData.references || 'Не указано'}\n\n📞 Контакт: ${formData.contact}`;
         
-        // Send via Telegram
-        tg.sendData(JSON.stringify(formData));
+        // Open chat with admin and pre-fill message
+        const adminUsername = 'mcrewdm'; // Your admin username
+        const encodedMessage = encodeURIComponent(message);
+        const telegramUrl = `https://t.me/${adminUsername}?text=${encodedMessage}`;
+        
+        // Open Telegram chat
+        window.open(telegramUrl, '_blank');
         
         // Show success message
         alert(currentLang === 'en' 
-            ? '✅ Order sent! We will contact you within 2 hours.' 
-            : '✅ Заказ отправлен! Мы свяжемся с вами в течение 2 часов.');
+            ? '✅ Opening chat with admin. Please send the message!' 
+            : '✅ Открываем чат с админом. Пожалуйста, отправьте сообщение!');
         
         // Go back to home
         showScreen('home');
