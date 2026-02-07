@@ -44,11 +44,12 @@ function toggleTheme() {
     applyTheme(newTheme);
 }
 
-// Media file IDs
-const MEDIA_FILE_IDS = {
-    covers: 'AgACAgIAAxkDAAO8aYUIGz5J7UVpOauIT5KcvjXivGMAAvgTaxuz9ilIU2cMkhILjcMBAAMCAAN5AAM4BA',
-    posters: 'AgACAgIAAxkDAAO9aYUIHaym1b3ubLUGzPEFpytkyYkAAvkTaxuz9ilIhLgYx1Zmy7QBAAMCAAN5AAM4BA',
-    video: 'BAACAgIAAxkDAAIBTWmFy5jzcZDsBQXiHwrcWzwE1gABqgAC9ocAArP2MUgIFpUzdZd27TgE'
+// Media files - using local files for instant loading
+const MEDIA_FILES = {
+    covers: 'covers.jpg',
+    posters: 'posters.jpg',
+    video: 'motion.mp4',
+    logo: 'logo.jpg'
 };
 
 // Services data - ALL categories from bot
@@ -163,19 +164,19 @@ const SERVICES = {
 const PORTFOLIO = [
     {
         type: 'photo',
-        fileId: MEDIA_FILE_IDS.covers,
+        file: MEDIA_FILES.covers,
         title: { en: 'Album Covers & Artwork', ru: 'Обложки альбомов и артворки' },
         description: { en: 'Cover art, snippets, visuals', ru: 'Обложки, сниппеты, визуалы' }
     },
     {
         type: 'photo',
-        fileId: MEDIA_FILE_IDS.posters,
+        file: MEDIA_FILES.posters,
         title: { en: 'Posters & Flyers', ru: 'Постеры и афиши' },
         description: { en: 'Event & promo materials', ru: 'Афиши и промо материалы' }
     },
     {
         type: 'video',
-        fileId: MEDIA_FILE_IDS.video,
+        file: MEDIA_FILES.video,
         title: { en: 'Motion Graphics & VFX', ru: 'Моушн графика и VFX' },
         description: { en: 'Video editing, motion design', ru: 'Видеомонтаж, моушн дизайн' }
     }
@@ -310,47 +311,34 @@ function showOrderForm(category) {
     showScreen('order');
 }
 
-// Load portfolio
+// Load portfolio - instant loading from local files
 async function loadPortfolio() {
     const grid = document.getElementById('portfolio-grid');
-    grid.innerHTML = '<div class="loading">Loading...</div>';
+    grid.innerHTML = '';
     
-    try {
-        for (const item of PORTFOLIO) {
-            const fileUrl = await getFileUrl(item.fileId);
-            if (!fileUrl) continue;
-            
-            const div = document.createElement('div');
-            div.className = 'portfolio-item';
-            
-            if (item.type === 'photo') {
-                div.innerHTML = `
-                    <img src="${fileUrl}" alt="${item.title[currentLang]}" loading="lazy">
-                    <div class="portfolio-caption">
-                        <h4>${item.title[currentLang]}</h4>
-                        <p>${item.description[currentLang]}</p>
-                    </div>
-                `;
-            } else if (item.type === 'video') {
-                div.innerHTML = `
-                    <video src="${fileUrl}" controls playsinline></video>
-                    <div class="portfolio-caption">
-                        <h4>${item.title[currentLang]}</h4>
-                        <p>${item.description[currentLang]}</p>
-                    </div>
-                `;
-            }
-            
-            grid.appendChild(div);
+    for (const item of PORTFOLIO) {
+        const div = document.createElement('div');
+        div.className = 'portfolio-item';
+        
+        if (item.type === 'photo') {
+            div.innerHTML = `
+                <img src="${item.file}" alt="${item.title[currentLang]}" loading="lazy">
+                <div class="portfolio-caption">
+                    <h4>${item.title[currentLang]}</h4>
+                    <p>${item.description[currentLang]}</p>
+                </div>
+            `;
+        } else if (item.type === 'video') {
+            div.innerHTML = `
+                <video src="${item.file}" controls playsinline></video>
+                <div class="portfolio-caption">
+                    <h4>${item.title[currentLang]}</h4>
+                    <p>${item.description[currentLang]}</p>
+                </div>
+            `;
         }
         
-        // Remove loading
-        const loading = grid.querySelector('.loading');
-        if (loading) loading.remove();
-        
-    } catch (error) {
-        console.error('Error loading portfolio:', error);
-        grid.innerHTML = '<div class="loading">Error loading portfolio</div>';
+        grid.appendChild(div);
     }
 }
 
