@@ -28,7 +28,7 @@ function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     
     const themeToggle = document.getElementById('theme-toggle');
-    themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+    themeToggle.checked = (theme === 'dark');
     
     // Update Telegram theme colors
     const bgColor = theme === 'dark' ? '#0a0a0a' : '#f5f5f5';
@@ -237,10 +237,9 @@ function goBack() {
 function updateLanguage(lang) {
     currentLang = lang;
     
-    // Update language buttons
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.lang === lang);
-    });
+    // Update language toggle
+    const langToggle = document.getElementById('lang-toggle');
+    langToggle.checked = (lang === 'ru');
     
     // Update all translatable elements
     document.querySelectorAll('[data-en][data-ru]').forEach(el => {
@@ -354,13 +353,16 @@ document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     
     // Theme toggle
-    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle.addEventListener('change', () => {
+        toggleTheme();
+    });
     
-    // Language buttons
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            updateLanguage(btn.dataset.lang);
-        });
+    // Language toggle
+    const langToggle = document.getElementById('lang-toggle');
+    langToggle.addEventListener('change', () => {
+        const newLang = langToggle.checked ? 'ru' : 'en';
+        updateLanguage(newLang);
     });
     
     // Menu items

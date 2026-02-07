@@ -10,10 +10,22 @@
 <body>
     <!-- Theme & Language Controls -->
     <div class="top-controls">
-        <button id="theme-toggle" class="theme-toggle">🌙</button>
-        <div class="language-selector">
-            <button class="lang-btn active" data-lang="en">EN</button>
-            <button class="lang-btn" data-lang="ru">RU</button>
+        <div class="toggle-group">
+            <span class="toggle-label">☀️</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="theme-toggle">
+                <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">🌙</span>
+        </div>
+        
+        <div class="toggle-group">
+            <span class="toggle-label">EN</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="lang-toggle">
+                <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">RU</span>
         </div>
     </div>
 

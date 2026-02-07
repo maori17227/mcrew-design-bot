@@ -49,53 +49,75 @@ body {
 /* Theme & Language Selector */
 .top-controls {
     position: fixed;
-    top: 10px;
-    right: 10px;
+    top: 15px;
+    right: 15px;
     z-index: 1000;
     display: flex;
+    flex-direction: column;
     gap: 10px;
 }
 
-.theme-toggle {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 8px 16px;
-    cursor: pointer;
-    font-size: 18px;
-    transition: all 0.3s;
-    box-shadow: var(--shadow);
-}
-
-.theme-toggle:active {
-    transform: scale(0.95);
-}
-
-.language-selector {
+.toggle-group {
     display: flex;
-    gap: 5px;
+    align-items: center;
+    gap: 8px;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 5px;
+    border-radius: 25px;
+    padding: 8px 12px;
     box-shadow: var(--shadow);
 }
 
-.lang-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-secondary);
-    padding: 8px 16px;
-    border-radius: 15px;
+.toggle-label {
     font-size: 14px;
     font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
+    color: var(--text-secondary);
+    transition: color 0.3s;
 }
 
-.lang-btn.active {
-    background: var(--accent-red);
-    color: #ffffff;
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--border-color);
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background-color: var(--accent-red);
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(20px);
 }
 
 /* Screens */
@@ -143,14 +165,20 @@ body {
 .hero::before {
     content: '';
     position: absolute;
-    top: 0;
-    right: 0;
-    width: 200px;
-    height: 200px;
+    top: 20px;
+    right: 20px;
+    width: 120px;
+    height: 120px;
     background: url('logo.jpg') no-repeat center;
-    background-size: contain;
-    opacity: 0.1;
+    background-size: cover;
+    opacity: 0.15;
     pointer-events: none;
+    border-radius: 50%;
+    animation: slideUp 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] .hero::before {
+    opacity: 0.08;
 }
 
 .logo {
@@ -160,6 +188,8 @@ body {
     margin-bottom: 20px;
     color: var(--text-primary);
     animation: slideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
 }
 
 @keyframes fadeInUp {
@@ -319,15 +349,19 @@ body {
 .price-list::before {
     content: '';
     position: absolute;
-    bottom: -50px;
-    right: -50px;
-    width: 200px;
-    height: 200px;
+    bottom: -80px;
+    right: -80px;
+    width: 250px;
+    height: 250px;
     background: url('pricelist.jpg') no-repeat center;
     background-size: cover;
-    opacity: 0.05;
+    opacity: 0.04;
     pointer-events: none;
-    border-radius: 50%;
+    transform: rotate(-15deg);
+}
+
+[data-theme="dark"] .price-list::before {
+    opacity: 0.02;
 }
 
 .price-item {
