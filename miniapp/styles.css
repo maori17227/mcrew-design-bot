@@ -210,6 +210,15 @@ body {
     margin-bottom: 20px;
 }
 
+.logo-svg {
+    filter: invert(0);
+    transition: filter 0.3s ease;
+}
+
+[data-theme="light"] .logo-svg {
+    filter: invert(1);
+}
+
 @keyframes fadeInUp {
     from {
         opacity: 0;
