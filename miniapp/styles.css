@@ -144,11 +144,6 @@ body {
     border-color: var(--accent-red);
 }
 
-.menu-icon {
-    font-size: 48px;
-    margin-bottom: 15px;
-}
-
 .menu-item h3 {
     font-size: 20px;
     margin-bottom: 8px;
@@ -297,10 +292,6 @@ body {
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 15px;
-}
-
-.contact-icon {
-    font-size: 32px;
 }
 
 .contact-item h4 {

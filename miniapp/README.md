@@ -1,200 +1,152 @@
 # MↃREW Telegram Mini App
 
-Красивое веб-приложение для Telegram с темным дизайном и красными акцентами.
+Dark-themed design studio mini app with bilingual support (EN/RU).
 
-## Особенности
+## Features
 
-✅ **Темный дизайн** - черный фон с красными акцентами  
-✅ **Принцип 3 кликов** - любая информация за 3 нажатия  
-✅ **Двуязычность** - английский и русский  
-✅ **Портфолио** - фото и видео работ  
-✅ **Адаптивный** - работает на всех устройствах  
-✅ **Telegram интеграция** - использует Telegram WebApp API  
+- 🎨 Dark theme with red accents (#ff0000)
+- 🌐 Bilingual: English & Russian
+- 📱 Responsive design
+- 🖼️ Portfolio with photos and videos loaded via Telegram Bot API
+- 💼 5 service categories with pricing
+- 📞 Contact information
+- ⚡ Fast and smooth animations
+- 🎯 3-click principle: any info within 3 taps
 
-## Структура
+## Design
 
-```
-miniapp/
-├── index.html      # Главная страница
-├── styles.css      # Стили (темный дизайн)
-├── app.js          # Логика приложения
-└── README.md       # Эта инструкция
-```
+- Background: #0a0a0a (dark black)
+- Accent: #ff0000 (red)
+- Clean, minimal interface
+- No emoji icons
+- Logo: MↃREW (no tagline)
 
-## Как запустить
+## Services
 
-### Вариант 1: GitHub Pages (рекомендуется)
+1. **Graphic Design** - Logos, brand identity, illustrations
+2. **UI/UX Design** - Landing pages, websites, mobile apps
+3. **Print/Publishing** - Business cards, presentations, social media
+4. **Editing & VFX** - Video editing, color correction, sound
+5. **Motion Design** - Logo animation, 2D animation, promo videos
 
-1. Загрузи папку `miniapp` в свой GitHub репозиторий
-2. Зайди в Settings → Pages
-3. Выбери ветку `main` и папку `/miniapp`
-4. Получишь URL типа: `https://username.github.io/repo/miniapp`
+## Portfolio
 
-### Вариант 2: Cloudflare Pages
+Media loaded dynamically via Telegram Bot API:
+- Album covers & artwork
+- Posters & flyers
+- Motion graphics & VFX videos
 
-1. Зайди на https://pages.cloudflare.com
-2. Подключи GitHub репозиторий
-3. Build settings:
-   - Build command: (оставь пустым)
-   - Build output directory: `miniapp`
-4. Deploy
+## Setup & Deployment
 
-### Вариант 3: Локальный сервер (для теста)
+### 1. Deploy to GitHub Pages
 
 ```bash
-cd miniapp
-python -m http.server 8000
+# Create a new repository on GitHub
+# Upload miniapp folder contents to repository
+# Enable GitHub Pages in repository settings
+# Your URL will be: https://username.github.io/repo-name/
 ```
 
-Открой http://localhost:8000
+### 2. Create Mini App in BotFather
 
-## Настройка бота
+1. Send `/newapp` to @BotFather
+2. Choose your bot
+3. Enter app name: **MↃREW**
+4. Enter description: **Design Studio - Covers, Logos, UI/UX, Motion Graphics**
+5. Upload app icon (512x512 PNG)
+6. Enter Web App URL: `https://your-github-pages-url/`
+7. Done! BotFather will give you the Mini App link
 
-### 1. Создай Mini App в BotFather
+### 3. Add Mini App to Bot Menu
 
-```
-/newapp
-@mindescrew_bot
-MↃREW Design Studio
-Описание приложения
-Загрузи фото 640x360
-https://твой-url.github.io/miniapp
-```
+1. Send `/mybots` to @BotFather
+2. Choose your bot
+3. Select "Bot Settings" → "Menu Button"
+4. Choose "Configure menu button"
+5. Enter button text: **Open App**
+6. Enter Web App URL: `https://your-github-pages-url/`
 
-### 2. Добавь кнопку в бота
+### 4. Test the Mini App
 
-Обнови `worker.js`:
+1. Open your bot in Telegram
+2. Click the menu button (bottom left)
+3. Mini App should open in Telegram
 
+## Bot Tokens
+
+- **Test bot**: `8205357964:AAFdXcc0Ma_gtqJ0BRP8q-qOowKXdrrRNBs`
+- **Main bot**: `8363446053:AAGfig_At866R3bVU9rNrY4AOuJQxnz_t2M`
+
+Update `BOT_TOKEN` in `app.js` to switch between bots.
+
+## Media File IDs
+
+Current file IDs in use:
 ```javascript
-function getMainMenuKeyboard(userId) {
-  const lang = getUserLanguage(userId)
-  return {
-    inline_keyboard: [
-      [{ text: '🚀 Open App', web_app: { url: 'https://твой-url/miniapp' } }],
-      [{ text: TEXTS[lang]['graphic_design'], callback_data: 'cat_graphic' }],
-      // ... остальные кнопки
-    ]
-  }
-}
+covers: 'AgACAgIAAxkDAAO8aYUIGz5J7UVpOauIT5KcvjXivGMAAvgTaxuz9ilIU2cMkhILjcMBAAMCAAN5AAM4BA'
+posters: 'AgACAgIAAxkDAAO9aYUIHaym1b3ubLUGzPEFpytkyYkAAvkTaxuz9ilIhLgYx1Zmy7QBAAMCAAN5AAM4BA'
+video: 'BAACAgIAAxkDAAIBTWmFy5jzcZDsBQXiHwrcWzwE1gABqgAC9ocAArP2MUgIFpUzdZd27TgE'
 ```
 
-## Дизайн
+## Files
 
-### Цвета
+- `index.html` - Main structure
+- `styles.css` - Dark theme styling  
+- `app.js` - App logic and media loading via Telegram Bot API
 
-- **Фон:** `#0a0a0a` (черный)
-- **Карточки:** `#151515` (темно-серый)
-- **Акцент:** `#ff0000` (красный)
-- **Текст:** `#ffffff` (белый)
-- **Вторичный текст:** `#999999` (серый)
+## Troubleshooting
 
-### Шрифты
+**Media not loading?**
+- Check bot token is correct
+- Verify file_id values are valid
+- Check browser console for errors
+- Test with different bot token
 
-- Системный шрифт: `-apple-system, BlinkMacSystemFont, 'Segoe UI'`
-- Размеры: 14px (текст), 16-20px (заголовки), 48px (лого)
+**Mini App not opening?**
+- Verify GitHub Pages URL is correct
+- Check HTTPS is enabled
+- Test URL in browser first
+- Make sure all files are uploaded
 
-### Анимации
+**Language not switching?**
+- Check browser console for errors
+- Verify all data-en and data-ru attributes are present
+- Test in Telegram app (not web version)
 
-- Fade in при открытии экранов
-- Scale при нажатии на кнопки
-- Плавные переходы 0.3s
+## 3-Click Principle
 
-## Принцип 3 кликов
-
-### Путь 1: Заказ услуги
-1. Главная → Services
+### Path 1: Order Service
+1. Home → Services
 2. Services → Graphic Design
 3. Graphic Design → Place Order ✅
 
-### Путь 2: Просмотр портфолио
-1. Главная → Portfolio
-2. Portfolio → (просмотр работ)
+### Path 2: View Portfolio
+1. Home → Portfolio
+2. Portfolio → (view works)
 3. Portfolio → Contact ✅
 
-### Путь 3: Связаться
-1. Главная → Contact
+### Path 3: Contact
+1. Home → Contact
 2. Contact → Contact Us ✅
-
-## Функции
-
-### Главный экран
-- Логотип MↃREW
-- 3 основные кнопки: Services, Portfolio, Contact
-- Переключатель языка (EN/RU)
-
-### Услуги
-- Список категорий
-- Детали с ценами
-- Кнопка "Place Order"
-
-### Портфолио
-- Сетка работ
-- Фото и видео
-- Описания на двух языках
-
-### Контакты
-- Telegram
-- Канал портфолио
-- Рабочие часы
-- Кнопка "Contact Us"
 
 ## Telegram WebApp API
 
-Используемые функции:
-
+Used functions:
 ```javascript
-tg.expand()              // Развернуть на весь экран
-tg.ready()               // Сообщить что готово
-tg.BackButton.show()     // Показать кнопку назад
-tg.BackButton.hide()     // Скрыть кнопку назад
-tg.setHeaderColor()      // Цвет шапки
-tg.setBackgroundColor()  // Цвет фона
-tg.openTelegramLink()    // Открыть ссылку в Telegram
+tg.expand()              // Expand to full screen
+tg.ready()               // Signal ready
+tg.BackButton.show()     // Show back button
+tg.BackButton.hide()     // Hide back button
+tg.setHeaderColor()      // Set header color
+tg.setBackgroundColor()  // Set background color
+tg.openTelegramLink()    // Open Telegram link
 ```
 
-## Обновление контента
+## Ready! 🎉
 
-### Добавить услугу
-
-Отредактируй `app.js`, секция `SERVICES`:
-
-```javascript
-newCategory: {
-    en: {
-        title: 'New Service',
-        items: [
-            { name: 'Item 1', price: '€100' }
-        ]
-    },
-    ru: {
-        title: 'Новая услуга',
-        items: [
-            { name: 'Пункт 1', price: '€100' }
-        ]
-    }
-}
-```
-
-### Добавить работу в портфолио
-
-Отредактируй `app.js`, секция `PORTFOLIO`:
-
-```javascript
-{
-    type: 'image', // или 'video'
-    url: 'https://url-to-file',
-    title: { en: 'Title', ru: 'Название' },
-    description: { en: 'Description', ru: 'Описание' }
-}
-```
-
-## Готово! 🎉
-
-Теперь у тебя есть красивое Mini App с:
-- ⚡ Быстрой навигацией (принцип 3 кликов)
-- 🎨 Стильным дизайном (темный + красный)
-- 🌐 Двумя языками (EN/RU)
-- 📱 Telegram интеграцией
-- 💼 Портфолио с фото и видео
-
-Загрузи на GitHub Pages и добавь в бота!
+Your Mini App has:
+- ⚡ Fast navigation (3-click principle)
+- 🎨 Stylish design (dark + red)
+- 🌐 Two languages (EN/RU)
+- 📱 Telegram integration
+- 💼 Portfolio with photos and videos
