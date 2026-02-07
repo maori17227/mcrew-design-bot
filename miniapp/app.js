@@ -172,26 +172,44 @@ const SERVICES = {
 };
 
 // Portfolio data
-const PORTFOLIO = [
-    {
-        type: 'photo',
-        file: MEDIA_FILES.covers,
-        title: { en: 'Track Covers & Artwork', ru: 'Обложки треков и артворки' },
-        description: { en: 'Cover art, snippets, visuals', ru: 'Обложки, сниппеты, визуалы' }
+const PORTFOLIO = {
+    covers: {
+        en: { title: 'Track Covers', description: 'Cover art & visuals' },
+        ru: { title: 'Обложки треков', description: 'Обложки и визуалы' },
+        items: [
+            {
+                type: 'photo',
+                file: MEDIA_FILES.covers,
+                title: { en: 'Track Covers & Artwork', ru: 'Обложки треков и артворки' },
+                description: { en: 'Cover art, snippets, visuals', ru: 'Обложки, сниппеты, визуалы' }
+            }
+        ]
     },
-    {
-        type: 'photo',
-        file: MEDIA_FILES.posters,
-        title: { en: 'Posters & Flyers', ru: 'Постеры и афиши' },
-        description: { en: 'Event & promo materials', ru: 'Афиши и промо материалы' }
+    posters: {
+        en: { title: 'Posters & Flyers', description: 'Event materials' },
+        ru: { title: 'Постеры и афиши', description: 'Материалы для событий' },
+        items: [
+            {
+                type: 'photo',
+                file: MEDIA_FILES.posters,
+                title: { en: 'Posters & Flyers', ru: 'Постеры и афиши' },
+                description: { en: 'Event & promo materials', ru: 'Афиши и промо материалы' }
+            }
+        ]
     },
-    {
-        type: 'video',
-        file: MEDIA_FILES.video,
-        title: { en: 'Motion Graphics & VFX', ru: 'Моушн графика и VFX' },
-        description: { en: 'Video editing, motion design', ru: 'Видеомонтаж, моушн дизайн' }
+    motion: {
+        en: { title: 'Motion Graphics & VFX', description: 'Video & animation' },
+        ru: { title: 'Моушн графика и VFX', description: 'Видео и анимация' },
+        items: [
+            {
+                type: 'video',
+                file: MEDIA_FILES.video,
+                title: { en: 'Motion Graphics & VFX', ru: 'Моушн графика и VFX' },
+                description: { en: 'Video editing, motion design', ru: 'Видеомонтаж, моушн дизайн' }
+            }
+        ]
     }
-];
+};
 
 // Get file URL from Telegram
 async function getFileUrl(fileId) {
@@ -222,9 +240,9 @@ function showScreen(screenId) {
         currentScreen = screenId;
     }
     
-    // Pause all videos when leaving portfolio
-    if (screenId !== 'portfolio') {
-        document.querySelectorAll('#portfolio-grid video').forEach(video => {
+    // Pause all videos when leaving portfolio detail
+    if (screenId !== 'portfolio-detail') {
+        document.querySelectorAll('#portfolio-detail-grid video').forEach(video => {
             video.pause();
             video.currentTime = 0;
         });
@@ -283,15 +301,23 @@ function updateLanguage(lang) {
     }
     
     // Update portfolio if loaded
-    const portfolioGrid = document.getElementById('portfolio-grid');
-    if (portfolioGrid && portfolioGrid.children.length > 0 && !portfolioGrid.querySelector('.loading')) {
-        portfolioGrid.querySelectorAll('.portfolio-caption').forEach((caption, index) => {
-            const item = PORTFOLIO[index];
-            if (item) {
-                caption.querySelector('h4').textContent = item.title[lang];
-                caption.querySelector('p').textContent = item.description[lang];
+    const portfolioDetailGrid = document.getElementById('portfolio-detail-grid');
+    const portfolioDetailScreen = document.getElementById('portfolio-detail-screen');
+    if (portfolioDetailScreen.classList.contains('active') && portfolioDetailGrid.children.length > 0) {
+        // Find which category is currently shown by checking the title
+        const currentTitle = document.getElementById('portfolio-detail-title').textContent;
+        let currentCategory = null;
+        
+        for (const [key, value] of Object.entries(PORTFOLIO)) {
+            if (value.en.title === currentTitle || value.ru.title === currentTitle) {
+                currentCategory = key;
+                break;
             }
-        });
+        }
+        
+        if (currentCategory) {
+            loadPortfolioCategory(currentCategory);
+        }
     }
     
     // Update service details if visible
@@ -396,12 +422,20 @@ function setFormPlaceholders(lang) {
     }
 }
 
-// Load portfolio - instant loading from local files
-async function loadPortfolio() {
-    const grid = document.getElementById('portfolio-grid');
+// Load portfolio category
+async function loadPortfolioCategory(category) {
+    const portfolioData = PORTFOLIO[category];
+    const grid = document.getElementById('portfolio-detail-grid');
+    const titleEl = document.getElementById('portfolio-detail-title');
+    
+    // Set title
+    titleEl.textContent = portfolioData[currentLang].title;
+    
+    // Clear grid
     grid.innerHTML = '';
     
-    for (const item of PORTFOLIO) {
+    // Load items
+    for (const item of portfolioData.items) {
         const div = document.createElement('div');
         div.className = 'portfolio-item';
         
@@ -425,6 +459,8 @@ async function loadPortfolio() {
         
         grid.appendChild(div);
     }
+    
+    showScreen('portfolio-detail');
 }
 
 // Event listeners
@@ -459,10 +495,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.menu-item').forEach(item => {
         item.addEventListener('click', () => {
             const page = item.dataset.page;
-            if (page === 'portfolio') {
-                loadPortfolio();
+            const portfolio = item.dataset.portfolio;
+            
+            if (page) {
+                showScreen(page);
+            } else if (portfolio) {
+                loadPortfolioCategory(portfolio);
             }
-            showScreen(page);
         });
     });
     
