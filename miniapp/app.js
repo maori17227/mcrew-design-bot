@@ -222,6 +222,14 @@ function showScreen(screenId) {
         currentScreen = screenId;
     }
     
+    // Pause all videos when leaving portfolio
+    if (screenId !== 'portfolio') {
+        document.querySelectorAll('#portfolio-grid video').forEach(video => {
+            video.pause();
+            video.currentTime = 0;
+        });
+    }
+    
     // Update Telegram back button
     if (screenId === 'home') {
         tg.BackButton.hide();
