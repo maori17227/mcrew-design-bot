@@ -244,17 +244,30 @@ function updateLanguage(lang) {
     // Update all translatable elements
     document.querySelectorAll('[data-en][data-ru]').forEach(el => {
         if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-            // Update placeholder
-            const placeholderKey = `data-placeholder-${lang}`;
-            if (el.hasAttribute(placeholderKey)) {
-                el.placeholder = el.getAttribute(placeholderKey);
-            } else if (el.dataset.en && el.dataset.ru) {
-                el.placeholder = el.dataset[lang];
-            }
+            // Skip - placeholders are handled separately
         } else {
             el.textContent = el.dataset[lang];
         }
     });
+    
+    // Update form placeholders if order screen is visible
+    const orderScreen = document.getElementById('order-screen');
+    if (orderScreen.classList.contains('active')) {
+        setFormPlaceholders(lang);
+        
+        // Update order title
+        const currentCategory = orderScreen.dataset.category;
+        const serviceIndex = orderScreen.dataset.serviceIndex;
+        if (currentCategory) {
+            const service = SERVICES[currentCategory][lang];
+            let serviceName = service.title;
+            if (serviceIndex !== null) {
+                const selectedService = service.items[serviceIndex];
+                serviceName = `${selectedService.name} (${selectedService.price})`;
+            }
+            document.getElementById('order-title').textContent = lang === 'en' ? `Order: ${serviceName}` : `Заказ: ${serviceName}`;
+        }
+    }
     
     // Update portfolio if loaded
     const portfolioGrid = document.getElementById('portfolio-grid');
@@ -274,16 +287,6 @@ function updateLanguage(lang) {
         const currentCategory = serviceDetailsScreen.dataset.category;
         if (currentCategory) {
             showServiceDetails(currentCategory);
-        }
-    }
-    
-    // Update order form if visible
-    const orderScreen = document.getElementById('order-screen');
-    if (orderScreen.classList.contains('active')) {
-        const currentCategory = orderScreen.dataset.category;
-        const serviceIndex = orderScreen.dataset.serviceIndex;
-        if (currentCategory) {
-            showOrderForm(currentCategory, serviceIndex);
         }
     }
 }
@@ -348,25 +351,33 @@ function showOrderForm(category, serviceIndex = null) {
     // Clear form
     document.getElementById('order-form').reset();
     
-    // Update placeholders immediately
+    // Set placeholders based on current language
+    setFormPlaceholders(currentLang);
+    
+    showScreen('order');
+}
+
+// Set form placeholders
+function setFormPlaceholders(lang) {
     const detailsField = document.getElementById('order-details');
     const styleField = document.getElementById('order-style');
     const deadlineField = document.getElementById('order-deadline');
     const budgetField = document.getElementById('order-budget');
+    const contactField = document.getElementById('order-contact');
     
-    if (currentLang === 'en') {
+    if (lang === 'en') {
         detailsField.placeholder = 'What exactly do you need?';
         styleField.placeholder = 'Preferred style, colors';
         deadlineField.placeholder = 'When do you need it?';
         budgetField.placeholder = 'Your budget';
+        contactField.placeholder = '@username or email';
     } else {
         detailsField.placeholder = 'Что именно вам нужно?';
         styleField.placeholder = 'Предпочитаемый стиль, цвета';
         deadlineField.placeholder = 'Когда нужно?';
         budgetField.placeholder = 'Ваш бюджет';
+        contactField.placeholder = '@username или email';
     }
-    
-    showScreen('order');
 }
 
 // Load portfolio - instant loading from local files

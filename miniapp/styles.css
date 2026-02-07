@@ -295,7 +295,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px 20px;
+    padding: 20px 60px;
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-color);
     position: sticky;
@@ -314,6 +314,7 @@ body {
     cursor: pointer;
     padding: 8px;
     transition: transform 0.3s ease;
+    flex-shrink: 0;
 }
 
 .back-btn:active {
@@ -321,9 +322,12 @@ body {
 }
 
 .screen-header h2 {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 700;
     color: var(--text-primary);
+    text-align: center;
+    flex: 1;
+    padding: 0 10px;
 }
 
 .screen-header .pricelist-img {
