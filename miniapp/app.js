@@ -631,6 +631,9 @@ function initAudioPlayers() {
         const FADE_START = 13; // Start fade at 13 seconds
         let fadeInterval = null;
         
+        // Set initial volume to 0.316 (approximately -10dB)
+        audio.volume = 0.316;
+        
         // Play/Pause button
         btn.addEventListener('click', () => {
             // Pause all other players
@@ -638,14 +641,14 @@ function initAudioPlayers() {
                 if (a.id !== audioId && !a.paused) {
                     a.pause();
                     a.currentTime = 0;
-                    a.volume = 1;
+                    a.volume = 0.316;
                     const otherBtn = document.querySelector(`[data-audio-id="${a.id}"]`);
                     otherBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
                 }
             });
             
             if (audio.paused) {
-                audio.volume = 1;
+                audio.volume = 0.316;
                 audio.play();
                 btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>';
             } else {
@@ -671,7 +674,7 @@ function initAudioPlayers() {
             if (currentTime >= TRAILER_DURATION) {
                 audio.pause();
                 audio.currentTime = 0;
-                audio.volume = 1;
+                audio.volume = 0.316;
                 btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
                 progressFill.style.width = '0%';
                 currentTimeEl.textContent = '0:00';
@@ -685,8 +688,8 @@ function initAudioPlayers() {
             // Start fade out at 13 seconds
             if (currentTime >= FADE_START && !fadeInterval) {
                 fadeInterval = setInterval(() => {
-                    if (audio.volume > 0.05) {
-                        audio.volume = Math.max(0, audio.volume - 0.05);
+                    if (audio.volume > 0.02) {
+                        audio.volume = Math.max(0, audio.volume - 0.016);
                     }
                 }, 100);
             }
@@ -699,7 +702,7 @@ function initAudioPlayers() {
         // Reset on end
         audio.addEventListener('ended', () => {
             audio.currentTime = 0;
-            audio.volume = 1;
+            audio.volume = 0.316;
             btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
             progressFill.style.width = '0%';
             currentTimeEl.textContent = '0:00';
@@ -714,7 +717,7 @@ function initAudioPlayers() {
             const rect = progressBar.getBoundingClientRect();
             const pos = (e.clientX - rect.left) / rect.width;
             audio.currentTime = pos * TRAILER_DURATION;
-            audio.volume = 1;
+            audio.volume = 0.316;
             if (fadeInterval) {
                 clearInterval(fadeInterval);
                 fadeInterval = null;
