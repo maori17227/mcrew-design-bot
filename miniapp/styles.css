@@ -211,12 +211,12 @@ body {
 }
 
 .logo-svg {
-    filter: invert(0);
-    transition: filter 0.3s ease;
+    color: #ffffff;
+    transition: color 0.3s ease;
 }
 
 [data-theme="light"] .logo-svg {
-    filter: invert(1);
+    color: #000000;
 }
 
 @keyframes fadeInUp {
