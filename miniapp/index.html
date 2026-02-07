@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MↃREW Design Studio</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Language Selector -->
+    <div id="language-selector" class="language-selector">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="ru">RU</button>
+    </div>
+
+    <!-- Main Container -->
+    <div id="app" class="app">
+        <!-- Home Screen -->
+        <div id="home-screen" class="screen active">
+            <div class="hero">
+                <div class="logo">MↃREW</div>
+                <p class="tagline" data-en="Design Studio" data-ru="Дизайн Студия">Design Studio</p>
+            </div>
+
+            <div class="menu-grid">
+                <div class="menu-item" data-page="services">
+                    <div class="menu-icon">🎨</div>
+                    <h3 data-en="Services" data-ru="Услуги">Services</h3>
+                    <p data-en="View our services" data-ru="Наши услуги">View our services</p>
+                </div>
+
+                <div class="menu-item" data-page="portfolio">
+                    <div class="menu-icon">💼</div>
+                    <h3 data-en="Portfolio" data-ru="Портфолио">Portfolio</h3>
+                    <p data-en="Our works" data-ru="Наши работы">Our works</p>
+                </div>
+
+                <div class="menu-item" data-page="contact">
+                    <div class="menu-icon">📞</div>
+                    <h3 data-en="Contact" data-ru="Контакты">Contact</h3>
+                    <p data-en="Get in touch" data-ru="Связаться">Get in touch</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Services Screen -->
+        <div id="services-screen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn">←</button>
+                <h2 data-en="Services" data-ru="Услуги">Services</h2>
+            </div>
+
+            <div class="services-list">
+                <div class="service-category" data-category="graphic">
+                    <h3>🎨 <span data-en="Graphic Design" data-ru="Графический дизайн">Graphic Design</span></h3>
+                </div>
+                <div class="service-category" data-category="video">
+                    <h3>🎬 <span data-en="Video Editing" data-ru="Видеомонтаж">Video Editing</span></h3>
+                </div>
+                <div class="service-category" data-category="motion">
+                    <h3>🎭 <span data-en="Motion Design" data-ru="Моушн дизайн">Motion Design</span>
+</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Details Screen -->
+        <div id="service-details-screen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn">←</button>
+                <h2 id="service-title"></h2>
+            </div>
+
+            <div id="service-content" class="service-content"></div>
+
+            <button class="cta-button" id="order-btn">
+                <span data-en="Place Order" data-ru="Оформить заказ">Place Order</span>
+            </button>
+        </div>
+
+        <!-- Portfolio Screen -->
+        <div id="portfolio-screen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn">←</button>
+                <h2 data-en="Portfolio" data-ru="Портфолио">Portfolio</h2>
+            </div>
+
+            <div class="portfolio-grid" id="portfolio-grid"></div>
+        </div>
+
+        <!-- Contact Screen -->
+        <div id="contact-screen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn">←</button>
+                <h2 data-en="Contact" data-ru="Контакты">Contact</h2>
+            </div>
+
+            <div class="contact-info">
+                <div class="contact-item">
+                    <div class="contact-icon">💬</div>
+                    <div>
+                        <h4>Telegram</h4>
+                        <a href="https://t.me/mcrewdm">@mcrewdm</a>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-icon">📸</div>
+                    <div>
+                        <h4 data-en="Portfolio Channel" data-ru="Канал портфолио">Portfolio Channel</h4>
+                        <a href="https://t.me/mindescrew">@mindescrew</a>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-icon">⏰</div>
+                    <div>
+                        <h4 data-en="Working Hours" data-ru="Рабочие часы">Working Hours</h4>
+                        <p data-en="Mon-Fri: 10:00-20:00 (UTC+3)" data-ru="Пн-Пт: 10:00-20:00 (UTC+3)">Mon-Fri: 10:00-20:00 (UTC+3)</p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="cta-button" onclick="window.open('https://t.me/mcrewdm')">
+                <span data-en="Contact Us" data-ru="Связаться">Contact Us</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
