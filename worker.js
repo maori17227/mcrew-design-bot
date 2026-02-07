@@ -1,5 +1,5 @@
 /**
- * MↃREW Telegram Bot - Cloudflare Workers Version
+ * MCREW Telegram Bot - Cloudflare Workers Version
  * Fast, reliable, never goes down
  */
 
@@ -15,7 +15,7 @@ const userLanguages = new Map()
 // Texts in different languages
 const TEXTS = {
   en: {
-    welcome: `🔥 <b>Welcome to MↃREW!</b>
+    welcome: `🔥 <b>Welcome to MCREW!</b>
 
 We create:
 • Covers, snippets, visuals
@@ -26,7 +26,7 @@ We create:
 • Video editing
 
 <b>Choose what interests you:</b>`,
-    menu_title: `🔥 <b>MↃREW</b>
+    menu_title: `🔥 <b>MCREW</b>
 
 <b>Choose what interests you:</b>`,
     graphic_design: '🎨 Graphic Design',
@@ -101,7 +101,7 @@ To create the perfect design, please provide:
 💡 <b>Write all details in your next message!</b>`,
   },
   ru: {
-    welcome: `🔥 <b>Добро пожаловать в MↃREW!</b>
+    welcome: `🔥 <b>Добро пожаловать в MCREW!</b>
 
 Мы создаем:
 • Обложки, сниппеты, визуалы
@@ -112,7 +112,7 @@ To create the perfect design, please provide:
 • Видеомонтаж
 
 <b>Выберите что вас интересует:</b>`,
-    menu_title: `🔥 <b>MↃREW</b>
+    menu_title: `🔥 <b>MCREW</b>
 
 <b>Выберите что вас интересует:</b>`,
     graphic_design: '🎨 Графический дизайн',
@@ -842,7 +842,7 @@ async function handleRequest(request, env) {
   
   // Handle GET requests (health check)
   if (request.method === 'GET') {
-    return new Response('🤖 MↃREW Bot is running on Cloudflare Workers!', { 
+    return new Response('🤖 MCREW Bot is running on Cloudflare Workers!', { 
       status: 200,
       headers: { 'Content-Type': 'text/plain; charset=utf-8' }
     })
