@@ -44,12 +44,18 @@ function toggleTheme() {
     applyTheme(newTheme);
 }
 
-// Media files - using local files for instant loading
+// Media files - using GitHub raw URLs for reliable loading
+const GITHUB_USER = 'maori17227';
+const GITHUB_REPO = 'mcrew-design-bot';
+const GITHUB_BRANCH = 'main';
+const GITHUB_BASE = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/miniapp/`;
+
 const MEDIA_FILES = {
-    covers: 'covers.jpg',
-    posters: 'posters.jpg',
-    video: 'motion.mp4',
-    logo: 'logo.jpg'
+    covers: GITHUB_BASE + 'covers.jpg',
+    posters: GITHUB_BASE + 'posters.jpg',
+    video: GITHUB_BASE + 'motion.mp4',
+    logo: GITHUB_BASE + 'logo.jpg',
+    pricelist: GITHUB_BASE + 'pricelist.jpg'
 };
 
 // Services data - ALL categories from bot
