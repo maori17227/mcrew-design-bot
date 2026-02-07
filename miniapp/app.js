@@ -178,10 +178,109 @@ const PORTFOLIO = {
         ru: { title: 'Обложки треков', description: 'Обложки и визуалы' },
         items: [
             {
-                type: 'photo',
-                file: MEDIA_FILES.covers,
-                title: { en: 'Track Covers & Artwork', ru: 'Обложки треков и артворки' },
-                description: { en: 'Cover art, snippets, visuals', ru: 'Обложки, сниппеты, визуалы' }
+                type: 'track',
+                artist: 'whylovly',
+                track: 'iwabi! эфирный план',
+                cover: `${GITHUB_BASE}porftolio/covers/whylovly iwabi! эфирный план.jpg`,
+                audio: null // Will be added later
+            },
+            {
+                type: 'track',
+                artist: 'whylovly',
+                track: 'lowsignal',
+                cover: `${GITHUB_BASE}porftolio/covers/whylovly lowsignal.jpg`,
+                audio: null
+            },
+            {
+                type: 'track',
+                artist: 'whylovly',
+                track: 'vindictaNots',
+                cover: `${GITHUB_BASE}porftolio/covers/whylovly vindictaNots.jpg`,
+                audio: null
+            },
+            {
+                type: 'track',
+                artist: 'whylovly',
+                track: 'любят',
+                cover: `${GITHUB_BASE}porftolio/covers/whylovly любят .jpg`,
+                audio: null
+            },
+            {
+                type: 'track',
+                artist: 'so brody',
+                track: '1take',
+                cover: `${GITHUB_BASE}porftolio/covers/so brody 1take.jpg`,
+                audio: null
+            },
+            {
+                type: 'track',
+                artist: 'so brody',
+                track: 'amecrica 2',
+                cover: `${GITHUB_BASE}porftolio/covers/so brody amecrica 2 .jpg`,
+                audio: null
+            },
+            {
+                type: 'track',
+                artist: 'lil flash$ ft. Kinderlil',
+                track: 'Best',
+                cover: `${GITHUB_BASE}porftolio/covers/lil flash$ ft. Kinderlil Best.jpg`,
+                audio: null
+            },
+            {
+                type: 'track',
+                artist: 'angelik',
+                track: 'wya',
+                cover: `${GITHUB_BASE}porftolio/covers/angelik wya.jpg`,
+                audio: null
+            },
+            {
+                type: 'track',
+                artist: 'HELLOVERCAVI, SODA LUV',
+                track: 'СВАГА',
+                cover: `${GITHUB_BASE}porftolio/covers/HELLOVERCAVI, SODA LUV СВАГА.jpg`,
+                audio: null
+            },
+            {
+                type: 'track',
+                artist: 'valeksi',
+                track: 'BIRKIN',
+                cover: `${GITHUB_BASE}porftolio/covers/valeksi BIRKIN.jpg`,
+                audio: null
+            },
+            {
+                type: 'track',
+                artist: 'valeksi',
+                track: 'GEEK0INIGHT',
+                cover: `${GITHUB_BASE}porftolio/covers/valeksi GEEK0INIGHT.jpg`,
+                audio: null
+            },
+            {
+                type: 'track',
+                artist: 'valeksi',
+                track: 'LAST CASE',
+                cover: `${GITHUB_BASE}porftolio/covers/valeksi LAST CASE.jpg`,
+                audio: null
+            },
+            {
+                type: 'track',
+                artist: 'valeksi',
+                track: 'RAGE LOVER-EP',
+                cover: `${GITHUB_BASE}porftolio/covers/valeksi RAGE LOVER-EP.jpg`,
+                audio: null
+            },
+            {
+                type: 'track',
+                artist: 'valeksi',
+                track: 'ZAPOMNISH',
+                cover: `${GITHUB_BASE}porftolio/covers/valeksi ZAPOMNISH.jpg`,
+                audio: null
+            },
+            {
+                type: 'track',
+                artist: 'Калыван',
+                track: 'кляйн',
+                cover: `${GITHUB_BASE}porftolio/covers/Калыван кляйн.jpg`,
+                audio: null
             }
         ]
     },
@@ -240,11 +339,15 @@ function showScreen(screenId) {
         currentScreen = screenId;
     }
     
-    // Pause all videos when leaving portfolio detail
+    // Pause all videos and audio when leaving portfolio detail
     if (screenId !== 'portfolio-detail') {
         document.querySelectorAll('#portfolio-detail-grid video').forEach(video => {
             video.pause();
             video.currentTime = 0;
+        });
+        document.querySelectorAll('#portfolio-detail-grid audio').forEach(audio => {
+            audio.pause();
+            audio.currentTime = 0;
         });
     }
     
@@ -439,7 +542,21 @@ async function loadPortfolioCategory(category) {
         const div = document.createElement('div');
         div.className = 'portfolio-item';
         
-        if (item.type === 'photo') {
+        if (item.type === 'track') {
+            // Track cover with audio player
+            div.innerHTML = `
+                <img src="${item.cover}" alt="${item.artist} - ${item.track}" loading="lazy">
+                <div class="portfolio-caption">
+                    <h4>${item.artist}</h4>
+                    <p>${item.track}</p>
+                    ${item.audio ? `
+                        <audio controls class="track-player">
+                            <source src="${item.audio}" type="audio/mpeg">
+                        </audio>
+                    ` : ''}
+                </div>
+            `;
+        } else if (item.type === 'photo') {
             div.innerHTML = `
                 <img src="${item.file}" alt="${item.title[currentLang]}" loading="lazy">
                 <div class="portfolio-caption">

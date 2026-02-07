@@ -512,6 +512,18 @@ body {
     color: var(--text-secondary);
 }
 
+.track-player {
+    width: 100%;
+    margin-top: 12px;
+    height: 40px;
+    border-radius: 8px;
+    outline: none;
+}
+
+.track-player::-webkit-media-controls-panel {
+    background: var(--bg-card);
+}
+
 /* Contact Info */
 .contact-info {
     padding: 40px;
