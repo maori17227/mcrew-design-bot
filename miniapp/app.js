@@ -180,8 +180,8 @@ const PORTFOLIO = {
         items: [
             {
                 type: 'track',
-                artist: 'whylovly',
-                track: 'iwabi! эфирный план',
+                artist: 'whylovly, iwabi!',
+                track: 'эфирный план',
                 cover: `${GITHUB_BASE}porftolio/covers/whylovly iwabi! эфирный план.jpg`,
                 audio: `${GITHUB_BASE}porftolio/covers/trailers/Эфирный план - iwabi!.mp3`
             },
@@ -293,8 +293,8 @@ const PORTFOLIO = {
             {
                 type: 'track',
                 artist: 'thot$14er',
-                track: '#курить',
-                cover: `${GITHUB_BASE}porftolio/covers/thot$14er #курить.jpg`,
+                track: 'курить',
+                cover: `${GITHUB_BASE}porftolio/covers/thot$14er %23курить.jpg`,
                 audio: `${GITHUB_BASE}porftolio/covers/trailers/Курить - thot$14er.mp3`
             }
         ]
