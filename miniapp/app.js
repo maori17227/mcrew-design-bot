@@ -28,7 +28,12 @@ function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     
     const themeBtn = document.getElementById('theme-btn');
-    themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+    // Update button appearance based on theme
+    if (theme === 'dark') {
+        themeBtn.style.backgroundColor = '#ffffff';
+    } else {
+        themeBtn.style.backgroundColor = '#000000';
+    }
     
     // Update Telegram theme colors
     const bgColor = theme === 'dark' ? '#0a0a0a' : '#f5f5f5';
