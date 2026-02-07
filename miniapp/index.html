@@ -8,10 +8,13 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Language Selector -->
-    <div id="language-selector" class="language-selector">
-        <button class="lang-btn active" data-lang="en">EN</button>
-        <button class="lang-btn" data-lang="ru">RU</button>
+    <!-- Theme & Language Controls -->
+    <div class="top-controls">
+        <button id="theme-toggle" class="theme-toggle">🌙</button>
+        <div class="language-selector">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="ru">RU</button>
+        </div>
     </div>
 
     <!-- Main Container -->
@@ -80,6 +83,47 @@
             </button>
         </div>
 
+        <!-- Order Screen -->
+        <div id="order-screen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn">←</button>
+                <h2 id="order-title"></h2>
+            </div>
+
+            <div class="order-form-container">
+                <form id="order-form">
+                    <div class="form-group">
+                        <label data-en="Project Details *" data-ru="Детали проекта *">Project Details *</label>
+                        <textarea id="order-details" required placeholder="What exactly do you need? / Что именно вам нужно?"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label data-en="Style & Colors" data-ru="Стиль и цвета">Style & Colors</label>
+                        <textarea id="order-style" placeholder="Preferred style, colors / Предпочитаемый стиль, цвета"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label data-en="Deadline *" data-ru="Срок *">Deadline *</label>
+                        <input type="text" id="order-deadline" required placeholder="When do you need it? / Когда нужно?">
+                    </div>
+
+                    <div class="form-group">
+                        <label data-en="Budget *" data-ru="Бюджет *">Budget *</label>
+                        <input type="text" id="order-budget" required placeholder="Your budget / Ваш бюджет">
+                    </div>
+
+                    <div class="form-group">
+                        <label data-en="Contact (Telegram/Email) *" data-ru="Контакт (Telegram/Email) *">Contact *</label>
+                        <input type="text" id="order-contact" required placeholder="@username or email">
+                    </div>
+
+                    <button type="submit" class="cta-button">
+                        <span data-en="Send Order" data-ru="Отправить заказ">Send Order</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
         <!-- Portfolio Screen -->
         <div id="portfolio-screen" class="screen">
             <div class="screen-header">
@@ -99,24 +143,36 @@
 
             <div class="contact-info">
                 <div class="contact-item">
-                    <div>
-                        <h4>Telegram</h4>
-                        <a href="https://t.me/mcrewdm">@mcrewdm</a>
-                    </div>
+                    <h4>Telegram</h4>
+                    <a href="https://t.me/mcrewdm">@mcrewdm</a>
                 </div>
 
                 <div class="contact-item">
-                    <div>
-                        <h4 data-en="Portfolio Channel" data-ru="Канал портфолио">Portfolio Channel</h4>
-                        <a href="https://t.me/mindescrew">@mindescrew</a>
-                    </div>
+                    <h4 data-en="Portfolio Channel" data-ru="Канал портфолио">Portfolio Channel</h4>
+                    <a href="https://t.me/mindescrew">@mindescrew</a>
                 </div>
 
                 <div class="contact-item">
-                    <div>
-                        <h4 data-en="Working Hours" data-ru="Рабочие часы">Working Hours</h4>
-                        <p data-en="Mon-Fri: 10:00-20:00 (UTC+3)" data-ru="Пн-Пт: 10:00-20:00 (UTC+3)">Mon-Fri: 10:00-20:00 (UTC+3)</p>
-                    </div>
+                    <h4 data-en="Working Hours" data-ru="Рабочие часы">Working Hours</h4>
+                    <p data-en="Mon-Fri: 10:00-20:00 (UTC+3)" data-ru="Пн-Пт: 10:00-20:00 (UTC+3)">Mon-Fri: 10:00-20:00 (UTC+3)</p>
+                    <p data-en="Sat-Sun: 12:00-18:00 (UTC+3)" data-ru="Сб-Вс: 12:00-18:00 (UTC+3)">Sat-Sun: 12:00-18:00 (UTC+3)</p>
+                </div>
+
+                <div class="contact-item">
+                    <h4 data-en="Payment Methods" data-ru="Способы оплаты">Payment Methods</h4>
+                    <p>PayPal • Bank transfer • Cryptocurrency</p>
+                </div>
+
+                <div class="contact-item">
+                    <h4 data-en="Terms" data-ru="Условия">Terms</h4>
+                    <p data-en="• 2 free revisions → afterward €10 per revision" data-ru="• 2 бесплатные правки → далее €10 за правку">• 2 free revisions → afterward €10 per revision</p>
+                    <p data-en="• Urgent order (≤ 4 days) → +50% to the price" data-ru="• Срочный заказ (≤ 4 дня) → +50% к цене">• Urgent order (≤ 4 days) → +50% to the price</p>
+                    <p data-en="• Redesign of existing work → +30-50% of base cost" data-ru="• Переделка существующей работы → +30-50% от базовой стоимости">• Redesign of existing work → +30-50% of base cost</p>
+                </div>
+
+                <div class="contact-item">
+                    <h4 data-en="Exchange Rates" data-ru="Курсы валют">Exchange Rates</h4>
+                    <p>1€ = 100₽ / 50₴ | 1$ = 85₽ / 42₴</p>
                 </div>
             </div>
 

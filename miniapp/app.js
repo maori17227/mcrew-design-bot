@@ -6,8 +6,43 @@ tg.ready();
 // Bot token for loading media
 const BOT_TOKEN = '8205357964:AAFdXcc0Ma_gtqJ0BRP8q-qOowKXdrrRNBs';
 
-// Current language
+// Current language and theme
 let currentLang = 'en';
+let currentTheme = 'light';
+
+// Initialize theme from Telegram or system preference
+function initTheme() {
+    // Check Telegram color scheme
+    if (tg.colorScheme === 'dark') {
+        currentTheme = 'dark';
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        currentTheme = 'dark';
+    }
+    
+    applyTheme(currentTheme);
+}
+
+// Apply theme
+function applyTheme(theme) {
+    currentTheme = theme;
+    document.documentElement.setAttribute('data-theme', theme);
+    
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+    
+    // Update Telegram theme colors
+    const bgColor = theme === 'dark' ? '#0a0a0a' : '#f5f5f5';
+    const headerColor = theme === 'dark' ? '#1a1a1a' : '#ffffff';
+    
+    tg.setBackgroundColor(bgColor);
+    tg.setHeaderColor(headerColor);
+}
+
+// Toggle theme
+function toggleTheme() {
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(newTheme);
+}
 
 // Media file IDs
 const MEDIA_FILE_IDS = {
@@ -238,7 +273,7 @@ function showServiceDetails(category) {
     const contentEl = document.getElementById('service-content');
     const screen = document.getElementById('service-details-screen');
     
-    // Store category for language switching
+    // Store category for language switching and order
     screen.dataset.category = category;
     
     titleEl.textContent = service.title;
@@ -256,6 +291,23 @@ function showServiceDetails(category) {
     
     contentEl.innerHTML = html;
     showScreen('service-details');
+}
+
+// Show order form
+function showOrderForm(category) {
+    const service = SERVICES[category][currentLang];
+    const titleEl = document.getElementById('order-title');
+    const screen = document.getElementById('order-screen');
+    
+    // Store category for language switching
+    screen.dataset.category = category;
+    
+    titleEl.textContent = currentLang === 'en' ? `Order: ${service.title}` : `Заказ: ${service.title}`;
+    
+    // Clear form
+    document.getElementById('order-form').reset();
+    
+    showScreen('order');
 }
 
 // Load portfolio
@@ -304,6 +356,12 @@ async function loadPortfolio() {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize theme
+    initTheme();
+    
+    // Theme toggle
+    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+    
     // Language buttons
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -334,15 +392,45 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', goBack);
     });
     
-    // Order button
+    // Order button - show order form
     document.getElementById('order-btn').addEventListener('click', () => {
-        tg.openTelegramLink('https://t.me/mcrewdm');
+        const category = document.getElementById('service-details-screen').dataset.category;
+        showOrderForm(category);
     });
     
     // Telegram back button
     tg.BackButton.onClick(goBack);
     
+    // Order form submit
+    document.getElementById('order-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = {
+            service: document.getElementById('order-title').textContent,
+            details: document.getElementById('order-details').value,
+            style: document.getElementById('order-style').value,
+            deadline: document.getElementById('order-deadline').value,
+            budget: document.getElementById('order-budget').value,
+            contact: document.getElementById('order-contact').value
+        };
+        
+        // Format message
+        const message = currentLang === 'en' 
+            ? `🔔 NEW ORDER from Mini App!\n\n📋 Service: ${formData.service}\n\n📝 Details:\n${formData.details}\n\n🎨 Style:\n${formData.style}\n\n⏰ Deadline: ${formData.deadline}\n💰 Budget: ${formData.budget}\n📞 Contact: ${formData.contact}`
+            : `🔔 НОВЫЙ ЗАКАЗ из Mini App!\n\n📋 Услуга: ${formData.service}\n\n📝 Детали:\n${formData.details}\n\n🎨 Стиль:\n${formData.style}\n\n⏰ Срок: ${formData.deadline}\n💰 Бюджет: ${formData.budget}\n📞 Контакт: ${formData.contact}`;
+        
+        // Send via Telegram
+        tg.sendData(JSON.stringify(formData));
+        
+        // Show success message
+        alert(currentLang === 'en' 
+            ? '✅ Order sent! We will contact you within 2 hours.' 
+            : '✅ Заказ отправлен! Мы свяжемся с вами в течение 2 часов.');
+        
+        // Go back to home
+        showScreen('home');
+    });
+    
     // Set theme colors
-    tg.setHeaderColor('#0a0a0a');
-    tg.setBackgroundColor('#0a0a0a');
+    applyTheme(currentTheme);
 });
