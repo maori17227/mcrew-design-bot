@@ -654,50 +654,98 @@ function initAudioPlayers() {
         const currentTimeEl = player.querySelector('.current-time');
         const durationEl = player.querySelector('.duration');
         
+        const TRAILER_DURATION = 15; // 15 seconds trailer
+        const FADE_START = 13; // Start fade at 13 seconds
+        let fadeInterval = null;
+        
         // Play/Pause button
         btn.addEventListener('click', () => {
             // Pause all other players
             document.querySelectorAll('audio').forEach(a => {
                 if (a.id !== audioId && !a.paused) {
                     a.pause();
+                    a.currentTime = 0;
+                    a.volume = 1;
                     const otherBtn = document.querySelector(`[data-audio-id="${a.id}"]`);
                     otherBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
                 }
             });
             
             if (audio.paused) {
+                audio.volume = 1;
                 audio.play();
                 btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>';
             } else {
                 audio.pause();
                 btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+                if (fadeInterval) {
+                    clearInterval(fadeInterval);
+                    fadeInterval = null;
+                }
             }
         });
         
-        // Update duration when loaded
+        // Update duration when loaded (show 15 seconds max)
         audio.addEventListener('loadedmetadata', () => {
-            durationEl.textContent = formatTime(audio.duration);
+            durationEl.textContent = formatTime(TRAILER_DURATION);
         });
         
-        // Update progress
+        // Update progress and handle 15 second limit with fade
         audio.addEventListener('timeupdate', () => {
-            const progress = (audio.currentTime / audio.duration) * 100;
+            const currentTime = audio.currentTime;
+            
+            // Stop at 15 seconds
+            if (currentTime >= TRAILER_DURATION) {
+                audio.pause();
+                audio.currentTime = 0;
+                audio.volume = 1;
+                btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+                progressFill.style.width = '0%';
+                currentTimeEl.textContent = '0:00';
+                if (fadeInterval) {
+                    clearInterval(fadeInterval);
+                    fadeInterval = null;
+                }
+                return;
+            }
+            
+            // Start fade out at 13 seconds
+            if (currentTime >= FADE_START && !fadeInterval) {
+                fadeInterval = setInterval(() => {
+                    if (audio.volume > 0.05) {
+                        audio.volume = Math.max(0, audio.volume - 0.05);
+                    }
+                }, 100);
+            }
+            
+            const progress = (currentTime / TRAILER_DURATION) * 100;
             progressFill.style.width = progress + '%';
-            currentTimeEl.textContent = formatTime(audio.currentTime);
+            currentTimeEl.textContent = formatTime(currentTime);
         });
         
         // Reset on end
         audio.addEventListener('ended', () => {
+            audio.currentTime = 0;
+            audio.volume = 1;
             btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
             progressFill.style.width = '0%';
             currentTimeEl.textContent = '0:00';
+            if (fadeInterval) {
+                clearInterval(fadeInterval);
+                fadeInterval = null;
+            }
         });
         
-        // Seek functionality
+        // Seek functionality (within 15 seconds)
         progressBar.addEventListener('click', (e) => {
             const rect = progressBar.getBoundingClientRect();
             const pos = (e.clientX - rect.left) / rect.width;
-            audio.currentTime = pos * audio.duration;
+            audio.currentTime = pos * TRAILER_DURATION;
+            audio.volume = 1;
+            if (fadeInterval) {
+                clearInterval(fadeInterval);
+                fadeInterval = null;
+            }
         });
     });
 }
