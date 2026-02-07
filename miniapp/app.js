@@ -366,21 +366,24 @@ function showOrderForm(category, serviceIndex = null) {
 function setFormPlaceholders(lang) {
     const detailsField = document.getElementById('order-details');
     const styleField = document.getElementById('order-style');
-    const deadlineField = document.getElementById('order-deadline');
-    const budgetField = document.getElementById('order-budget');
+    const requirementsField = document.getElementById('order-requirements');
+    const deadlineBudgetField = document.getElementById('order-deadline-budget');
+    const referencesField = document.getElementById('order-references');
     const contactField = document.getElementById('order-contact');
     
     if (lang === 'en') {
-        detailsField.placeholder = 'What exactly do you need?';
-        styleField.placeholder = 'Preferred style, colors';
-        deadlineField.placeholder = 'When do you need it?';
-        budgetField.placeholder = 'Your budget';
+        detailsField.placeholder = '• What exactly do you need?\n• Purpose/goal of the design';
+        styleField.placeholder = '• Preferred style (minimalism, dark, bright, etc.)\n• Main colors\n• Colors to avoid';
+        requirementsField.placeholder = '• Required format/size\n• Where will it be used?\n• Text/brand name to include';
+        deadlineBudgetField.placeholder = '• When do you need it ready?\n• Your budget\n• Urgent? (+50% for ≤4 days)';
+        referencesField.placeholder = '• Send examples/links for inspiration\n• Special requirements';
         contactField.placeholder = '@username or email';
     } else {
-        detailsField.placeholder = 'Что именно вам нужно?';
-        styleField.placeholder = 'Предпочитаемый стиль, цвета';
-        deadlineField.placeholder = 'Когда нужно?';
-        budgetField.placeholder = 'Ваш бюджет';
+        detailsField.placeholder = '• Что именно вам нужно?\n• Цель/назначение дизайна';
+        styleField.placeholder = '• Предпочитаемый стиль (минимализм, темный, яркий и т.д.)\n• Основные цвета\n• Цвета, которых следует избегать';
+        requirementsField.placeholder = '• Нужный формат/размер\n• Где будет использоваться?\n• Текст/название бренда для включения';
+        deadlineBudgetField.placeholder = '• Когда нужно готово?\n• Ваш бюджет\n• Срочно? (+50% за ≤4 дня)';
+        referencesField.placeholder = '• Пришлите примеры/ссылки для вдохновения\n• Особые требования';
         contactField.placeholder = '@username или email';
     }
 }
@@ -478,15 +481,16 @@ document.addEventListener('DOMContentLoaded', () => {
             service: document.getElementById('order-title').textContent,
             details: document.getElementById('order-details').value,
             style: document.getElementById('order-style').value,
-            deadline: document.getElementById('order-deadline').value,
-            budget: document.getElementById('order-budget').value,
+            requirements: document.getElementById('order-requirements').value,
+            deadlineBudget: document.getElementById('order-deadline-budget').value,
+            references: document.getElementById('order-references').value,
             contact: document.getElementById('order-contact').value
         };
         
         // Format message
         const message = currentLang === 'en' 
-            ? `🔔 NEW ORDER from Mini App!\n\n📋 Service: ${formData.service}\n\n📝 Details:\n${formData.details}\n\n🎨 Style:\n${formData.style}\n\n⏰ Deadline: ${formData.deadline}\n💰 Budget: ${formData.budget}\n📞 Contact: ${formData.contact}`
-            : `🔔 НОВЫЙ ЗАКАЗ из Mini App!\n\n📋 Услуга: ${formData.service}\n\n📝 Детали:\n${formData.details}\n\n🎨 Стиль:\n${formData.style}\n\n⏰ Срок: ${formData.deadline}\n💰 Бюджет: ${formData.budget}\n📞 Контакт: ${formData.contact}`;
+            ? `🔔 NEW ORDER from Mini App!\n\n📋 Service: ${formData.service}\n\n📝 Details:\n${formData.details}\n\n🎨 Style & Colors:\n${formData.style || 'Not specified'}\n\n📐 Requirements:\n${formData.requirements || 'Not specified'}\n\n⏰ Deadline & Budget:\n${formData.deadlineBudget}\n\n🔗 References:\n${formData.references || 'Not specified'}\n\n📞 Contact: ${formData.contact}`
+            : `🔔 НОВЫЙ ЗАКАЗ из Mini App!\n\n📋 Услуга: ${formData.service}\n\n📝 Детали:\n${formData.details}\n\n🎨 Стиль и цвета:\n${formData.style || 'Не указано'}\n\n📐 Требования:\n${formData.requirements || 'Не указано'}\n\n⏰ Сроки и бюджет:\n${formData.deadlineBudget}\n\n🔗 Референсы:\n${formData.references || 'Не указано'}\n\n📞 Контакт: ${formData.contact}`;
         
         // Send via Telegram
         tg.sendData(JSON.stringify(formData));
