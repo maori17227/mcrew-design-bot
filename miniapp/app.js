@@ -272,16 +272,16 @@ const PORTFOLIO = {
             {
                 type: 'track',
                 artist: 'valeksi',
-                track: 'FILL ME UP',
+                track: 'SELF-LOVER',
                 cover: `${GITHUB_BASE}porftolio/covers/valeksi RAGE LOVER-EP.jpg`,
-                audio: `${GITHUB_BASE}porftolio/covers/trailers/FILL ME UP - Valeksi.mp3`
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/SELF-LOVER - Valeksi.mp3`
             },
             {
                 type: 'track',
                 artist: 'valeksi',
-                track: 'SELF-LOVER',
+                track: 'FILL ME UP',
                 cover: `${GITHUB_BASE}porftolio/covers/valeksi LAST CASE.jpg`,
-                audio: `${GITHUB_BASE}porftolio/covers/trailers/SELF-LOVER - Valeksi.mp3`
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/FILL ME UP - Valeksi.mp3`
             },
             {
                 type: 'track',
