@@ -27,8 +27,8 @@ function applyTheme(theme) {
     currentTheme = theme;
     document.documentElement.setAttribute('data-theme', theme);
     
-    const themeToggle = document.getElementById('theme-toggle');
-    themeToggle.checked = (theme === 'dark');
+    const themeBtn = document.getElementById('theme-btn');
+    themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
     
     // Update Telegram theme colors
     const bgColor = theme === 'dark' ? '#0a0a0a' : '#f5f5f5';
@@ -352,9 +352,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize theme
     initTheme();
     
-    // Theme toggle
-    const themeToggle = document.getElementById('theme-toggle');
-    themeToggle.addEventListener('change', () => {
+    // Theme button
+    const themeBtn = document.getElementById('theme-btn');
+    themeBtn.addEventListener('click', () => {
         toggleTheme();
     });
     
