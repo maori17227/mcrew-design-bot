@@ -6,22 +6,8 @@
 
 :root {
     /* Light theme */
-    --bg-primary: #f5f5f5;
-    --bg-secondary: #ffffff;
-    --bg-card: #ffffff;
-    --accent-red: #ff0000;
-    --accent-red-hover: #cc0000;
-    --text-primary: #000000;
-    --text-secondary: #666666;
-    --border-color: #e0e0e0;
-    --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
-}
-
-[data-theme="dark"] {
-    /* Dark theme */
-    --bg-primary: #0a0a0a;
-    --bg-secondary: #1a1a1a;
+    --bg-primary: #000000;
+    --bg-secondary: #0a0a0a;
     --bg-card: #151515;
     --accent-red: #ff0000;
     --accent-red-hover: #cc0000;
@@ -30,6 +16,32 @@
     --border-color: #2a2a2a;
     --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] {
+    /* Dark theme */
+    --bg-primary: #000000;
+    --bg-secondary: #0a0a0a;
+    --bg-card: #151515;
+    --accent-red: #ff0000;
+    --accent-red-hover: #cc0000;
+    --text-primary: #ffffff;
+    --text-secondary: #999999;
+    --border-color: #2a2a2a;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="light"] {
+    /* Light theme override */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f5f5;
+    --bg-card: #ffffff;
+    --text-primary: #000000;
+    --text-secondary: #666666;
+    --border-color: #e0e0e0;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 body {
@@ -42,6 +54,96 @@ body {
     position: fixed;
     width: 100%;
     height: 100vh;
+}
+
+/* Splash Screen */
+.splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: #000000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease;
+}
+
+.splash-screen.active {
+    display: flex;
+}
+
+.splash-screen.slide-up {
+    transform: translateY(-100%);
+    opacity: 0;
+}
+
+.splash-logo {
+    width: 280px;
+    height: 280px;
+    object-fit: contain;
+    animation: logoFloat 3s ease-in-out infinite;
+    margin-bottom: 60px;
+    transition: filter 0.3s ease;
+}
+
+[data-theme="dark"] .splash-logo {
+    filter: invert(1) brightness(2);
+}
+
+[data-theme="light"] .splash-logo {
+    filter: invert(0);
+}
+
+@keyframes logoFloat {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.swipe-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    animation: swipePulse 2s ease-in-out infinite;
+}
+
+.swipe-indicator p {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.swipe-arrow {
+    font-size: 32px;
+    color: var(--accent-red);
+    animation: arrowBounce 1.5s ease-in-out infinite;
+}
+
+@keyframes swipePulse {
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes arrowBounce {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
 }
 
 .app {

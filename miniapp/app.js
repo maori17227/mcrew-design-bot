@@ -12,11 +12,12 @@ let currentTheme = 'light';
 
 // Initialize theme from Telegram or system preference
 function initTheme() {
+    // Default to dark theme
+    currentTheme = 'dark';
+    
     // Check Telegram color scheme
-    if (tg.colorScheme === 'dark') {
-        currentTheme = 'dark';
-    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        currentTheme = 'dark';
+    if (tg.colorScheme === 'light') {
+        currentTheme = 'light';
     }
     
     applyTheme(currentTheme);
@@ -734,6 +735,40 @@ function formatTime(seconds) {
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize theme
     initTheme();
+    
+    // Splash screen swipe up
+    const splashScreen = document.getElementById('splash-screen');
+    let touchStartY = 0;
+    let touchEndY = 0;
+    
+    splashScreen.addEventListener('touchstart', (e) => {
+        touchStartY = e.touches[0].clientY;
+    });
+    
+    splashScreen.addEventListener('touchmove', (e) => {
+        touchEndY = e.touches[0].clientY;
+    });
+    
+    splashScreen.addEventListener('touchend', () => {
+        const swipeDistance = touchStartY - touchEndY;
+        
+        // If swiped up more than 50px
+        if (swipeDistance > 50) {
+            hideSplashScreen();
+        }
+    });
+    
+    // Also allow click to dismiss
+    splashScreen.addEventListener('click', () => {
+        hideSplashScreen();
+    });
+    
+    function hideSplashScreen() {
+        splashScreen.classList.add('slide-up');
+        setTimeout(() => {
+            splashScreen.classList.remove('active');
+        }, 600);
+    }
     
     // Close keyboard when clicking outside input fields
     document.addEventListener('click', (e) => {
