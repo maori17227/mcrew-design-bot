@@ -244,7 +244,13 @@ function updateLanguage(lang) {
     // Update all translatable elements
     document.querySelectorAll('[data-en][data-ru]').forEach(el => {
         if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-            el.placeholder = el.dataset[lang];
+            // Update placeholder
+            const placeholderKey = `data-placeholder-${lang}`;
+            if (el.hasAttribute(placeholderKey)) {
+                el.placeholder = el.getAttribute(placeholderKey);
+            } else if (el.dataset.en && el.dataset.ru) {
+                el.placeholder = el.dataset[lang];
+            }
         } else {
             el.textContent = el.dataset[lang];
         }
@@ -300,20 +306,66 @@ function showServiceDetails(category) {
 }
 
 // Show order form
-function showOrderForm(category) {
+function showOrderForm(category, serviceIndex = null) {
     const service = SERVICES[category][currentLang];
     const titleEl = document.getElementById('order-title');
     const screen = document.getElementById('order-screen');
     
     // Store category for language switching
     screen.dataset.category = category;
+    screen.dataset.serviceIndex = serviceIndex;
     
-    titleEl.textContent = currentLang === 'en' ? `Order: ${service.title}` : `Заказ: ${service.title}`;
+    let serviceName = service.title;
+    if (serviceIndex !== null) {
+        const selectedService = service.items[serviceIndex];
+        serviceName = `${selectedService.name} (${selectedService.price})`;
+    }
+    
+    titleEl.textContent = currentLang === 'en' ? `Order: ${serviceName}` : `Заказ: ${serviceName}`;
     
     // Clear form
     document.getElementById('order-form').reset();
     
+    // Update placeholders
+    updateLanguage(currentLang);
+    
     showScreen('order');
+}
+
+// Show service selection for order
+function showServiceSelection(category) {
+    const service = SERVICES[category][currentLang];
+    const contentEl = document.getElementById('selection-content');
+    const screen = document.getElementById('service-selection-screen');
+    
+    // Store category for language switching
+    screen.dataset.category = category;
+    
+    let html = '<div class="price-list">';
+    service.items.forEach((item, index) => {
+        html += `
+            <div class="price-item clickable" data-category="${category}" data-index="${index}">
+                <h4>${item.name}</h4>
+                <span class="price">${item.price}</span>
+            </div>
+        `;
+    });
+    html += '</div>';
+    
+    contentEl.innerHTML = html;
+    
+    // Add click handlers
+    setTimeout(() => {
+        document.querySelectorAll('.price-item.clickable').forEach(item => {
+            item.addEventListener('click', () => {
+                const cat = item.dataset.category;
+                const idx = item.dataset.index;
+                showOrderForm(cat, idx);
+            });
+        });
+    }, 100);
+    
+    showScreen('service-selection');
 }
 
 // Load portfolio - instant loading from local files
@@ -388,10 +440,10 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', goBack);
     });
     
-    // Order button - show order form
+    // Order button - show service selection
     document.getElementById('order-btn').addEventListener('click', () => {
         const category = document.getElementById('service-details-screen').dataset.category;
-        showOrderForm(category);
+        showServiceSelection(category);
     });
     
     // Telegram back button

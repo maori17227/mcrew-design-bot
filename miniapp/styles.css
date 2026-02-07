@@ -411,16 +411,27 @@ body {
     font-size: 16px;
     font-weight: 500;
     color: var(--text-primary);
-    white-space: nowrap;
     margin-right: 20px;
+    flex: 1;
+    min-width: 0;
 }
 
 .price-item .price {
     color: var(--accent-red);
     font-weight: 700;
-    font-size: 18px;
+    font-size: 16px;
     white-space: nowrap;
     flex-shrink: 0;
+}
+
+.price-item.clickable {
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.price-item.clickable:active {
+    transform: translateX(5px);
+    background: rgba(255, 0, 0, 0.05);
 }
 
 /* Portfolio Grid */
