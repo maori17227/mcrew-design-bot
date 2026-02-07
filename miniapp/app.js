@@ -187,20 +187,6 @@ const PORTFOLIO = {
             {
                 type: 'track',
                 artist: 'whylovly',
-                track: 'lowsignal',
-                cover: `${GITHUB_BASE}porftolio/covers/whylovly lowsignal.jpg`,
-                audio: null
-            },
-            {
-                type: 'track',
-                artist: 'whylovly',
-                track: 'vindictaNots',
-                cover: `${GITHUB_BASE}porftolio/covers/whylovly vindictaNots.jpg`,
-                audio: null
-            },
-            {
-                type: 'track',
-                artist: 'whylovly',
                 track: 'любят',
                 cover: `${GITHUB_BASE}porftolio/covers/whylovly любят .jpg`,
                 audio: `${GITHUB_BASE}porftolio/covers/trailers/любят - whylovly.mp3`
@@ -274,20 +260,6 @@ const PORTFOLIO = {
                 track: 'GEEK0INIGHT',
                 cover: `${GITHUB_BASE}porftolio/covers/valeksi GEEK0INIGHT.jpg`,
                 audio: `${GITHUB_BASE}porftolio/covers/trailers/GEEK0lNIGHT - Valeksi.mp3`
-            },
-            {
-                type: 'track',
-                artist: 'valeksi',
-                track: 'LAST CASE',
-                cover: `${GITHUB_BASE}porftolio/covers/valeksi LAST CASE.jpg`,
-                audio: null
-            },
-            {
-                type: 'track',
-                artist: 'valeksi',
-                track: 'RAGE LOVER-EP',
-                cover: `${GITHUB_BASE}porftolio/covers/valeksi RAGE LOVER-EP.jpg`,
-                audio: null
             },
             {
                 type: 'track',
