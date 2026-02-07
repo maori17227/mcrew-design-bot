@@ -421,6 +421,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize theme
     initTheme();
     
+    // Close keyboard when clicking outside input fields
+    document.addEventListener('click', (e) => {
+        if (!e.target.matches('input, textarea')) {
+            // Remove focus from any active input
+            if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+                document.activeElement.blur();
+            }
+        }
+    });
+    
     // Theme button
     const themeBtn = document.getElementById('theme-btn');
     themeBtn.addEventListener('click', () => {
