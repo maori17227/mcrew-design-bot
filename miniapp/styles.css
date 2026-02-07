@@ -285,7 +285,8 @@ body {
 .screen-header {
     display: flex;
     align-items: center;
-    padding: 20px 40px;
+    justify-content: center;
+    padding: 20px 20px;
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-color);
     position: sticky;
@@ -295,13 +296,14 @@ body {
 }
 
 .back-btn {
+    position: absolute;
+    left: 20px;
     background: none;
     border: none;
     color: var(--accent-red);
-    font-size: 28px;
+    font-size: 24px;
     cursor: pointer;
-    padding: 10px;
-    margin-right: 15px;
+    padding: 8px;
     transition: transform 0.3s ease;
 }
 
@@ -317,9 +319,9 @@ body {
 
 .screen-header .pricelist-img {
     width: auto;
-    height: 120px;
+    height: 100px;
     object-fit: contain;
-    max-width: 100%;
+    max-width: 70%;
 }
 
 /* Services List */
@@ -377,31 +379,11 @@ body {
     margin-bottom: 20px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
 }
 
 [data-theme="light"] .price-list {
     background: rgba(255, 255, 255, 0.8);
     border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.price-list::before {
-    content: '';
-    position: absolute;
-    bottom: -80px;
-    right: -80px;
-    width: 250px;
-    height: 250px;
-    background: url('pricelist.jpg') no-repeat center;
-    background-size: cover;
-    opacity: 0.04;
-    pointer-events: none;
-    transform: rotate(-15deg);
-}
-
-[data-theme="dark"] .price-list::before {
-    opacity: 0.02;
 }
 
 .price-item {
@@ -426,15 +408,19 @@ body {
 }
 
 .price-item h4 {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 500;
     color: var(--text-primary);
+    white-space: nowrap;
+    margin-right: 20px;
 }
 
 .price-item .price {
     color: var(--accent-red);
     font-weight: 700;
     font-size: 18px;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 /* Portfolio Grid */

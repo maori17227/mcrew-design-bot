@@ -171,7 +171,7 @@ const PORTFOLIO = [
     {
         type: 'photo',
         file: MEDIA_FILES.covers,
-        title: { en: 'Album Covers & Artwork', ru: 'Обложки альбомов и артворки' },
+        title: { en: 'Track Covers & Artwork', ru: 'Обложки треков и артворки' },
         description: { en: 'Cover art, snippets, visuals', ru: 'Обложки, сниппеты, визуалы' }
     },
     {
