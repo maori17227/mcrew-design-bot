@@ -835,16 +835,23 @@ document.addEventListener('DOMContentLoaded', () => {
         isTransitioning = true;
         splashScreen.classList.add('transitioning');
         
-        // Very smooth animation - logo goes all the way up
-        splashLogo.style.transition = 'all 0.8s cubic-bezier(0.25, 0.1, 0.25, 1)';
-        splashLogo.style.transform = 'scale(0.1875) translateY(-600px)';
-        splashLogo.style.opacity = '0';
+        // Calculate exact position for logo to end up at the top
+        // Logo should go from center (50vh) to top (60px from top)
+        const screenHeight = window.innerHeight;
+        const centerY = screenHeight / 2;
+        const targetY = 80; // Position from top where small logo should be
+        const moveDistance = -(centerY - targetY);
         
-        // Fade out splash screen smoothly
+        // Very smooth animation - logo transforms to small size and moves to top
+        splashLogo.style.transition = 'all 1s cubic-bezier(0.25, 0.1, 0.25, 1)';
+        splashLogo.style.transform = `scale(0.1875) translateY(${moveDistance}px)`;
+        splashLogo.style.opacity = '1'; // Keep visible during transition
+        
+        // Fade out splash screen smoothly after logo reaches position
         setTimeout(() => {
-            splashScreen.style.transition = 'opacity 0.4s ease';
+            splashScreen.style.transition = 'opacity 0.5s ease';
             splashScreen.style.opacity = '0';
-        }, 400);
+        }, 600);
         
         setTimeout(() => {
             splashScreen.classList.remove('active');
@@ -855,7 +862,7 @@ document.addEventListener('DOMContentLoaded', () => {
             splashLogo.style.opacity = '';
             splashLogo.classList.remove('shrinking');
             isTransitioning = false;
-        }, 1200);
+        }, 1500);
     }
     
     // Swipe down on home screen to show splash again
