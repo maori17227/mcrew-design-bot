@@ -199,6 +199,73 @@
         </div>
     </section>
 
+    <!-- Profile Section (only visible when logged in) -->
+    <section id="profile" class="profile hidden">
+        <div class="profile-container">
+            <div class="profile-header-section">
+                <div class="profile-avatar-wrapper">
+                    <img id="profile-avatar-img" class="profile-avatar-img" alt="Avatar">
+                    <div class="profile-avatar-placeholder">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                </div>
+                <h2 id="profile-name-display" class="profile-name-display">Loading...</h2>
+                <p id="profile-username-display" class="profile-username-display">@username</p>
+            </div>
+
+            <div class="profile-balance-section">
+                <div class="balance-card">
+                    <div class="balance-card-header">
+                        <span class="balance-card-label" data-en="Your Balance" data-ru="Ваш баланс">Your Balance</span>
+                        <span class="balance-card-currency">MTV (Motive)</span>
+                    </div>
+                    <div class="balance-card-amount">
+                        <span class="balance-card-symbol">ɱ</span>
+                        <span id="profile-balance-mtv" class="balance-card-value">0.00</span>
+                    </div>
+                    <div class="balance-card-mini">
+                        <span id="profile-balance-mini" class="balance-card-mini-value">0</span>
+                        <span class="balance-card-mini-label">Mini</span>
+                    </div>
+                    <button class="buy-mtv-button" id="buy-mtv-button">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                            <line x1="1" y1="10" x2="23" y2="10"></line>
+                        </svg>
+                        <span data-en="Buy MTV" data-ru="Купить MTV">Buy MTV</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="profile-stats-section">
+                <div class="profile-stat-card">
+                    <div class="stat-card-value" id="profile-stat-orders">0</div>
+                    <div class="stat-card-label" data-en="Orders" data-ru="Заказов">Orders</div>
+                </div>
+                <div class="profile-stat-card">
+                    <div class="stat-card-value" id="profile-stat-spent">ɱ 0.00</div>
+                    <div class="stat-card-label" data-en="Spent" data-ru="Потрачено">Spent</div>
+                </div>
+                <div class="profile-stat-card">
+                    <div class="stat-card-value" id="profile-stat-saved">ɱ 0.00</div>
+                    <div class="stat-card-label" data-en="Saved" data-ru="Сэкономлено">Saved</div>
+                </div>
+            </div>
+
+            <div class="profile-transactions-section">
+                <h3 class="profile-section-title" data-en="Recent Transactions" data-ru="Последние транзакции">Recent Transactions</h3>
+                <div id="profile-transactions-list" class="profile-transactions-list">
+                    <div class="profile-empty-state">
+                        <span data-en="No transactions yet" data-ru="Пока нет транзакций">No transactions yet</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">

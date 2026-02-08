@@ -10,6 +10,10 @@ let currentLang = 'en';
 let currentAudio = null;
 let currentCategory = null;
 let clickedElement = null;
+let userBalance = {
+    mtv: 0,
+    mini: 0
+};
 
 // Portfolio Data - Static fallback
 const PORTFOLIO_DATA = {
@@ -709,6 +713,7 @@ function updateUserUI() {
     const userInfo = document.getElementById('user-info');
     const userAvatar = document.getElementById('user-avatar');
     const userName = document.getElementById('user-name');
+    const profileSection = document.getElementById('profile');
     
     if (currentUser) {
         loginBtn.classList.add('hidden');
@@ -719,7 +724,18 @@ function updateUserUI() {
         }
         userName.textContent = currentUser.first_name;
         
-        userInfo.addEventListener('click', logout);
+        userInfo.addEventListener('click', () => {
+            // Scroll to profile
+            profileSection.classList.remove('hidden');
+            profileSection.scrollIntoView({ behavior: 'smooth' });
+            updateProfileDisplay();
+        });
+        
+        // Show profile section
+        profileSection.classList.remove('hidden');
+        
+        // Load balance
+        loadUserBalance();
         
         // Update contact username in order form
         const contactUsernameDisplay = document.getElementById('contact-username-display');
@@ -729,7 +745,81 @@ function updateUserUI() {
     } else {
         loginBtn.classList.remove('hidden');
         userInfo.classList.add('hidden');
+        profileSection.classList.add('hidden');
     }
+}
+
+// Load user balance
+async function loadUserBalance() {
+    try {
+        // Try to load from API
+        const response = await fetch(`${API_BASE}/api/user/${currentUser.id}/balance`);
+        if (response.ok) {
+            const data = await response.json();
+            userBalance = data.balance || { mtv: 0, mini: 0 };
+        } else {
+            // Load from localStorage
+            const saved = localStorage.getItem('mcrew_balance_' + currentUser.id);
+            if (saved) {
+                userBalance = JSON.parse(saved);
+            }
+        }
+    } catch (error) {
+        console.log('Failed to load balance from API, using localStorage');
+        const saved = localStorage.getItem('mcrew_balance_' + currentUser.id);
+        if (saved) {
+            userBalance = JSON.parse(saved);
+        }
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('mcrew_balance_' + currentUser.id, JSON.stringify(userBalance));
+    
+    // Update profile display
+    updateProfileDisplay();
+}
+
+// Update profile display
+function updateProfileDisplay() {
+    if (!currentUser) return;
+    
+    const profileAvatar = document.getElementById('profile-avatar-img');
+    const profileName = document.getElementById('profile-name-display');
+    const profileUsername = document.getElementById('profile-username-display');
+    const balanceMtv = document.getElementById('profile-balance-mtv');
+    const balanceMini = document.getElementById('profile-balance-mini');
+    
+    if (profileName) {
+        profileName.textContent = currentUser.first_name + (currentUser.last_name ? ' ' + currentUser.last_name : '');
+    }
+    
+    if (profileUsername && currentUser.username) {
+        profileUsername.textContent = '@' + currentUser.username;
+    } else if (profileUsername) {
+        profileUsername.textContent = 'ID: ' + currentUser.id;
+    }
+    
+    if (profileAvatar && currentUser.photo_url) {
+        profileAvatar.src = currentUser.photo_url;
+        profileAvatar.classList.add('loaded');
+    }
+    
+    if (balanceMtv) {
+        const mtv = Math.floor(userBalance.mini / 100);
+        const mini = userBalance.mini % 100;
+        balanceMtv.textContent = mtv + '.' + mini.toString().padStart(2, '0');
+    }
+    
+    if (balanceMini) {
+        balanceMini.textContent = userBalance.mini;
+    }
+}
+
+// Format MTV amount
+function formatMTV(mini) {
+    const mtv = Math.floor(mini / 100);
+    const miniPart = mini % 100;
+    return `${mtv}.${miniPart.toString().padStart(2, '0')}`;
 }
 
 function logout() {
@@ -1324,4 +1414,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Apply theme immediately
     applyTheme(currentTheme);
+    
+    // Buy MTV button
+    const buyMtvButton = document.getElementById('buy-mtv-button');
+    if (buyMtvButton) {
+        buyMtvButton.addEventListener('click', () => {
+            alert(currentLang === 'en' 
+                ? '💳 MTV Purchase\n\nComing soon! You will be able to buy MTV using Telegram Stars.\n\n1 ⭐ = 10 ɱ\n\nStay tuned!' 
+                : '💳 Покупка MTV\n\nСкоро! Вы сможете купить MTV используя Telegram Stars.\n\n1 ⭐ = 10 ɱ\n\nОставайтесь на связи!');
+        });
+    }
 });
