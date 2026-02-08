@@ -1423,9 +1423,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const buyMtvButton = document.getElementById('buy-mtv-button');
     if (buyMtvButton) {
         buyMtvButton.addEventListener('click', () => {
-            alert(currentLang === 'en' 
-                ? '💳 MTV Purchase\n\nComing soon! You will be able to buy MTV using Telegram Stars.\n\n1 ⭐ = 10 ɱ\n\nStay tuned!' 
-                : '💳 Покупка MTV\n\nСкоро! Вы сможете купить MTV используя Telegram Stars.\n\n1 ⭐ = 10 ɱ\n\nОставайтесь на связи!');
+            // Open crypto deposit modal
+            const cryptoModal = document.getElementById('crypto-deposit-modal');
+            if (cryptoModal) {
+                cryptoModal.classList.add('active');
+            }
         });
     }
 });
