@@ -318,9 +318,6 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
-    /* Hidden by default - will be shown after splash screen swipe */
-    opacity: 0;
-    transform: translateY(60px);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
@@ -329,7 +326,7 @@ body {
     border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-/* Remove auto-animation delays - controlled by JS */
+/* Animation will be controlled by JS after splash screen */
 
 .menu-item:last-child {
     margin-bottom: 0;
