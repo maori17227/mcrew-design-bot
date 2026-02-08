@@ -6,6 +6,19 @@ tg.ready();
 // Hide main button
 tg.MainButton.hide();
 
+// Handle app closing - play close sound
+tg.onEvent('viewportChanged', function() {
+    if (!tg.isExpanded) {
+        // App is being closed/minimized
+        playSound('close');
+    }
+});
+
+// Alternative: handle when user tries to close
+window.addEventListener('beforeunload', function() {
+    playSound('close');
+});
+
 // Admin user ID
 const ADMIN_USER_ID = 8017281019;
 const isAdmin = tg.initDataUnsafe?.user?.id === ADMIN_USER_ID;
@@ -531,6 +544,9 @@ function showServiceDetails(category) {
 
 // Show order form
 function showOrderForm(category, serviceIndex = null) {
+    // Play select sound when user chooses a service to order
+    playSound('select');
+    
     const service = SERVICES[category][currentLang];
     const titleEl = document.getElementById('order-title');
     const screen = document.getElementById('order-screen');
