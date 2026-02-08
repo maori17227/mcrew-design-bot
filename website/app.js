@@ -806,7 +806,7 @@ function updateProfileDisplay() {
     
     if (balanceMtv) {
         const mtv = Math.round(userBalance.mini / 100);
-        balanceMtv.textContent = mtv;
+        balanceMtv.textContent = mtv + '.0';
     }
     
     if (balanceMini) {
@@ -817,7 +817,7 @@ function updateProfileDisplay() {
 // Format MTV amount
 function formatMTV(mini) {
     const mtv = Math.round(mini / 100);
-    return `${mtv}`;
+    return `${mtv}.0`;
 }
 
 function logout() {

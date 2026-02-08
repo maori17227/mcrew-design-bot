@@ -100,7 +100,7 @@ function updateProfileUI() {
     
     if (balanceMtv) {
         const mtv = Math.round(userBalance.mini / 100);
-        balanceMtv.textContent = mtv;
+        balanceMtv.textContent = mtv + '.0';
     }
     
     if (balanceMini) {
@@ -111,7 +111,7 @@ function updateProfileUI() {
 // Format MTV amount
 function formatMTV(mini) {
     const mtv = Math.round(mini / 100);
-    return `${mtv}`;
+    return `${mtv}.0`;
 }
 
 // Handle app closing - play close sound
@@ -1999,6 +1999,9 @@ async function updateTONPrice() {
                 rateElement.textContent = `1 TON ≈ ${tonToMtvRate} ɱ`;
             }
             
+            // Update preset buttons
+            updateTONPresetButtons();
+            
             // Save to localStorage with timestamp
             localStorage.setItem('ton_rate', JSON.stringify({
                 rate: tonToMtvRate,
@@ -2018,6 +2021,19 @@ async function updateTONPrice() {
             tonToUsdRate = data.usdRate;
         }
     }
+}
+
+// Update TON preset buttons with current rate
+function updateTONPresetButtons() {
+    const buttons = document.querySelectorAll('.amount-btn[data-ton]');
+    buttons.forEach(btn => {
+        const tonAmount = parseFloat(btn.dataset.ton);
+        const mtvAmount = Math.round(tonAmount * tonToMtvRate);
+        const mtvSpan = btn.querySelector('.amount-mtv');
+        if (mtvSpan) {
+            mtvSpan.textContent = `${mtvAmount} ɱ`;
+        }
+    });
 }
 
 // Check if rate needs update (once per day)
@@ -2040,6 +2056,8 @@ function checkAndUpdateRate() {
             if (rateElement) {
                 rateElement.textContent = `1 TON ≈ ${tonToMtvRate} ɱ`;
             }
+            // Update preset buttons
+            updateTONPresetButtons();
         }
     }
 }
@@ -2198,11 +2216,18 @@ function setupCryptoPaymentListeners() {
             try {
                 if (!tonConnectUI) {
                     initTONConnectMiniapp();
+                    // Wait a bit for initialization
+                    await new Promise(resolve => setTimeout(resolve, 500));
                 }
                 
-                // Connect wallet if not connected
-                if (!tonConnectUI.connected) {
+                // Check if wallet is connected
+                const wallet = tonConnectUI.wallet;
+                if (!wallet) {
+                    // Open connection modal
                     await tonConnectUI.openModal();
+                    tg.showAlert(currentLang === 'en' ? 
+                        'Please connect your TON wallet first' : 
+                        'Пожалуйста, подключите TON кошелек');
                     return;
                 }
                 
