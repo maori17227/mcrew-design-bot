@@ -347,11 +347,6 @@ function initNavigation() {
         });
     });
     
-    const loginBtn = document.getElementById('login-btn');
-    loginBtn.addEventListener('click', () => {
-        showLoginModal();
-    });
-    
     // Back to portfolio button
     const backBtn = document.getElementById('back-to-portfolio');
     backBtn.addEventListener('click', () => {
