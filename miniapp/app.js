@@ -726,8 +726,8 @@ function initAudioPlayers() {
         const currentTimeEl = player.querySelector('.current-time');
         const durationEl = player.querySelector('.duration');
         
-        const TRAILER_DURATION = 15; // 15 seconds trailer
-        const FADE_START = 13; // Start fade at 13 seconds
+        const TRAILER_DURATION = 13; // 13 seconds trailer
+        const FADE_START = 11; // Start fade at 11 seconds
         const TARGET_VOLUME = 0.316; // Target volume (-10dB)
         let fadeInterval = null;
         
