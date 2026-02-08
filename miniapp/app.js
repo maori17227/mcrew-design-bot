@@ -937,16 +937,19 @@ async function loadOrders() {
     const statusFilter = document.getElementById('orders-status-filter').value;
     
     try {
+        // Get user ID - use admin ID if available
+        const userId = (tg.initDataUnsafe?.user?.id) || currentUser?.id || ADMIN_USER_ID;
+        
         // Load orders
         const ordersUrl = `${API_BASE}/api/orders?category=${categoryFilter}&status=${statusFilter}`;
         const ordersResponse = await fetch(ordersUrl, {
             headers: {
-                'X-User-ID': tg.initDataUnsafe?.user?.id || ''
+                'X-User-ID': userId.toString()
             }
         });
         
         if (!ordersResponse.ok) {
-            throw new Error('Failed to load orders');
+            throw new Error('Failed to load orders: ' + ordersResponse.status);
         }
         
         const ordersData = await ordersResponse.json();
@@ -956,7 +959,7 @@ async function loadOrders() {
         const statsUrl = `${API_BASE}/api/orders/stats`;
         const statsResponse = await fetch(statsUrl, {
             headers: {
-                'X-User-ID': tg.initDataUnsafe?.user?.id || ''
+                'X-User-ID': userId.toString()
             }
         });
         
@@ -979,7 +982,7 @@ async function loadOrders() {
         
     } catch (error) {
         console.error('Error loading orders:', error);
-        listEl.innerHTML = `<div class="error-state">${currentLang === 'en' ? 'Error loading orders' : 'Ошибка загрузки заказов'}</div>`;
+        listEl.innerHTML = `<div class="error-state">${currentLang === 'en' ? 'Error loading orders' : 'Ошибка загрузки заказов'}: ${error.message}</div>`;
     }
 }
 
