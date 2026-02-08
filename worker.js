@@ -855,6 +855,67 @@ async function handleAdminAPI(request, env, url) {
   const path = url.pathname
   
   try {
+    // Handle order submission
+    if (path === '/api/order' && request.method === 'POST') {
+      const body = await request.json()
+      const { service, details, style, requirements, deadlineBudget, references, contact, userId, userName, userUsername } = body
+      
+      if (!service || !details || !deadlineBudget || !contact) {
+        return new Response(JSON.stringify({ error: 'Required fields missing' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
+      
+      // Format order message for admin
+      const orderText = `🔔 <b>NEW ORDER from Mini App!</b>
+
+👤 <b>Client:</b> ${userName} (@${userUsername})
+🆔 <b>User ID:</b> ${userId}
+
+📋 <b>Service:</b> ${service}
+
+📝 <b>Details:</b>
+${details}
+
+🎨 <b>Style & Colors:</b>
+${style || 'Not specified'}
+
+📐 <b>Requirements:</b>
+${requirements || 'Not specified'}
+
+⏰ <b>Deadline & Budget:</b>
+${deadlineBudget}
+
+🔗 <b>References:</b>
+${references || 'Not specified'}
+
+📞 <b>Contact:</b> ${contact}
+
+⏱ <b>Time:</b> ${new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}`
+      
+      // Send to admin
+      const ADMIN_CHAT_ID = env.ADMIN_CHAT_ID
+      const BOT_TOKEN = env.BOT_TOKEN
+      
+      if (ADMIN_CHAT_ID && BOT_TOKEN) {
+        const telegramUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`
+        await fetch(telegramUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: ADMIN_CHAT_ID,
+            text: orderText,
+            parse_mode: 'HTML'
+          })
+        })
+      }
+      
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+    
     // Get portfolio items
     if (path === '/api/portfolio' && request.method === 'GET') {
       const category = url.searchParams.get('category')

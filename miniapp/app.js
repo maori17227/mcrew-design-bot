@@ -1174,27 +1174,34 @@ document.addEventListener('DOMContentLoaded', () => {
             requirements: document.getElementById('order-requirements').value,
             deadlineBudget: document.getElementById('order-deadline-budget').value,
             references: document.getElementById('order-references').value,
-            contact: document.getElementById('order-contact').value
+            contact: document.getElementById('order-contact').value,
+            userId: tg.initDataUnsafe?.user?.id || 'unknown',
+            userName: tg.initDataUnsafe?.user?.first_name || 'Unknown',
+            userUsername: tg.initDataUnsafe?.user?.username || 'no_username'
         };
         
-        // Send data to bot via Telegram Web App API
+        // Send order to worker API
         try {
-            tg.sendData(JSON.stringify(formData));
+            const response = await fetch(`${API_BASE}/api/order`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
             
-            // Play close sound
-            playSound('close');
+            if (!response.ok) throw new Error('Failed to send order');
             
             // Show success message
-            setTimeout(() => {
-                alert(currentLang === 'en' 
-                    ? '✅ Order sent! We will contact you within 2 hours.' 
-                    : '✅ Заказ отправлен! Мы свяжемся с вами в течение 2 часов.');
-                
-                // Close Mini App
-                tg.close();
-            }, 300);
+            alert(currentLang === 'en' 
+                ? '✅ Order sent! We will contact you within 2 hours.' 
+                : '✅ Заказ отправлен! Мы свяжемся с вами в течение 2 часов.');
+            
+            // Go back to home
+            showScreen('home');
+            
         } catch (error) {
-            console.error('Error sending data:', error);
+            console.error('Error sending order:', error);
             
             // Fallback: open chat with admin
             const message = currentLang === 'en' 
@@ -1210,10 +1217,10 @@ document.addEventListener('DOMContentLoaded', () => {
             alert(currentLang === 'en' 
                 ? '✅ Opening chat with admin. Please send the message!' 
                 : '✅ Открываем чат с админом. Пожалуйста, отправьте сообщение!');
+            
+            // Go back to home
+            showScreen('home');
         }
-        
-        // Go back to home
-        showScreen('home');
     });
     
     // Set theme colors
