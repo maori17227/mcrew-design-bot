@@ -698,9 +698,16 @@ async function loadPortfolioCategory(category) {
 
 // Initialize custom audio players
 function initAudioPlayers() {
-    // Create audio context for volume normalization
+    // Create shared audio context for all players
     const AudioContext = window.AudioContext || window.webkitAudioContext;
-    const audioContext = new AudioContext();
+    let audioContext = null;
+    
+    // Try to create audio context once
+    try {
+        audioContext = new AudioContext();
+    } catch (error) {
+        console.warn('Web Audio API not available:', error);
+    }
     
     document.querySelectorAll('.play-btn').forEach(btn => {
         const audioId = btn.dataset.audioId;
@@ -719,9 +726,9 @@ function initAudioPlayers() {
         let sourceNode = null;
         let isAudioContextSetup = false;
         
-        // Setup Web Audio API for volume normalization
+        // Setup Web Audio API for volume normalization (called only once per audio element)
         function setupAudioContext() {
-            if (isAudioContextSetup) return;
+            if (isAudioContextSetup || !audioContext) return;
             
             try {
                 // Resume audio context if suspended (required by some browsers)
@@ -729,7 +736,7 @@ function initAudioPlayers() {
                     audioContext.resume();
                 }
                 
-                // Create audio nodes
+                // Create audio nodes (ONLY ONCE per audio element)
                 sourceNode = audioContext.createMediaElementSource(audio);
                 gainNode = audioContext.createGain();
                 
@@ -752,9 +759,11 @@ function initAudioPlayers() {
                 isAudioContextSetup = true;
                 console.log('Audio normalization enabled for', audioId);
             } catch (error) {
-                console.warn('Could not setup audio normalization:', error);
+                console.warn('Could not setup audio normalization for', audioId, ':', error);
                 // Fallback to regular volume control
-                audio.volume = TARGET_VOLUME;
+                isAudioContextSetup = false;
+                gainNode = null;
+                sourceNode = null;
             }
         }
         
@@ -764,7 +773,7 @@ function initAudioPlayers() {
         // Play/Pause button
         btn.addEventListener('click', () => {
             // Setup audio context on first interaction (required by browsers)
-            if (!isAudioContextSetup) {
+            if (!isAudioContextSetup && audioContext) {
                 setupAudioContext();
             }
             
@@ -773,23 +782,26 @@ function initAudioPlayers() {
                 if (a.id !== audioId && !a.paused) {
                     a.pause();
                     a.currentTime = 0;
-                    if (gainNode) {
-                        gainNode.gain.value = 1.0;
-                    } else {
-                        a.volume = TARGET_VOLUME;
-                    }
+                    a.volume = TARGET_VOLUME;
                     const otherBtn = document.querySelector(`[data-audio-id="${a.id}"]`);
-                    otherBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+                    if (otherBtn) {
+                        otherBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+                    }
                 }
             });
             
             if (audio.paused) {
+                // Reset volume/gain before playing
                 if (gainNode) {
                     gainNode.gain.value = 1.0;
                 } else {
                     audio.volume = TARGET_VOLUME;
                 }
-                audio.play();
+                
+                audio.play().catch(err => {
+                    console.error('Error playing audio:', err);
+                });
+                
                 btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>';
             } else {
                 audio.pause();
