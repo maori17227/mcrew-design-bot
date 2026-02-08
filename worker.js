@@ -981,6 +981,54 @@ async function handleRequest(request, env) {
         }
       }
       
+      // Handle web app data (Mini App orders)
+      else if (update.message && update.message.web_app_data) {
+        const chatId = update.message.chat.id
+        const userId = update.message.from.id
+        const user = update.message.from
+        const webAppData = JSON.parse(update.message.web_app_data.data)
+        
+        // Format order message for admin
+        const orderText = `🔔 <b>NEW ORDER from Mini App!</b>
+
+👤 <b>Client:</b> ${user.first_name || 'Unknown'} ${user.last_name || ''} (@${user.username || 'no_username'})
+🆔 <b>User ID:</b> ${userId}
+
+📋 <b>Service:</b> ${webAppData.service}
+
+📝 <b>Details:</b>
+${webAppData.details}
+
+🎨 <b>Style & Colors:</b>
+${webAppData.style || 'Not specified'}
+
+📐 <b>Requirements:</b>
+${webAppData.requirements || 'Not specified'}
+
+⏰ <b>Deadline & Budget:</b>
+${webAppData.deadlineBudget}
+
+🔗 <b>References:</b>
+${webAppData.references || 'Not specified'}
+
+📞 <b>Contact:</b> ${webAppData.contact}
+
+⏱ <b>Time:</b> ${new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}`
+        
+        // Send to admin
+        if (ADMIN_CHAT_ID) {
+          await sendMessage(ADMIN_CHAT_ID, orderText, null, BOT_TOKEN)
+        }
+        
+        // Reply to user
+        const lang = getUserLanguage(userId)
+        const replyText = lang === 'ru' 
+          ? '✅ <b>Спасибо за ваш заказ!</b>\n\nМы получили ваше сообщение и свяжемся с вами в течение 2 часов.\n\n💬 Вопросы? Пишите @mcrewdm'
+          : '✅ <b>Thank you for your order!</b>\n\nWe received your message and will contact you within 2 hours.\n\n💬 Questions? Write @mcrewdm'
+        
+        await sendMessage(chatId, replyText, null, BOT_TOKEN)
+      }
+      
       return new Response('OK', { status: 200 })
       
     } catch (error) {
