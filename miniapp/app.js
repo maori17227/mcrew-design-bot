@@ -10,18 +10,6 @@ const isAdmin = tg.initDataUnsafe?.user?.id === ADMIN_USER_ID;
 // API base URL (your Cloudflare Worker URL)
 const API_BASE = 'https://mcrew-bot.141avatar141.workers.dev';
 
-// Setup Main Button to open bot
-tg.MainButton.text = 'Open Bot';
-tg.MainButton.color = '#ff0000';
-tg.MainButton.textColor = '#ffffff';
-tg.MainButton.show();
-
-// Main Button click handler - opens bot chat
-tg.MainButton.onClick(() => {
-    playSound('select');
-    tg.openTelegramLink('https://t.me/mcrewdm');
-});
-
 // Bot token for loading media
 const BOT_TOKEN = '8205357964:AAFdXcc0Ma_gtqJ0BRP8q-qOowKXdrrRNBs';
 
@@ -603,9 +591,31 @@ async function loadPortfolioCategory(category) {
     // Clear grid
     grid.innerHTML = '';
     
+    // For admin, try to load from KV first, fallback to static data
+    let items = portfolioData.items;
+    
+    if (isAdmin) {
+        try {
+            const response = await fetch(`${API_BASE}/api/portfolio?category=${category}`, {
+                headers: {
+                    'X-User-ID': tg.initDataUnsafe?.user?.id || ''
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.items && data.items.length > 0) {
+                    items = data.items;
+                }
+            }
+        } catch (error) {
+            console.log('Using static portfolio data');
+        }
+    }
+    
     // Load items
-    for (let i = 0; i < portfolioData.items.length; i++) {
-        const item = portfolioData.items[i];
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
         const div = document.createElement('div');
         div.className = 'portfolio-item';
         
@@ -1124,9 +1134,6 @@ document.addEventListener('DOMContentLoaded', () => {
     langToggle.addEventListener('change', () => {
         const newLang = langToggle.checked ? 'ru' : 'en';
         updateLanguage(newLang);
-        
-        // Update Main Button text based on language
-        tg.MainButton.text = newLang === 'en' ? 'Open Bot' : 'Открыть бота';
     });
     
     // Menu items
