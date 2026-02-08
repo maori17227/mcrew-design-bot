@@ -1,157 +1,158 @@
-# MCREW Design Studio Website
+# MCREW Website
 
-Полноценный веб-сайт для дизайн-студии MCREW с авторизацией через Telegram.
+Minimalist design studio website inspired by YSL and Yohji Yamamoto aesthetics.
 
-## Особенности
+## Live Site
 
-- ✅ Адаптивный дизайн (desktop + mobile)
-- ✅ Авторизация через Telegram Bot
-- ✅ Синхронизация с Mini App (общее портфолио)
-- ✅ Темная/светлая тема
-- ✅ Портфолио с аудио плеером
-- ✅ Форма заказа услуг
-- ✅ Минималистичный дизайн в стиле YSL
+🌐 **https://maori17227.github.io/mcrew-design-bot/**
 
-## Структура
+## Features
+
+### Design
+- ✨ Minimalist, elegant design inspired by luxury fashion brands
+- 🎨 Clean typography with Helvetica Neue
+- 🌓 Dark/Light theme toggle
+- 🌍 EN/RU language switching
+- 📱 Fully responsive (desktop + mobile)
+- 🎭 Smooth scroll animations
+- 🎬 Hover effects and transitions
+
+### Content
+- 🎵 **17 Track Covers** with audio previews (13-second trailers)
+- 🎨 **Services** section with pricing
+- 📧 **Contact** section with Telegram link
+- 🔐 **Telegram Authentication** (login with Telegram)
+
+### Technical
+- 🚀 Pure Vanilla JavaScript (no frameworks)
+- 💅 Custom CSS with CSS variables for theming
+- 🎵 Custom audio player with progress bar
+- 📊 Intersection Observer for scroll animations
+- 🔒 Telegram Login Widget integration
+
+## Local Development
+
+### Start Local Server
+
+```bash
+cd website
+python -m http.server 8000
+```
+
+Then open: http://localhost:8000
+
+### File Structure
 
 ```
 website/
-├── index.html      # Главная страница
-├── styles.css      # Стили
-├── app.js          # JavaScript логика
-└── README.md       # Документация
+├── index.html      # Main HTML structure
+├── styles.css      # All styles (YSL-inspired design)
+├── app.js          # JavaScript logic
+└── README.md       # This file
 ```
 
-## Разделы сайта
+## Deployment
 
-### 1. Hero Section
-- Главный экран с логотипом
-- Призыв к действию (CTA)
+The website is automatically deployed to GitHub Pages from the `gh-pages` branch.
 
-### 2. Services
-- Graphic Design
-- UI/UX Design
-- Motion Design
-- Video Editing
-
-### 3. Portfolio
-- Track Covers (с аудио плеером)
-- Posters & Flyers
-- Motion Design
-
-### 4. Contact
-- Форма заказа
-- Ссылка на Telegram Bot
-
-## Авторизация через Telegram
-
-Используется официальный Telegram Login Widget:
-
-```javascript
-// Callback функция
-window.onTelegramAuth = function(user) {
-    // user содержит:
-    // - id
-    // - first_name
-    // - last_name
-    // - username
-    // - photo_url
-    // - auth_date
-    // - hash
-};
-```
-
-## Запуск локально
-
-1. Откройте `index.html` в браузере
-2. Или используйте локальный сервер:
+### Manual Deploy
 
 ```bash
-# Python
-python -m http.server 8000
+# Switch to gh-pages branch
+git checkout gh-pages
 
-# Node.js
-npx http-server
+# Copy files
+copy website\index.html index.html
+copy website\styles.css styles.css
+copy website\app.js app.js
+
+# Commit and push
+git add index.html styles.css app.js
+git commit -m "Update website"
+git push origin gh-pages
+
+# Switch back to main
+git checkout main
 ```
 
-Затем откройте: `http://localhost:8000`
+## Telegram Auth Setup
 
-## Деплой
+To enable Telegram authentication:
 
-### GitHub Pages
+1. Open [@BotFather](https://t.me/BotFather) in Telegram
+2. Send `/setdomain`
+3. Select `@mcrew_bot`
+4. Enter: `maori17227.github.io`
 
-1. Создайте ветку `gh-pages`
-2. Скопируйте файлы из `website/` в корень ветки
-3. Включите GitHub Pages в настройках репозитория
+See [WEBSITE_TELEGRAM_AUTH_SETUP.md](../WEBSITE_TELEGRAM_AUTH_SETUP.md) for detailed instructions.
 
-URL будет: `https://maori17227.github.io/mcrew-design-bot/`
+## Portfolio Data
 
-### Cloudflare Pages
+All 17 tracks are loaded from GitHub:
+- Artist names and track titles
+- Cover images (JPG)
+- Audio trailers (WAV, 13 seconds)
 
-1. Подключите репозиторий к Cloudflare Pages
-2. Build command: (пусто)
-3. Build output directory: `website`
+Audio settings:
+- Volume: 0.316 (-10dB)
+- Duration: 13 seconds (auto-stop)
+- Format: WAV
 
-## API Integration
+## Browser Support
 
-Сайт использует тот же API что и Mini App:
+- ✅ Chrome/Edge (latest)
+- ✅ Firefox (latest)
+- ✅ Safari (latest)
+- ✅ Mobile browsers (iOS Safari, Chrome Mobile)
 
-```javascript
-const API_BASE = 'https://mcrew-bot.141avatar141.workers.dev';
-```
+## Performance
 
-Endpoints:
-- `GET /api/portfolio?category=covers` - Получить портфолио
-- `POST /api/order` - Отправить заказ
+- ⚡ Lazy loading for images
+- 🎵 Audio preload="metadata"
+- 🎨 CSS animations (GPU-accelerated)
+- 📦 No external dependencies
 
-## Синхронизация с Mini App
+## Design Inspiration
 
-Портфолио загружается из тех же источников:
-- GitHub Raw URLs для изображений
-- Cloudflare KV для динамического контента (для админа)
+- **YSL** (www.ysl.com) - Minimalist navigation, clean layout
+- **Yohji Yamamoto** (www.yohjiyamamoto.co.jp) - Typography, spacing, elegance
 
-## Настройка
+## Color Palette
 
-В `app.js` измените:
+### Dark Theme
+- Background: `#000000`
+- Text: `#ffffff`
+- Secondary: `#999999`
+- Accent: `#ff0000`
 
-```javascript
-const API_BASE = 'ваш-api-url';
-const BOT_USERNAME = 'ваш_бот';
-const GITHUB_BASE = 'ваш-github-url';
-```
+### Light Theme
+- Background: `#ffffff`
+- Text: `#000000`
+- Secondary: `#666666`
+- Accent: `#ff0000`
 
-## Темы
+## Typography
 
-Сайт поддерживает темную и светлую темы:
+- **Font:** Helvetica Neue, Arial (system fonts)
+- **Headings:** 300-400 weight, uppercase, letter-spacing
+- **Body:** 400 weight, normal case
 
-```css
-:root {
-    --bg-primary: #000000;
-    --accent: #ff0000;
-    /* ... */
-}
+## Animations
 
-[data-theme="light"] {
-    --bg-primary: #ffffff;
-    /* ... */
-}
-```
+- Preloader fade out (1s)
+- Hero logo float (6s loop)
+- Scroll indicator (2s loop)
+- Section fade-in on scroll
+- Service card hover effects
+- Portfolio image zoom on hover
+- Modal slide-up animation
 
-## Адаптивность
+## Contact
 
-Breakpoints:
-- Desktop: > 1024px
-- Tablet: 768px - 1024px
-- Mobile: < 768px
+- **Telegram:** [@mcrewdm](https://t.me/mcrewdm)
+- **Bot:** [@mcrew_bot](https://t.me/mcrew_bot)
+- **GitHub:** [maori17227/mcrew-design-bot](https://github.com/maori17227/mcrew-design-bot)
 
-## Браузеры
+---
 
-Поддерживаются:
-- Chrome/Edge (последние 2 версии)
-- Firefox (последние 2 версии)
-- Safari (последние 2 версии)
-- Mobile browsers
-
-## Лицензия
-
-© 2024 MCREW. All rights reserved.
+Made with ❤️ by MCREW Design Studio
