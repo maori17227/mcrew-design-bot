@@ -47,6 +47,11 @@
             </div>
 
             <div class="menu-grid">
+                <div class="menu-item" data-page="profile">
+                    <h3 data-en="👤 Profile" data-ru="👤 Профиль">👤 Profile</h3>
+                    <p data-en="Your account" data-ru="Ваш аккаунт">Your account</p>
+                </div>
+
                 <div class="menu-item" data-page="services">
                     <h3 data-en="Services" data-ru="Услуги">Services</h3>
                     <p data-en="View our services" data-ru="Наши услуги">View our services</p>
@@ -66,6 +71,60 @@
                 <div class="menu-item admin-only" data-page="admin" style="display: none;">
                     <h3 data-en="⚙️ Admin Panel" data-ru="⚙️ Админ панель">⚙️ Admin Panel</h3>
                     <p data-en="Manage portfolio" data-ru="Управление портфолио">Manage portfolio</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Screen -->
+        <div id="profile-screen" class="screen">
+            <div class="profile-header">
+                <div class="profile-avatar-container">
+                    <img id="profile-avatar" class="profile-avatar" alt="Avatar">
+                    <div class="profile-avatar-placeholder">👤</div>
+                </div>
+                <h2 id="profile-name" class="profile-name">Loading...</h2>
+                <p id="profile-username" class="profile-username">@username</p>
+            </div>
+
+            <div class="profile-balance-card">
+                <div class="balance-header">
+                    <span class="balance-label" data-en="Your Balance" data-ru="Ваш баланс">Your Balance</span>
+                    <span class="balance-currency">MTV (Motive)</span>
+                </div>
+                <div class="balance-amount">
+                    <span class="balance-symbol">ɱ</span>
+                    <span id="balance-mtv" class="balance-value">0.00</span>
+                </div>
+                <div class="balance-mini">
+                    <span id="balance-mini" class="balance-mini-value">0</span>
+                    <span class="balance-mini-label">Mini</span>
+                </div>
+                <button class="buy-mtv-btn" id="buy-mtv-btn">
+                    <span data-en="💳 Buy MTV" data-ru="💳 Купить MTV">💳 Buy MTV</span>
+                </button>
+            </div>
+
+            <div class="profile-stats">
+                <div class="profile-stat-item">
+                    <div class="stat-value" id="stat-orders">0</div>
+                    <div class="stat-label" data-en="Orders" data-ru="Заказов">Orders</div>
+                </div>
+                <div class="profile-stat-item">
+                    <div class="stat-value" id="stat-spent">ɱ 0.00</div>
+                    <div class="stat-label" data-en="Spent" data-ru="Потрачено">Spent</div>
+                </div>
+                <div class="profile-stat-item">
+                    <div class="stat-value" id="stat-saved">ɱ 0.00</div>
+                    <div class="stat-label" data-en="Saved" data-ru="Сэкономлено">Saved</div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h3 class="profile-section-title" data-en="Recent Transactions" data-ru="Последние транзакции">Recent Transactions</h3>
+                <div id="transactions-list" class="transactions-list">
+                    <div class="empty-state">
+                        <span data-en="No transactions yet" data-ru="Пока нет транзакций">No transactions yet</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -138,8 +197,18 @@
                     </div>
 
                     <div class="form-group">
-                        <label data-en="Contact (Telegram/Email) *" data-ru="Контакт (Telegram/Email) *">Contact *</label>
-                        <input type="text" id="order-contact" required placeholder="@username or email">
+                        <label data-en="📞 CONTACT *" data-ru="📞 КОНТАКТ *">📞 CONTACT *</label>
+                        <div class="contact-choice">
+                            <label class="contact-radio">
+                                <input type="radio" name="contact-type" value="username" checked>
+                                <span data-en="Use my Telegram username" data-ru="Использовать мой Telegram">Use my Telegram username</span>
+                            </label>
+                            <label class="contact-radio">
+                                <input type="radio" name="contact-type" value="custom">
+                                <span data-en="Enter different contact" data-ru="Ввести другой контакт">Enter different contact</span>
+                            </label>
+                        </div>
+                        <input type="text" id="order-contact" placeholder="@username or email" style="display: none;">
                     </div>
 
                     <button type="submit" class="cta-button">

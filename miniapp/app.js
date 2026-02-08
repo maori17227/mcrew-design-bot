@@ -6,6 +6,116 @@ tg.ready();
 // Hide main button
 tg.MainButton.hide();
 
+// Current user data
+let currentUser = null;
+let userBalance = {
+    mtv: 0,
+    mini: 0
+};
+
+// Auto-login with Telegram
+function initUser() {
+    const tgUser = tg.initDataUnsafe?.user;
+    if (tgUser) {
+        currentUser = {
+            id: tgUser.id,
+            first_name: tgUser.first_name,
+            last_name: tgUser.last_name,
+            username: tgUser.username,
+            photo_url: tgUser.photo_url,
+            language_code: tgUser.language_code
+        };
+        
+        // Save to localStorage
+        localStorage.setItem('mcrew_user', JSON.stringify(currentUser));
+        
+        // Load user balance from API or localStorage
+        loadUserBalance();
+        
+        console.log('User auto-logged in:', currentUser);
+    } else {
+        // Try to load from localStorage
+        const saved = localStorage.getItem('mcrew_user');
+        if (saved) {
+            currentUser = JSON.parse(saved);
+            loadUserBalance();
+        }
+    }
+}
+
+// Load user balance
+async function loadUserBalance() {
+    try {
+        // Try to load from API
+        const response = await fetch(`${API_BASE}/api/user/${currentUser.id}/balance`);
+        if (response.ok) {
+            const data = await response.json();
+            userBalance = data.balance || { mtv: 0, mini: 0 };
+        } else {
+            // Load from localStorage
+            const saved = localStorage.getItem('mcrew_balance');
+            if (saved) {
+                userBalance = JSON.parse(saved);
+            }
+        }
+    } catch (error) {
+        console.log('Failed to load balance from API, using localStorage');
+        const saved = localStorage.getItem('mcrew_balance');
+        if (saved) {
+            userBalance = JSON.parse(saved);
+        }
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('mcrew_balance', JSON.stringify(userBalance));
+    
+    // Update UI if on profile page
+    updateProfileUI();
+}
+
+// Update profile UI
+function updateProfileUI() {
+    if (!currentUser) return;
+    
+    const profileAvatar = document.getElementById('profile-avatar');
+    const profileName = document.getElementById('profile-name');
+    const profileUsername = document.getElementById('profile-username');
+    const balanceMtv = document.getElementById('balance-mtv');
+    const balanceMini = document.getElementById('balance-mini');
+    
+    if (profileName) {
+        profileName.textContent = currentUser.first_name + (currentUser.last_name ? ' ' + currentUser.last_name : '');
+    }
+    
+    if (profileUsername && currentUser.username) {
+        profileUsername.textContent = '@' + currentUser.username;
+    } else if (profileUsername) {
+        profileUsername.textContent = 'ID: ' + currentUser.id;
+    }
+    
+    if (profileAvatar && currentUser.photo_url) {
+        profileAvatar.src = currentUser.photo_url;
+        profileAvatar.classList.add('loaded');
+    }
+    
+    if (balanceMtv) {
+        const mtv = Math.floor(userBalance.mini / 100);
+        const mini = userBalance.mini % 100;
+        balanceMtv.textContent = mtv + '.' + mini.toString().padStart(2, '0');
+    }
+    
+    if (balanceMini) {
+        balanceMini.textContent = userBalance.mini;
+    }
+}
+
+// Format MTV amount
+function formatMTV(mini) {
+    const mtv = Math.floor(mini / 100);
+    const miniPart = mini % 100;
+    return `${mtv}.${miniPart.toString().padStart(2, '0')}`;
+}
+
 // Handle app closing - play close sound
 tg.onEvent('viewportChanged', function() {
     if (!tg.isExpanded) {
@@ -422,6 +532,11 @@ let previousScreen = [];
 function showScreen(screenId) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(`${screenId}-screen`).classList.add('active');
+    
+    // Update profile UI when showing profile screen
+    if (screenId === 'profile') {
+        updateProfileUI();
+    }
     
     if (currentScreen !== screenId) {
         previousScreen.push(currentScreen);
@@ -1086,6 +1201,9 @@ async function deleteAdminItem(category, itemId) {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize user first
+    initUser();
+    
     // Initialize theme
     initTheme();
     
@@ -1399,6 +1517,26 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('order-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         
+        // Get contact
+        const contactType = document.querySelector('input[name="contact-type"]:checked').value;
+        let contact;
+        if (contactType === 'username') {
+            if (currentUser && currentUser.username) {
+                contact = '@' + currentUser.username;
+            } else {
+                alert(currentLang === 'en' 
+                    ? 'Please select "Enter different contact" option' 
+                    : 'Пожалуйста, выберите "Ввести другой контакт"');
+                return;
+            }
+        } else {
+            contact = document.getElementById('order-contact').value;
+            if (!contact) {
+                alert(currentLang === 'en' ? 'Please enter contact' : 'Пожалуйста, введите контакт');
+                return;
+            }
+        }
+        
         const formData = {
             service: document.getElementById('order-title').textContent,
             details: document.getElementById('order-details').value,
@@ -1406,10 +1544,10 @@ document.addEventListener('DOMContentLoaded', () => {
             requirements: document.getElementById('order-requirements').value,
             deadlineBudget: document.getElementById('order-deadline-budget').value,
             references: document.getElementById('order-references').value,
-            contact: document.getElementById('order-contact').value,
-            userId: tg.initDataUnsafe?.user?.id || 'unknown',
-            userName: tg.initDataUnsafe?.user?.first_name || 'Unknown',
-            userUsername: tg.initDataUnsafe?.user?.username || 'no_username'
+            contact: contact,
+            userId: currentUser?.id || tg.initDataUnsafe?.user?.id || 'unknown',
+            userName: currentUser?.first_name || tg.initDataUnsafe?.user?.first_name || 'Unknown',
+            userUsername: currentUser?.username || tg.initDataUnsafe?.user?.username || 'no_username'
         };
         
         // Send order to worker API
@@ -1453,6 +1591,31 @@ document.addEventListener('DOMContentLoaded', () => {
             showScreen('home');
         }
     });
+    
+    // Contact type radio buttons
+    document.querySelectorAll('input[name="contact-type"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            const contactInput = document.getElementById('order-contact');
+            if (radio.value === 'custom') {
+                contactInput.style.display = 'block';
+                contactInput.required = true;
+            } else {
+                contactInput.style.display = 'none';
+                contactInput.required = false;
+            }
+        });
+    });
+    
+    // Buy MTV button
+    const buyMtvBtn = document.getElementById('buy-mtv-btn');
+    if (buyMtvBtn) {
+        buyMtvBtn.addEventListener('click', () => {
+            playSound('select');
+            alert(currentLang === 'en' 
+                ? '💳 MTV Purchase\n\nComing soon! You will be able to buy MTV using Telegram Stars.\n\n1 ⭐ = 10 ɱ' 
+                : '💳 Покупка MTV\n\nСкоро! Вы сможете купить MTV используя Telegram Stars.\n\n1 ⭐ = 10 ɱ');
+        });
+    }
     
     // Set theme colors
     applyTheme(currentTheme);
