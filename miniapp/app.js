@@ -10,6 +10,38 @@ const BOT_TOKEN = '8205357964:AAFdXcc0Ma_gtqJ0BRP8q-qOowKXdrrRNBs';
 let currentLang = 'en';
 let currentTheme = 'light';
 
+// Sound effects
+const sounds = {
+    startup: null,
+    select: null,
+    close: null
+};
+
+// Initialize sounds
+function initSounds() {
+    sounds.startup = document.getElementById('sound-startup');
+    sounds.select = document.getElementById('sound-select');
+    sounds.close = document.getElementById('sound-close');
+    
+    // Set volume
+    if (sounds.startup) sounds.startup.volume = 0.5;
+    if (sounds.select) sounds.select.volume = 0.3;
+    if (sounds.close) sounds.close.volume = 0.5;
+}
+
+// Play sound
+function playSound(soundName) {
+    try {
+        const sound = sounds[soundName];
+        if (sound) {
+            sound.currentTime = 0;
+            sound.play().catch(e => console.log('Sound play failed:', e));
+        }
+    } catch (e) {
+        console.log('Sound error:', e);
+    }
+}
+
 // Initialize theme from Telegram or system preference
 function initTheme() {
     // Default to dark theme
@@ -739,6 +771,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize theme
     initTheme();
     
+    // Initialize sounds
+    initSounds();
+    
+    // Play startup sound
+    setTimeout(() => {
+        playSound('startup');
+    }, 100);
+    
     // Splash screen swipe up
     const splashScreen = document.getElementById('splash-screen');
     const splashLogo = document.getElementById('splash-logo');
@@ -889,6 +929,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Menu items
     document.querySelectorAll('.menu-item').forEach(item => {
         item.addEventListener('click', () => {
+            playSound('select');
+            
             const page = item.dataset.page;
             const portfolio = item.dataset.portfolio;
             
@@ -903,13 +945,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Service categories
     document.querySelectorAll('.service-category').forEach(item => {
         item.addEventListener('click', () => {
+            playSound('select');
             showServiceDetails(item.dataset.category);
         });
     });
     
     // Back buttons
     document.querySelectorAll('.back-btn').forEach(btn => {
-        btn.addEventListener('click', goBack);
+        btn.addEventListener('click', () => {
+            playSound('select');
+            goBack();
+        });
     });
     
     // Telegram back button
@@ -933,13 +979,18 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             tg.sendData(JSON.stringify(formData));
             
-            // Show success message
-            alert(currentLang === 'en' 
-                ? '✅ Order sent! We will contact you within 2 hours.' 
-                : '✅ Заказ отправлен! Мы свяжемся с вами в течение 2 часов.');
+            // Play close sound
+            playSound('close');
             
-            // Close Mini App
-            tg.close();
+            // Show success message
+            setTimeout(() => {
+                alert(currentLang === 'en' 
+                    ? '✅ Order sent! We will contact you within 2 hours.' 
+                    : '✅ Заказ отправлен! Мы свяжемся с вами в течение 2 часов.');
+                
+                // Close Mini App
+                tg.close();
+            }, 300);
         } catch (error) {
             console.error('Error sending data:', error);
             
