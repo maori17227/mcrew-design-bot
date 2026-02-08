@@ -1449,15 +1449,18 @@ async function updateTONPrice() {
         
         if (data && data['the-open-network'] && data['the-open-network'].usd) {
             tonToUsdRate = data['the-open-network'].usd;
-            tonToMtvRate = Math.round(tonToUsdRate); // Round to nearest
+            tonToMtvRate = Math.round(tonToUsdRate); // Round to nearest (1 TON ≈ 1.4 USDT = 1 ɱ)
             
             // Update rate display in profile
-            const rateElements = document.querySelectorAll('[data-en="1 TON ≈ 100 ɱ"]');
+            const rateElements = document.querySelectorAll('#ton-rate-display');
             rateElements.forEach(el => {
                 el.setAttribute('data-en', `1 TON ≈ ${tonToMtvRate} ɱ`);
                 el.setAttribute('data-ru', `1 TON ≈ ${tonToMtvRate} ɱ`);
                 el.textContent = `1 TON ≈ ${tonToMtvRate} ɱ`;
             });
+            
+            // Update preset buttons
+            updateTONPresetButtons();
             
             // Save to localStorage with timestamp
             localStorage.setItem('ton_rate', JSON.stringify({
@@ -1496,12 +1499,14 @@ function checkAndUpdateRate() {
             tonToMtvRate = data.rate;
             tonToUsdRate = data.usdRate;
             // Update display with cached rate
-            const rateElements = document.querySelectorAll('[data-en="1 TON ≈ 100 ɱ"]');
+            const rateElements = document.querySelectorAll('#ton-rate-display');
             rateElements.forEach(el => {
                 el.setAttribute('data-en', `1 TON ≈ ${tonToMtvRate} ɱ`);
                 el.setAttribute('data-ru', `1 TON ≈ ${tonToMtvRate} ɱ`);
                 el.textContent = `1 TON ≈ ${tonToMtvRate} ɱ`;
             });
+            // Update preset buttons
+            updateTONPresetButtons();
         }
     }
 }
@@ -1715,6 +1720,16 @@ function createOrderHistoryElement(order) {
 
 // Crypto deposit modal
 function showCryptoDepositModal() {
+    // Check if running in Telegram Mini App
+    const isTelegramMiniApp = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData;
+    
+    if (!isTelegramMiniApp) {
+        alert(currentLang === 'en' ? 
+            'TON Connect not available. Please use Telegram Mini App.' : 
+            'TON Connect недоступен. Используйте Telegram Mini App.');
+        return;
+    }
+    
     const modal = document.getElementById('crypto-deposit-modal');
     modal.classList.add('active');
 }
