@@ -1094,7 +1094,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Define exact positions
     const LOGO_START_Y = window.innerHeight / 2; // Center of screen
-    const LOGO_END_Y = 70; // 70px from top (final position)
+    const LOGO_END_Y = 50; // 50px from top (final position)
     const LOGO_START_SIZE = 320; // 320px
     const LOGO_END_SIZE = 60; // 60px
     
@@ -1234,7 +1234,7 @@ document.addEventListener('DOMContentLoaded', () => {
             splashScreen.style.opacity = '0';
         }, 500);
         
-        // Show main screen with fade in animation
+        // Show main screen with slide up animation
         setTimeout(() => {
             splashScreen.classList.remove('active');
             splashScreen.style.opacity = '';
@@ -1245,13 +1245,30 @@ document.addEventListener('DOMContentLoaded', () => {
             splashLogo.classList.remove('shrinking');
             isTransitioning = false;
             
-            // Fade in main screen
+            // Slide up main screen from bottom
             const homeScreen = document.getElementById('home-screen');
-            homeScreen.style.opacity = '0';
+            const hero = homeScreen.querySelector('.hero');
+            const menuGrid = homeScreen.querySelector('.menu-grid');
+            
+            // Start from below screen
+            hero.style.opacity = '0';
+            hero.style.transform = 'translateY(30px)';
+            menuGrid.style.opacity = '0';
+            menuGrid.style.transform = 'translateY(50px)';
+            
+            // Animate hero (logo area)
             setTimeout(() => {
-                homeScreen.style.transition = 'opacity 0.6s ease';
-                homeScreen.style.opacity = '1';
-            }, 50);
+                hero.style.transition = 'all 0.6s cubic-bezier(0.25, 0.1, 0.25, 1)';
+                hero.style.opacity = '1';
+                hero.style.transform = 'translateY(0)';
+            }, 100);
+            
+            // Animate menu grid (buttons)
+            setTimeout(() => {
+                menuGrid.style.transition = 'all 0.7s cubic-bezier(0.25, 0.1, 0.25, 1)';
+                menuGrid.style.opacity = '1';
+                menuGrid.style.transform = 'translateY(0)';
+            }, 250);
         }, 1300);
     }
     
