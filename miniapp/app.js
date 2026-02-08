@@ -698,6 +698,10 @@ async function loadPortfolioCategory(category) {
 
 // Initialize custom audio players
 function initAudioPlayers() {
+    // Create audio context for volume normalization
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioContext = new AudioContext();
+    
     document.querySelectorAll('.play-btn').forEach(btn => {
         const audioId = btn.dataset.audioId;
         const audio = document.getElementById(audioId);
@@ -709,26 +713,82 @@ function initAudioPlayers() {
         
         const TRAILER_DURATION = 15; // 15 seconds trailer
         const FADE_START = 13; // Start fade at 13 seconds
+        const TARGET_VOLUME = 0.316; // Target normalized volume (-10dB)
         let fadeInterval = null;
+        let gainNode = null;
+        let sourceNode = null;
+        let isAudioContextSetup = false;
         
-        // Set initial volume to 0.316 (approximately -10dB)
-        audio.volume = 0.316;
+        // Setup Web Audio API for volume normalization
+        function setupAudioContext() {
+            if (isAudioContextSetup) return;
+            
+            try {
+                // Resume audio context if suspended (required by some browsers)
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+                
+                // Create audio nodes
+                sourceNode = audioContext.createMediaElementSource(audio);
+                gainNode = audioContext.createGain();
+                
+                // Create compressor for dynamic range control
+                const compressor = audioContext.createDynamicsCompressor();
+                compressor.threshold.value = -24; // Start compressing at -24dB
+                compressor.knee.value = 30; // Smooth compression curve
+                compressor.ratio.value = 12; // Compression ratio
+                compressor.attack.value = 0.003; // Fast attack (3ms)
+                compressor.release.value = 0.25; // Medium release (250ms)
+                
+                // Connect nodes: source -> gain -> compressor -> destination
+                sourceNode.connect(gainNode);
+                gainNode.connect(compressor);
+                compressor.connect(audioContext.destination);
+                
+                // Set initial gain for normalization
+                gainNode.gain.value = 1.0;
+                
+                isAudioContextSetup = true;
+                console.log('Audio normalization enabled for', audioId);
+            } catch (error) {
+                console.warn('Could not setup audio normalization:', error);
+                // Fallback to regular volume control
+                audio.volume = TARGET_VOLUME;
+            }
+        }
+        
+        // Set initial volume
+        audio.volume = TARGET_VOLUME;
         
         // Play/Pause button
         btn.addEventListener('click', () => {
+            // Setup audio context on first interaction (required by browsers)
+            if (!isAudioContextSetup) {
+                setupAudioContext();
+            }
+            
             // Pause all other players
             document.querySelectorAll('audio').forEach(a => {
                 if (a.id !== audioId && !a.paused) {
                     a.pause();
                     a.currentTime = 0;
-                    a.volume = 0.316;
+                    if (gainNode) {
+                        gainNode.gain.value = 1.0;
+                    } else {
+                        a.volume = TARGET_VOLUME;
+                    }
                     const otherBtn = document.querySelector(`[data-audio-id="${a.id}"]`);
                     otherBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
                 }
             });
             
             if (audio.paused) {
-                audio.volume = 0.316;
+                if (gainNode) {
+                    gainNode.gain.value = 1.0;
+                } else {
+                    audio.volume = TARGET_VOLUME;
+                }
                 audio.play();
                 btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>';
             } else {
@@ -754,7 +814,11 @@ function initAudioPlayers() {
             if (currentTime >= TRAILER_DURATION) {
                 audio.pause();
                 audio.currentTime = 0;
-                audio.volume = 0.316;
+                if (gainNode) {
+                    gainNode.gain.value = 1.0;
+                } else {
+                    audio.volume = TARGET_VOLUME;
+                }
                 btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
                 progressFill.style.width = '0%';
                 currentTimeEl.textContent = '0:00';
@@ -769,11 +833,17 @@ function initAudioPlayers() {
             if (currentTime >= FADE_START) {
                 if (!fadeInterval) {
                     // Start smooth fade out
-                    const initialVolume = 0.316;
                     fadeInterval = setInterval(() => {
                         const fadeProgress = (audio.currentTime - FADE_START) / (TRAILER_DURATION - FADE_START);
-                        const targetVolume = initialVolume * (1 - fadeProgress);
-                        audio.volume = Math.max(0, targetVolume);
+                        const targetGain = 1.0 * (1 - fadeProgress);
+                        
+                        if (gainNode) {
+                            // Use gain node for smoother fade
+                            gainNode.gain.value = Math.max(0, targetGain);
+                        } else {
+                            // Fallback to volume control
+                            audio.volume = Math.max(0, TARGET_VOLUME * (1 - fadeProgress));
+                        }
                     }, 50); // Update every 50ms for smoother fade
                 }
             }
@@ -786,7 +856,11 @@ function initAudioPlayers() {
         // Reset on end
         audio.addEventListener('ended', () => {
             audio.currentTime = 0;
-            audio.volume = 0.316;
+            if (gainNode) {
+                gainNode.gain.value = 1.0;
+            } else {
+                audio.volume = TARGET_VOLUME;
+            }
             btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
             progressFill.style.width = '0%';
             currentTimeEl.textContent = '0:00';
@@ -801,7 +875,11 @@ function initAudioPlayers() {
             const rect = progressBar.getBoundingClientRect();
             const pos = (e.clientX - rect.left) / rect.width;
             audio.currentTime = pos * TRAILER_DURATION;
-            audio.volume = 0.316;
+            if (gainNode) {
+                gainNode.gain.value = 1.0;
+            } else {
+                audio.volume = TARGET_VOLUME;
+            }
             if (fadeInterval) {
                 clearInterval(fadeInterval);
                 fadeInterval = null;
