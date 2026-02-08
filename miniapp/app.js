@@ -3,6 +3,18 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 tg.ready();
 
+// Setup Main Button to open bot
+tg.MainButton.text = 'Open Bot';
+tg.MainButton.color = '#ff0000';
+tg.MainButton.textColor = '#ffffff';
+tg.MainButton.show();
+
+// Main Button click handler - opens bot chat
+tg.MainButton.onClick(() => {
+    playSound('select');
+    tg.openTelegramLink('https://t.me/mcrewdm');
+});
+
 // Bot token for loading media
 const BOT_TOKEN = '8205357964:AAFdXcc0Ma_gtqJ0BRP8q-qOowKXdrrRNBs';
 
@@ -25,7 +37,7 @@ function initSounds() {
     
     // Set volume
     if (sounds.startup) sounds.startup.volume = 0.5;
-    if (sounds.select) sounds.select.volume = 0.3;
+    if (sounds.select) sounds.select.volume = 0.5;
     if (sounds.close) sounds.close.volume = 0.5;
 }
 
@@ -785,7 +797,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let touchStartY = 0;
     let touchEndY = 0;
     let isTransitioning = false;
+    let isDragging = false;
     
+    // Touch events
     splashScreen.addEventListener('touchstart', (e) => {
         if (isTransitioning) return;
         touchStartY = e.touches[0].clientY;
@@ -830,6 +844,75 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 300);
         }
     });
+    
+    // Mouse events for desktop
+    splashScreen.addEventListener('mousedown', (e) => {
+        if (isTransitioning) return;
+        isDragging = true;
+        touchStartY = e.clientY;
+        splashScreen.style.cursor = 'grabbing';
+    });
+    
+    splashScreen.addEventListener('mousemove', (e) => {
+        if (!isDragging || isTransitioning) return;
+        touchEndY = e.clientY;
+        const swipeDistance = touchStartY - touchEndY;
+        
+        // Transform logo during swipe - very smooth
+        if (swipeDistance > 0) {
+            const progress = Math.min(swipeDistance / 250, 1);
+            
+            // Scale from 320px to 60px
+            const scale = 1 - (progress * 0.8125);
+            
+            // Move up smoothly
+            const translateY = -progress * 450;
+            
+            splashLogo.classList.add('shrinking');
+            splashLogo.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+            splashLogo.style.opacity = 1 - (progress * 0.3);
+        }
+    });
+    
+    splashScreen.addEventListener('mouseup', () => {
+        if (!isDragging || isTransitioning) return;
+        isDragging = false;
+        splashScreen.style.cursor = 'grab';
+        
+        const swipeDistance = touchStartY - touchEndY;
+        
+        // If swiped up more than 80px
+        if (swipeDistance > 80) {
+            hideSplashScreen();
+        } else {
+            // Reset logo smoothly
+            splashLogo.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+            splashLogo.style.transform = '';
+            splashLogo.style.opacity = '';
+            setTimeout(() => {
+                splashLogo.style.transition = '';
+                splashLogo.classList.remove('shrinking');
+            }, 300);
+        }
+    });
+    
+    splashScreen.addEventListener('mouseleave', () => {
+        if (!isDragging || isTransitioning) return;
+        isDragging = false;
+        splashScreen.style.cursor = 'grab';
+        
+        // Reset logo if mouse leaves
+        splashLogo.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        splashLogo.style.transform = '';
+        splashLogo.style.opacity = '';
+        setTimeout(() => {
+            splashLogo.style.transition = '';
+            splashLogo.classList.remove('shrinking');
+        }, 300);
+    });
+    
+    // Set initial cursor
+    splashScreen.style.cursor = 'grab';
     
     function hideSplashScreen() {
         isTransitioning = true;
@@ -931,6 +1014,9 @@ document.addEventListener('DOMContentLoaded', () => {
     langToggle.addEventListener('change', () => {
         const newLang = langToggle.checked ? 'ru' : 'en';
         updateLanguage(newLang);
+        
+        // Update Main Button text based on language
+        tg.MainButton.text = newLang === 'en' ? 'Open Bot' : 'Открыть бота';
     });
     
     // Menu items
@@ -954,14 +1040,6 @@ document.addEventListener('DOMContentLoaded', () => {
         item.addEventListener('click', () => {
             playSound('select');
             showServiceDetails(item.dataset.category);
-        });
-    });
-    
-    // Back buttons
-    document.querySelectorAll('.back-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            playSound('select');
-            goBack();
         });
     });
     
