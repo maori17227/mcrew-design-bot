@@ -1190,7 +1190,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(formData)
             });
             
-            if (!response.ok) throw new Error('Failed to send order');
+            if (!response.ok) {
+                throw new Error('Failed to send order');
+            }
             
             // Show success message
             alert(currentLang === 'en' 
@@ -1203,20 +1205,10 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Error sending order:', error);
             
-            // Fallback: open chat with admin
-            const message = currentLang === 'en' 
-                ? `🔔 NEW ORDER from Mini App!\n\n📋 Service: ${formData.service}\n\n📝 Details:\n${formData.details}\n\n🎨 Style & Colors:\n${formData.style || 'Not specified'}\n\n📐 Requirements:\n${formData.requirements || 'Not specified'}\n\n⏰ Deadline & Budget:\n${formData.deadlineBudget}\n\n🔗 References:\n${formData.references || 'Not specified'}\n\n📞 Contact: ${formData.contact}`
-                : `🔔 НОВЫЙ ЗАКАЗ из Mini App!\n\n📋 Услуга: ${formData.service}\n\n📝 Детали:\n${formData.details}\n\n🎨 Стиль и цвета:\n${formData.style || 'Не указано'}\n\n📐 Требования:\n${formData.requirements || 'Не указано'}\n\n⏰ Сроки и бюджет:\n${formData.deadlineBudget}\n\n🔗 Референсы:\n${formData.references || 'Не указано'}\n\n📞 Контакт: ${formData.contact}`;
-            
-            const adminUsername = 'mcrewdm';
-            const encodedMessage = encodeURIComponent(message);
-            const telegramUrl = `https://t.me/${adminUsername}?text=${encodedMessage}`;
-            
-            window.open(telegramUrl, '_blank');
-            
+            // Show error message
             alert(currentLang === 'en' 
-                ? '✅ Opening chat with admin. Please send the message!' 
-                : '✅ Открываем чат с админом. Пожалуйста, отправьте сообщение!');
+                ? '❌ Error sending order. Please try again or contact @mcrewdm' 
+                : '❌ Ошибка отправки заказа. Попробуйте снова или напишите @mcrewdm');
             
             // Go back to home
             showScreen('home');

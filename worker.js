@@ -1253,34 +1253,16 @@ async function handleRequest(request, env) {
           }
         }
         
-        // Regular user messages
+        // Regular user messages - only /start command
         if (text === '/start') {
-          // Set default language to English
-          setUserLanguage(userId, 'en')
+          // Just send a message to use Mini App
+          const welcomeText = currentLang === 'en' 
+            ? '👋 Welcome to MCREW Design Studio!\n\n🎨 Use the Mini App button below to view our services and place an order.'
+            : '👋 Добро пожаловать в MCREW Design Studio!\n\n🎨 Используйте кнопку Mini App ниже, чтобы посмотреть наши услуги и оформить заказ.'
           
-          const welcomeText = getText(userId, 'welcome')
-          const keyboard = getMainMenuKeyboard(userId)
-          
-          // Send welcome message with logo photo
-          await sendPhoto(chatId, MEDIA_FILE_IDS.logo, welcomeText, keyboard, BOT_TOKEN)
-        } else if (text && !text.startsWith('/')) {
-          // Handle order text message (only if not a command)
-          const orderText = getText(userId, 'new_order', {
-            name: user.first_name || 'Unknown',
-            username: user.username || 'no_username',
-            message: text,
-            time: new Date().toISOString()
-          })
-          
-          // Send to admin
-          if (ADMIN_CHAT_ID) {
-            await sendMessage(ADMIN_CHAT_ID, orderText, null, BOT_TOKEN)
-          }
-          
-          // Reply to user
-          const replyText = getText(userId, 'order_thanks')
-          await sendMessage(chatId, replyText, null, BOT_TOKEN)
+          await sendMessage(chatId, welcomeText, null, BOT_TOKEN)
         }
+        // Ignore all other messages from regular users
       }
       
       // Handle callback queries (button clicks)
