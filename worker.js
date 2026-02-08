@@ -963,6 +963,26 @@ ${references || 'Не указано'}
       })
     }
     
+    // Update portfolio items (for edit functionality)
+    if (path === '/api/portfolio/update' && request.method === 'POST') {
+      const body = await request.json()
+      const { category, items } = body
+      
+      if (!category || !items) {
+        return new Response(JSON.stringify({ error: 'Category and items required' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
+      
+      const key = `portfolio_${category}`
+      await env.PORTFOLIO_KV.put(key, JSON.stringify(items))
+      
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+    
     // Delete portfolio item
     if (path === '/api/portfolio' && request.method === 'DELETE') {
       const category = url.searchParams.get('category')

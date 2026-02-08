@@ -800,6 +800,7 @@ function formatTime(seconds) {
 
 // Admin API functions
 let currentAdminCategory = 'covers';
+let currentEditItem = null;
 
 async function loadAdminPortfolio(category) {
     const listEl = document.getElementById('admin-items-list');
@@ -818,36 +819,104 @@ async function loadAdminPortfolio(category) {
         const items = data.items || [];
         
         if (items.length === 0) {
-            listEl.innerHTML = `<p style="text-align: center; color: var(--text-secondary);">${currentLang === 'en' ? 'No items yet' : 'Пока нет элементов'}</p>`;
+            listEl.innerHTML = `<p style="text-align: center; color: var(--text-secondary); padding: 40px 20px;">${currentLang === 'en' ? 'No items yet. Upload via bot!' : 'Пока нет элементов. Загрузите через бота!'}</p>`;
             return;
         }
         
         listEl.innerHTML = '';
         items.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'admin-item';
+            const card = document.createElement('div');
+            card.className = 'admin-item-card';
             
-            const thumb = item.cover || item.file || '';
-            const title = item.artist ? `${item.artist} - ${item.track}` : (item.title?.[currentLang] || 'Item');
-            const type = item.type || 'unknown';
+            // Get preview URL
+            let previewUrl = '';
+            let previewType = 'image';
             
-            div.innerHTML = `
-                <img src="${thumb}" alt="${title}" class="admin-item-thumb" onerror="this.style.display='none'">
-                <div class="admin-item-info">
-                    <h4>${title}</h4>
-                    <p>${type} • ${new Date(item.createdAt).toLocaleDateString()}</p>
+            if (item.type === 'track') {
+                previewUrl = item.cover || '';
+            } else if (item.type === 'video') {
+                previewUrl = item.file || '';
+                previewType = 'video';
+            } else {
+                previewUrl = item.file || '';
+            }
+            
+            // Get title
+            let title = '';
+            if (item.type === 'track') {
+                title = `${item.artist} - ${item.track}`;
+            } else {
+                title = item.title?.[currentLang] || item.title?.en || 'Item';
+            }
+            
+            // Get metadata
+            const date = new Date(item.createdAt).toLocaleDateString(currentLang === 'ru' ? 'ru-RU' : 'en-US');
+            const typeLabel = item.type === 'track' ? '🎵 Track' : (item.type === 'video' ? '🎬 Video' : '🖼️ Photo');
+            
+            // Build card HTML
+            card.innerHTML = `
+                ${previewType === 'video' 
+                    ? `<video class="admin-item-preview" src="${previewUrl}" muted loop playsinline></video>`
+                    : `<img class="admin-item-preview" src="${previewUrl}" alt="${title}" onerror="this.style.display='none'">`
+                }
+                <div class="admin-item-content">
+                    <div class="admin-item-title">${title}</div>
+                    <div class="admin-item-meta">${typeLabel} • ${date}</div>
+                    <div class="admin-item-actions">
+                        ${item.type === 'track' 
+                            ? `<button class="admin-item-edit" data-id="${item.id}">
+                                <span data-en="✏️ Edit" data-ru="✏️ Изменить">✏️ Edit</span>
+                               </button>`
+                            : ''
+                        }
+                        <button class="admin-item-delete" data-id="${item.id}">
+                            <span data-en="🗑️ Delete" data-ru="🗑️ Удалить">🗑️ Delete</span>
+                        </button>
+                    </div>
                 </div>
-                <button class="admin-item-delete" data-id="${item.id}">Delete</button>
             `;
             
-            listEl.appendChild(div);
+            // Play video on hover (desktop) or tap (mobile)
+            if (previewType === 'video') {
+                const video = card.querySelector('video');
+                card.addEventListener('mouseenter', () => video.play());
+                card.addEventListener('mouseleave', () => {
+                    video.pause();
+                    video.currentTime = 0;
+                });
+                card.addEventListener('touchstart', () => {
+                    if (video.paused) {
+                        video.play();
+                    } else {
+                        video.pause();
+                        video.currentTime = 0;
+                    }
+                });
+            }
+            
+            listEl.appendChild(card);
+        });
+        
+        // Update language for new elements
+        updateLanguage(currentLang);
+        
+        // Add edit handlers
+        document.querySelectorAll('.admin-item-edit').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const itemId = btn.dataset.id;
+                const item = items.find(i => i.id === itemId);
+                if (item) {
+                    showEditModal(item, category);
+                }
+            });
         });
         
         // Add delete handlers
         document.querySelectorAll('.admin-item-delete').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const itemId = btn.dataset.id;
-                if (confirm(currentLang === 'en' ? 'Delete this item?' : 'Удалить этот элемент?')) {
+                const confirmMsg = currentLang === 'en' ? 'Delete this item?' : 'Удалить этот элемент?';
+                if (confirm(confirmMsg)) {
                     await deleteAdminItem(currentAdminCategory, itemId);
                 }
             });
@@ -855,7 +924,84 @@ async function loadAdminPortfolio(category) {
         
     } catch (error) {
         console.error('Error loading admin portfolio:', error);
-        listEl.innerHTML = `<p style="text-align: center; color: var(--accent-red);">${currentLang === 'en' ? 'Error loading items' : 'Ошибка загрузки'}</p>`;
+        listEl.innerHTML = `<p style="text-align: center; color: var(--accent-red); padding: 40px 20px;">${currentLang === 'en' ? 'Error loading items' : 'Ошибка загрузки'}</p>`;
+    }
+}
+
+function showEditModal(item, category) {
+    currentEditItem = { ...item, category };
+    
+    const modal = document.getElementById('admin-edit-modal');
+    const artistInput = document.getElementById('edit-artist');
+    const trackInput = document.getElementById('edit-track');
+    
+    // Fill form
+    artistInput.value = item.artist || '';
+    trackInput.value = item.track || '';
+    
+    // Show modal
+    modal.classList.add('active');
+}
+
+function hideEditModal() {
+    const modal = document.getElementById('admin-edit-modal');
+    modal.classList.remove('active');
+    currentEditItem = null;
+}
+
+async function saveEditItem() {
+    if (!currentEditItem) return;
+    
+    const artistInput = document.getElementById('edit-artist');
+    const trackInput = document.getElementById('edit-track');
+    
+    const updatedItem = {
+        ...currentEditItem,
+        artist: artistInput.value.trim(),
+        track: trackInput.value.trim()
+    };
+    
+    try {
+        // Get current items
+        const response = await fetch(`${API_BASE}/api/portfolio?category=${currentEditItem.category}`, {
+            headers: {
+                'X-User-ID': tg.initDataUnsafe?.user?.id || ''
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load');
+        
+        const data = await response.json();
+        const items = data.items || [];
+        
+        // Update item
+        const index = items.findIndex(i => i.id === currentEditItem.id);
+        if (index !== -1) {
+            items[index] = updatedItem;
+            
+            // Save back to KV via API
+            const saveResponse = await fetch(`${API_BASE}/api/portfolio/update`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-User-ID': tg.initDataUnsafe?.user?.id || ''
+                },
+                body: JSON.stringify({ 
+                    category: currentEditItem.category, 
+                    items: items 
+                })
+            });
+            
+            if (!saveResponse.ok) throw new Error('Failed to save');
+            
+            alert(currentLang === 'en' ? '✅ Item updated!' : '✅ Элемент обновлен!');
+            hideEditModal();
+            await loadAdminPortfolio(currentEditItem.category);
+        }
+        
+    } catch (error) {
+        console.error('Error saving item:', error);
+        alert(currentLang === 'en' ? '❌ Error saving item' : '❌ Ошибка сохранения');
     }
 }
 
@@ -1242,60 +1388,41 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
         
-        // Type change handler
-        const typeSelect = document.getElementById('admin-type');
-        const artistGroup = document.getElementById('admin-artist-group');
-        const trackGroup = document.getElementById('admin-track-group');
-        const audioGroup = document.getElementById('admin-audio-group');
+        // Refresh button
+        const refreshBtn = document.getElementById('admin-refresh-btn');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => {
+                playSound('select');
+                loadAdminPortfolio(currentAdminCategory);
+            });
+        }
         
-        typeSelect.addEventListener('change', () => {
-            const type = typeSelect.value;
-            if (type === 'track') {
-                artistGroup.style.display = 'block';
-                trackGroup.style.display = 'block';
-                audioGroup.style.display = 'block';
-                document.getElementById('admin-artist').required = true;
-                document.getElementById('admin-track').required = true;
-                document.getElementById('admin-audio').required = true;
-            } else {
-                artistGroup.style.display = 'none';
-                trackGroup.style.display = 'none';
-                audioGroup.style.display = 'none';
-                document.getElementById('admin-artist').required = false;
-                document.getElementById('admin-track').required = false;
-                document.getElementById('admin-audio').required = false;
-            }
-        });
+        // Edit modal handlers
+        const editModal = document.getElementById('admin-edit-modal');
+        const editForm = document.getElementById('admin-edit-form');
+        const editCancelBtn = document.getElementById('admin-edit-cancel');
         
-        // Add form handler
-        document.getElementById('admin-add-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const type = document.getElementById('admin-type').value;
-            const cover = document.getElementById('admin-cover').value;
-            
-            let item = { type };
-            
-            if (type === 'track') {
-                item.artist = document.getElementById('admin-artist').value;
-                item.track = document.getElementById('admin-track').value;
-                item.cover = cover;
-                item.audio = document.getElementById('admin-audio').value;
-            } else if (type === 'photo') {
-                item.file = cover;
-                item.title = { en: 'Photo', ru: 'Фото' };
-                item.description = { en: 'Portfolio item', ru: 'Элемент портфолио' };
-            } else if (type === 'video') {
-                item.file = cover;
-                item.title = { en: 'Video', ru: 'Видео' };
-                item.description = { en: 'Portfolio item', ru: 'Элемент портфолио' };
-            }
-            
-            await addAdminItem(currentAdminCategory, item);
-            
-            // Reset form
-            e.target.reset();
-        });
+        if (editForm) {
+            editForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await saveEditItem();
+            });
+        }
+        
+        if (editCancelBtn) {
+            editCancelBtn.addEventListener('click', () => {
+                hideEditModal();
+            });
+        }
+        
+        // Close modal on background click
+        if (editModal) {
+            editModal.addEventListener('click', (e) => {
+                if (e.target === editModal) {
+                    hideEditModal();
+                }
+            });
+        }
         
         // Load initial portfolio when admin screen is shown
         const adminScreen = document.getElementById('admin-screen');

@@ -247,52 +247,74 @@
                     </button>
                 </div>
 
-                <div class="admin-add-section">
-                    <h3 data-en="Add New Item" data-ru="Добавить новый элемент">Add New Item</h3>
+                <div class="admin-info-section">
+                    <h3 data-en="📤 How to Add Items" data-ru="📤 Как добавить элементы">📤 How to Add Items</h3>
                     
-                    <form id="admin-add-form">
-                        <div class="form-group">
-                            <label data-en="Type" data-ru="Тип">Type</label>
-                            <select id="admin-type" required>
-                                <option value="track">Track (with audio)</option>
-                                <option value="photo">Photo</option>
-                                <option value="video">Video</option>
-                            </select>
+                    <div class="admin-info-box">
+                        <p data-en="Upload files directly to the bot with captions:" data-ru="Загружайте файлы напрямую в бота с подписями:">Upload files directly to the bot with captions:</p>
+                        
+                        <div class="admin-hint">
+                            <strong data-en="🎵 Track Cover:" data-ru="🎵 Обложка трека:">🎵 Track Cover:</strong>
+                            <code>covers|Artist Name|Track Name</code>
+                            <small data-en="Then send audio with the Item ID" data-ru="Затем отправьте аудио с Item ID">Then send audio with the Item ID</small>
                         </div>
-
-                        <div class="form-group" id="admin-artist-group">
-                            <label data-en="Artist" data-ru="Артист">Artist</label>
-                            <input type="text" id="admin-artist" placeholder="Artist name">
+                        
+                        <div class="admin-hint">
+                            <strong data-en="🖼️ Poster:" data-ru="🖼️ Постер:">🖼️ Poster:</strong>
+                            <code>posters|Title</code>
                         </div>
-
-                        <div class="form-group" id="admin-track-group">
-                            <label data-en="Track Name" data-ru="Название трека">Track Name</label>
-                            <input type="text" id="admin-track" placeholder="Track name">
+                        
+                        <div class="admin-hint">
+                            <strong data-en="🎬 Video:" data-ru="🎬 Видео:">🎬 Video:</strong>
+                            <code>motion|Title</code>
                         </div>
-
-                        <div class="form-group">
-                            <label data-en="Cover/Image URL" data-ru="URL обложки/изображения">Cover/Image URL</label>
-                            <input type="url" id="admin-cover" required placeholder="https://...">
+                        
+                        <div class="admin-hint">
+                            <strong data-en="📋 Commands:" data-ru="📋 Команды:">📋 Commands:</strong>
+                            <code>/admin</code> <span data-en="- Show help" data-ru="- Показать помощь">- Show help</span><br>
+                            <code>/list covers</code> <span data-en="- List items" data-ru="- Список элементов">- List items</span><br>
+                            <code>/delete covers ID</code> <span data-en="- Delete item" data-ru="- Удалить элемент">- Delete item</span>
                         </div>
-
-                        <div class="form-group" id="admin-audio-group">
-                            <label data-en="Audio URL" data-ru="URL аудио">Audio URL</label>
-                            <input type="url" id="admin-audio" placeholder="https://...">
-                        </div>
-
-                        <button type="submit" class="cta-button">
-                            <span data-en="➕ Add Item" data-ru="➕ Добавить">➕ Add Item</span>
-                        </button>
-                    </form>
+                    </div>
                 </div>
 
                 <div class="admin-items-section">
-                    <h3 data-en="Current Items" data-ru="Текущие элементы">Current Items</h3>
-                    <div id="admin-items-list" class="admin-items-list">
+                    <div class="admin-items-header">
+                        <h3 data-en="Current Items" data-ru="Текущие элементы">Current Items</h3>
+                        <button class="admin-refresh-btn" id="admin-refresh-btn">
+                            <span data-en="🔄 Refresh" data-ru="🔄 Обновить">🔄 Refresh</span>
+                        </button>
+                    </div>
+                    <div id="admin-items-list" class="admin-items-grid">
                         <div class="loading" data-en="Loading..." data-ru="Загрузка...">Loading...</div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Admin Edit Modal -->
+    <div id="admin-edit-modal" class="admin-edit-modal">
+        <div class="admin-edit-content">
+            <h3 data-en="Edit Item" data-ru="Редактировать элемент">Edit Item</h3>
+            <form id="admin-edit-form" class="admin-edit-form">
+                <div class="form-group">
+                    <label data-en="Artist" data-ru="Артист">Artist</label>
+                    <input type="text" id="edit-artist" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label data-en="Track Name" data-ru="Название трека">Track Name</label>
+                    <input type="text" id="edit-track" class="form-control">
+                </div>
+                <div class="admin-edit-buttons">
+                    <button type="submit" class="admin-edit-save">
+                        <span data-en="💾 Save" data-ru="💾 Сохранить">💾 Save</span>
+                    </button>
+                    <button type="button" class="admin-edit-cancel" id="admin-edit-cancel">
+                        <span data-en="✖️ Cancel" data-ru="✖️ Отмена">✖️ Cancel</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
