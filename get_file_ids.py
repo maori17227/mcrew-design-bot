@@ -67,8 +67,8 @@ file_ids = {}
 
 print("📸 Отправка фотографий...")
 file_ids['logo'] = send_photo('images/mcrew_logo.jpg', 'MↃREW Logo')
-file_ids['covers'] = send_photo('images/covers_example.jpg', 'Covers Example')
-file_ids['posters'] = send_photo('images/poster_example.jpg', 'Posters Example')
+file_ids['covers'] = send_photo('images/covers_example.png', 'Covers Example')
+file_ids['posters'] = send_photo('images/poster_example.png', 'Posters Example')
 
 print("🎬 Отправка видео (может занять время)...")
 file_ids['video'] = send_video('videos/motion_example.mp4', 'Motion Graphics Example')

@@ -351,8 +351,8 @@ IMAGES = {
 # Portfolio examples - photos and videos
 PORTFOLIO_EXAMPLES = [
     # Photos
-    {'type': 'photo', 'path': 'images/covers_example.jpg'},
-    {'type': 'photo', 'path': 'images/poster_example.jpg'},
+    {'type': 'photo', 'path': 'images/covers_example.png'},
+    {'type': 'photo', 'path': 'images/poster_example.png'},
     
     # Videos
     {'type': 'video', 'path': 'videos/motion_example.mp4'},

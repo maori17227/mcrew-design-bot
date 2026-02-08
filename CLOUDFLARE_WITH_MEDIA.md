@@ -15,8 +15,8 @@
 
 ```javascript
 const PORTFOLIO_MEDIA = {
-  covers: 'https://raw.githubusercontent.com/maori17227/mcrew-design-bot/main/images/covers_example.jpg',
-  posters: 'https://raw.githubusercontent.com/maori17227/mcrew-design-bot/main/images/poster_example.jpg',
+  covers: 'https://raw.githubusercontent.com/maori17227/mcrew-design-bot/main/images/covers_example.png',
+  posters: 'https://raw.githubusercontent.com/maori17227/mcrew-design-bot/main/images/poster_example.png',
   video: 'https://raw.githubusercontent.com/maori17227/mcrew-design-bot/main/videos/motion_example.mp4'
 }
 ```
@@ -58,16 +58,16 @@ wrangler deploy
 1. Зайди в Cloudflare Dashboard
 2. R2 → Create bucket → `mcrew-media`
 3. Загрузи файлы:
-   - `covers_example.jpg`
-   - `poster_example.jpg`
+   - `covers_example.png`
+   - `poster_example.png`
    - `motion_example.mp4`
 4. Сделай bucket публичным
 5. Замени URL в `worker.js`:
 
 ```javascript
 const PORTFOLIO_MEDIA = {
-  covers: 'https://pub-xxxxx.r2.dev/covers_example.jpg',
-  posters: 'https://pub-xxxxx.r2.dev/poster_example.jpg',
+  covers: 'https://pub-xxxxx.r2.dev/covers_example.png',
+  posters: 'https://pub-xxxxx.r2.dev/poster_example.png',
   video: 'https://pub-xxxxx.r2.dev/motion_example.mp4'
 }
 ```

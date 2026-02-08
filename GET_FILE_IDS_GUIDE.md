@@ -67,8 +67,8 @@ const MEDIA_FILE_IDS = {
 
 1. Открой своего бота в Telegram
 2. Отправь ему фото: `images/mcrew_logo.jpg`
-3. Отправь ему фото: `images/covers_example.jpg`
-4. Отправь ему фото: `images/poster_example.jpg`
+3. Отправь ему фото: `images/covers_example.png`
+4. Отправь ему фото: `images/poster_example.png`
 5. Отправь ему видео: `videos/motion_example.mp4`
 
 ### Шаг 2: Получи file_id через API
