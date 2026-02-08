@@ -301,7 +301,18 @@
 
                     <div class="order-section">
                         <label class="order-label" data-en="CONTACT *" data-ru="КОНТАКТ *">CONTACT *</label>
-                        <input type="text" class="order-input" id="order-contact" required data-en="@username or email" data-ru="@username или email" placeholder="@username or email">
+                        <div class="contact-choice">
+                            <label class="contact-radio">
+                                <input type="radio" name="contact-type" value="username" checked>
+                                <span data-en="Use my Telegram username" data-ru="Использовать мой Telegram username">Use my Telegram username</span>
+                                <span class="contact-username" id="contact-username-display">@username</span>
+                            </label>
+                            <label class="contact-radio">
+                                <input type="radio" name="contact-type" value="custom">
+                                <span data-en="Enter different contact" data-ru="Ввести другой контакт">Enter different contact</span>
+                            </label>
+                        </div>
+                        <input type="text" class="order-input" id="order-contact" data-en="@username or email" data-ru="@username или email" placeholder="@username or email" style="display: none;">
                     </div>
 
                     <button type="submit" class="order-submit-btn" data-en="Send Order" data-ru="Отправить заказ">Send Order</button>

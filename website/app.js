@@ -720,6 +720,12 @@ function updateUserUI() {
         userName.textContent = currentUser.first_name;
         
         userInfo.addEventListener('click', logout);
+        
+        // Update contact username in order form
+        const contactUsernameDisplay = document.getElementById('contact-username-display');
+        if (contactUsernameDisplay && currentUser.username) {
+            contactUsernameDisplay.textContent = '@' + currentUser.username;
+        }
     } else {
         loginBtn.classList.remove('hidden');
         userInfo.classList.add('hidden');
@@ -1115,30 +1121,116 @@ function showOrderModal(service, itemIndex) {
 // Order Form Submit
 function initOrderForm() {
     const form = document.getElementById('order-form');
+    const contactRadios = document.querySelectorAll('input[name="contact-type"]');
+    const contactInput = document.getElementById('order-contact');
+    const contactUsernameDisplay = document.getElementById('contact-username-display');
+    
+    // Update username display when user logs in
+    function updateContactUsername() {
+        if (currentUser && currentUser.username) {
+            contactUsernameDisplay.textContent = '@' + currentUser.username;
+        } else {
+            contactUsernameDisplay.textContent = '@username';
+        }
+    }
+    
+    updateContactUsername();
+    
+    // Show/hide custom contact input
+    contactRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            if (radio.value === 'custom') {
+                contactInput.style.display = 'block';
+                contactInput.required = true;
+            } else {
+                contactInput.style.display = 'none';
+                contactInput.required = false;
+            }
+        });
+    });
+    
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const modal = document.getElementById('order-modal');
         const service = modal.dataset.service;
+        const serviceTitle = document.getElementById('order-modal-title').textContent;
+        
+        // Get contact
+        const contactType = document.querySelector('input[name="contact-type"]:checked').value;
+        let contact;
+        if (contactType === 'username') {
+            if (currentUser && currentUser.username) {
+                contact = '@' + currentUser.username;
+            } else {
+                alert(currentLang === 'en' 
+                    ? 'Please login with Telegram or select "Enter different contact"' 
+                    : 'Пожалуйста, войдите через Telegram или выберите "Ввести другой контакт"');
+                return;
+            }
+        } else {
+            contact = contactInput.value;
+            if (!contact) {
+                alert(currentLang === 'en' ? 'Please enter contact' : 'Пожалуйста, введите контакт');
+                return;
+            }
+        }
         
         const orderData = {
-            service: service,
+            service: serviceTitle,
             details: document.getElementById('order-details').value,
             style: document.getElementById('order-style').value,
             requirements: document.getElementById('order-requirements').value,
             deadline_budget: document.getElementById('order-deadline-budget').value,
             references: document.getElementById('order-references').value,
-            contact: document.getElementById('order-contact').value,
+            contact: contact,
+            user: currentUser ? {
+                id: currentUser.id,
+                first_name: currentUser.first_name,
+                username: currentUser.username
+            } : null,
             timestamp: new Date().toISOString()
         };
         
+        // Format message for Telegram
+        const message = `
+🆕 NEW ORDER FROM WEBSITE
+
+📦 Service: ${orderData.service}
+
+📝 PROJECT DETAILS:
+${orderData.details || 'Not specified'}
+
+🎨 STYLE & COLORS:
+${orderData.style || 'Not specified'}
+
+📐 REQUIREMENTS:
+${orderData.requirements || 'Not specified'}
+
+⏰ DEADLINE & BUDGET:
+${orderData.deadline_budget || 'Not specified'}
+
+🔗 REFERENCES:
+${orderData.references || 'Not specified'}
+
+📞 CONTACT: ${orderData.contact}
+
+${orderData.user ? `👤 User: ${orderData.user.first_name} (@${orderData.user.username || 'no username'})` : ''}
+
+🕐 ${new Date().toLocaleString()}
+        `.trim();
+        
         try {
+            // Send to Telegram bot
             const response = await fetch(`${API_BASE}/api/order`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(orderData)
+                body: JSON.stringify({
+                    message: message,
+                    data: orderData
+                })
             });
             
             if (response.ok) {
@@ -1147,14 +1239,22 @@ function initOrderForm() {
                     : '✅ Заказ отправлен! Мы свяжемся с вами в ближайшее время.');
                 form.reset();
                 modal.classList.remove('active');
+                // Reset radio to username
+                document.querySelector('input[name="contact-type"][value="username"]').checked = true;
+                contactInput.style.display = 'none';
             } else {
                 throw new Error('Failed to send order');
             }
         } catch (error) {
             console.error('Error sending order:', error);
+            // Fallback: open Telegram with pre-filled message
+            const telegramUrl = `https://t.me/mcrewdm?text=${encodeURIComponent(message)}`;
+            window.open(telegramUrl, '_blank');
             alert(currentLang === 'en' 
-                ? '❌ Error sending order. Please contact us directly.' 
-                : '❌ Ошибка отправки заказа. Пожалуйста, свяжитесь с нами напрямую.');
+                ? '✅ Opening Telegram to send your order...' 
+                : '✅ Открываем Telegram для отправки заказа...');
+            form.reset();
+            modal.classList.remove('active');
         }
     });
 }
