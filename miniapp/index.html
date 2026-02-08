@@ -305,6 +305,9 @@
 
             <div class="admin-content">
                 <div class="admin-tabs">
+                    <button class="admin-tab" data-category="orders">
+                        <span data-en="📦 Orders" data-ru="📦 Заказы">📦 Orders</span>
+                    </button>
                     <button class="admin-tab active" data-category="covers">
                         <span data-en="Track Covers" data-ru="Обложки">Track Covers</span>
                     </button>
@@ -316,7 +319,55 @@
                     </button>
                 </div>
 
-                <div class="admin-info-section">
+                <!-- Orders Management Section -->
+                <div class="admin-orders-section" id="admin-orders-section" style="display: none;">
+                    <div class="orders-filters">
+                        <select id="orders-category-filter" class="orders-filter-select">
+                            <option value="all" data-en="All Categories" data-ru="Все категории">All Categories</option>
+                            <option value="graphic" data-en="Graphic Design" data-ru="Графический дизайн">Graphic Design</option>
+                            <option value="ui" data-en="UI/UX Design" data-ru="UI/UX дизайн">UI/UX Design</option>
+                            <option value="print" data-en="Print/Publishing" data-ru="Печать">Print/Publishing</option>
+                            <option value="video" data-en="Video Editing" data-ru="Видеомонтаж">Video Editing</option>
+                            <option value="motion" data-en="Motion Design" data-ru="Моушн дизайн">Motion Design</option>
+                        </select>
+                        
+                        <select id="orders-status-filter" class="orders-filter-select">
+                            <option value="all" data-en="All Statuses" data-ru="Все статусы">All Statuses</option>
+                            <option value="pending" data-en="Pending" data-ru="Ожидает">Pending</option>
+                            <option value="in-progress" data-en="In Progress" data-ru="В работе">In Progress</option>
+                            <option value="completed" data-en="Completed" data-ru="Завершен">Completed</option>
+                        </select>
+                        
+                        <button class="orders-refresh-btn" id="orders-refresh-btn">
+                            <span data-en="🔄 Refresh" data-ru="🔄 Обновить">🔄 Refresh</span>
+                        </button>
+                    </div>
+                    
+                    <div class="orders-stats" id="orders-stats">
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-total">0</div>
+                            <div class="stat-label" data-en="Total Orders" data-ru="Всего заказов">Total Orders</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-pending">0</div>
+                            <div class="stat-label" data-en="Pending" data-ru="Ожидает">Pending</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-in-progress">0</div>
+                            <div class="stat-label" data-en="In Progress" data-ru="В работе">In Progress</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-completed">0</div>
+                            <div class="stat-label" data-en="Completed" data-ru="Завершен">Completed</div>
+                        </div>
+                    </div>
+                    
+                    <div id="orders-list" class="orders-list">
+                        <div class="loading" data-en="Loading orders..." data-ru="Загрузка заказов...">Loading orders...</div>
+                    </div>
+                </div>
+
+                <div class="admin-info-section" id="admin-portfolio-section">
                     <h3 data-en="📤 How to Add Items" data-ru="📤 Как добавить элементы">📤 How to Add Items</h3>
                     
                     <div class="admin-info-box">
@@ -384,6 +435,19 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div id="order-detail-modal" class="admin-edit-modal">
+        <div class="admin-edit-content order-detail-content">
+            <div class="order-detail-header">
+                <h3 data-en="Order Details" data-ru="Детали заказа">Order Details</h3>
+                <button class="modal-close-btn" id="order-detail-close">✖️</button>
+            </div>
+            <div id="order-detail-body" class="order-detail-body">
+                <!-- Order details will be inserted here -->
+            </div>
         </div>
     </div>
 

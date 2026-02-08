@@ -849,7 +849,7 @@ async function handleAdminAPI(request, env, url) {
     // Handle order submission (no auth required)
     if (path === '/api/order' && request.method === 'POST') {
       const body = await request.json()
-      const { service, details, style, requirements, deadlineBudget, references, contact, userId, userName, userUsername } = body
+      const { service, details, style, requirements, deadlineBudget, references, contact, userId, userName, userUsername, source } = body
       
       if (!service || !details || !deadlineBudget || !contact) {
         return new Response(JSON.stringify({ error: 'Required fields missing' }), {
@@ -858,12 +858,69 @@ async function handleAdminAPI(request, env, url) {
         })
       }
       
+      // Create order object
+      const order = {
+        id: Date.now().toString(),
+        service,
+        details,
+        style: style || '',
+        requirements: requirements || '',
+        deadlineBudget,
+        references: references || '',
+        contact,
+        userId: userId || null,
+        userName: userName || 'Guest',
+        userUsername: userUsername || 'no_username',
+        source: source || 'miniapp',
+        status: 'pending',
+        createdAt: new Date().toISOString()
+      }
+      
+      // Determine category from service name
+      let category = 'other'
+      const serviceLower = service.toLowerCase()
+      if (serviceLower.includes('logo') || serviceLower.includes('brand') || serviceLower.includes('icon') || serviceLower.includes('illustration') || serviceLower.includes('графический')) {
+        category = 'graphic'
+      } else if (serviceLower.includes('landing') || serviceLower.includes('website') || serviceLower.includes('mobile') || serviceLower.includes('ui') || serviceLower.includes('лендинг') || serviceLower.includes('сайт')) {
+        category = 'ui'
+      } else if (serviceLower.includes('card') || serviceLower.includes('presentation') || serviceLower.includes('monthly') || serviceLower.includes('визитка') || serviceLower.includes('презентация')) {
+        category = 'print'
+      } else if (serviceLower.includes('video') || serviceLower.includes('editing') || serviceLower.includes('cc') || serviceLower.includes('sfx') || serviceLower.includes('монтаж')) {
+        category = 'video'
+      } else if (serviceLower.includes('motion') || serviceLower.includes('animation') || serviceLower.includes('promo') || serviceLower.includes('event') || serviceLower.includes('моушн') || serviceLower.includes('анимация')) {
+        category = 'motion'
+      }
+      
+      order.category = category
+      
+      // Save order to KV
+      try {
+        // Get existing orders
+        const ordersKey = 'orders_all'
+        const existingOrders = await env.PORTFOLIO_KV.get(ordersKey, 'json') || []
+        
+        // Add new order
+        existingOrders.unshift(order) // Add to beginning
+        
+        // Keep only last 1000 orders
+        if (existingOrders.length > 1000) {
+          existingOrders.length = 1000
+        }
+        
+        // Save back to KV
+        await env.PORTFOLIO_KV.put(ordersKey, JSON.stringify(existingOrders))
+      } catch (error) {
+        console.error('Failed to save order to KV:', error)
+      }
+      
       // Format order message for admin
-      const orderText = `🔔 <b>НОВЫЙ ЗАКАЗ из Mini App!</b>
+      const orderText = `🔔 <b>НОВЫЙ ЗАКАЗ ${source === 'website' ? 'с САЙТА' : 'из MINI APP'}!</b>
 
 👤 <b>Клиент:</b> ${userName} (@${userUsername})
+🆔 <b>ID заказа:</b> ${order.id}
 
 📋 <b>Услуга:</b> ${service}
+🏷️ <b>Категория:</b> ${category}
 
 📝 <b>Детали:</b>
 ${details}
@@ -880,7 +937,7 @@ ${deadlineBudget}
 🔗 <b>Референсы:</b>
 ${references || 'Не указано'}
 
-� <b>Контакт:</b> ${contact}
+📞 <b>Контакт:</b> ${contact}
 
 ⏱ <b>Время:</b> ${new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}`
       
@@ -901,7 +958,7 @@ ${references || 'Не указано'}
         })
       }
       
-      return new Response(JSON.stringify({ success: true }), {
+      return new Response(JSON.stringify({ success: true, orderId: order.id }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
@@ -991,6 +1048,189 @@ ${references || 'Не указано'}
       if (!category || !itemId) {
         return new Response(JSON.stringify({ error: 'Category and ID required' }), {
           status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
+      
+      const key = `portfolio_${category}`
+      const data = await env.PORTFOLIO_KV.get(key, 'json') || []
+      
+      const filtered = data.filter(item => item.id !== itemId)
+      await env.PORTFOLIO_KV.put(key, JSON.stringify(filtered))
+      
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+    
+    // Get all orders
+    if (path === '/api/orders' && request.method === 'GET') {
+      const category = url.searchParams.get('category')
+      const status = url.searchParams.get('status')
+      
+      const ordersKey = 'orders_all'
+      let orders = await env.PORTFOLIO_KV.get(ordersKey, 'json') || []
+      
+      // Filter by category if specified
+      if (category && category !== 'all') {
+        orders = orders.filter(order => order.category === category)
+      }
+      
+      // Filter by status if specified
+      if (status && status !== 'all') {
+        orders = orders.filter(order => order.status === status)
+      }
+      
+      return new Response(JSON.stringify({ orders }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+    
+    // Update order status
+    if (path === '/api/orders/status' && request.method === 'POST') {
+      const body = await request.json()
+      const { orderId, status } = body
+      
+      if (!orderId || !status) {
+        return new Response(JSON.stringify({ error: 'Order ID and status required' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
+      
+      const ordersKey = 'orders_all'
+      const orders = await env.PORTFOLIO_KV.get(ordersKey, 'json') || []
+      
+      const order = orders.find(o => o.id === orderId)
+      if (order) {
+        order.status = status
+        order.updatedAt = new Date().toISOString()
+        await env.PORTFOLIO_KV.put(ordersKey, JSON.stringify(orders))
+        
+        return new Response(JSON.stringify({ success: true, order }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      } else {
+        return new Response(JSON.stringify({ error: 'Order not found' }), {
+          status: 404,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
+    }
+    
+    // Get order statistics
+    if (path === '/api/orders/stats' && request.method === 'GET') {
+      const ordersKey = 'orders_all'
+      const orders = await env.PORTFOLIO_KV.get(ordersKey, 'json') || []
+      
+      const stats = {
+        total: orders.length,
+        pending: orders.filter(o => o.status === 'pending').length,
+        inProgress: orders.filter(o => o.status === 'in-progress').length,
+        completed: orders.filter(o => o.status === 'completed').length,
+        byCategory: {
+          graphic: orders.filter(o => o.category === 'graphic').length,
+          ui: orders.filter(o => o.category === 'ui').length,
+          print: orders.filter(o => o.category === 'print').length,
+          video: orders.filter(o => o.category === 'video').length,
+          motion: orders.filter(o => o.category === 'motion').length,
+          other: orders.filter(o => o.category === 'other').length
+        }
+      }
+      
+      return new Response(JSON.stringify({ stats }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+    
+    // Save transaction (no auth required for deposits)
+    if (path === '/api/transactions' && request.method === 'POST') {
+      const body = await request.json()
+      const { userId, type, amount, currency, txHash, address, status } = body
+      
+      if (!userId || !type || !amount || !currency) {
+        return new Response(JSON.stringify({ error: 'Required fields missing' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
+      
+      const transaction = {
+        id: Date.now().toString(),
+        userId,
+        type,
+        amount,
+        currency,
+        txHash: txHash || null,
+        address: address || null,
+        status: status || 'completed',
+        createdAt: new Date().toISOString()
+      }
+      
+      // Save to KV
+      const txKey = 'transactions_all'
+      const transactions = await env.PORTFOLIO_KV.get(txKey, 'json') || []
+      transactions.unshift(transaction)
+      
+      // Keep only last 10000 transactions
+      if (transactions.length > 10000) {
+        transactions.length = 10000
+      }
+      
+      await env.PORTFOLIO_KV.put(txKey, JSON.stringify(transactions))
+      
+      // If deposit is completed, update user balance
+      if (type === 'deposit' && status === 'completed') {
+        const balanceKey = `balance_${userId}`
+        const balance = await env.PORTFOLIO_KV.get(balanceKey, 'json') || { mtv: 0, mini: 0 }
+        balance.mini += amount
+        await env.PORTFOLIO_KV.put(balanceKey, JSON.stringify(balance))
+      }
+      
+      return new Response(JSON.stringify({ success: true, transaction }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+    
+    // Get user transactions
+    if (path.startsWith('/api/user/') && path.includes('/transactions') && request.method === 'GET') {
+      const userId = path.split('/')[3]
+      
+      const txKey = 'transactions_all'
+      const allTransactions = await env.PORTFOLIO_KV.get(txKey, 'json') || []
+      
+      const userTransactions = allTransactions.filter(tx => tx.userId.toString() === userId)
+      
+      return new Response(JSON.stringify({ transactions: userTransactions }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+    
+    // Get user orders
+    if (path.startsWith('/api/user/') && path.includes('/orders') && request.method === 'GET') {
+      const userId = path.split('/')[3]
+      
+      const ordersKey = 'orders_all'
+      const allOrders = await env.PORTFOLIO_KV.get(ordersKey, 'json') || []
+      
+      const userOrders = allOrders.filter(order => order.userId && order.userId.toString() === userId)
+      
+      return new Response(JSON.stringify({ orders: userOrders }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+    
+    // Get user balance
+    if (path.startsWith('/api/user/') && path.includes('/balance') && request.method === 'GET') {
+      const userId = path.split('/')[3]
+      
+      const balanceKey = `balance_${userId}`
+      const balance = await env.PORTFOLIO_KV.get(balanceKey, 'json') || { mtv: 0, mini: 0 }
+      
+      return new Response(JSON.stringify({ balance }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         })
       }

@@ -1311,15 +1311,24 @@ ${orderData.user ? `👤 User: ${orderData.user.first_name} (@${orderData.user.u
         `.trim();
         
         try {
-            // Send to Telegram bot
+            // Send to API with correct structure
             const response = await fetch(`${API_BASE}/api/order`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    message: message,
-                    data: orderData
+                    service: serviceTitle,
+                    details: orderData.details,
+                    style: orderData.style,
+                    requirements: orderData.requirements,
+                    deadlineBudget: orderData.deadline_budget,
+                    references: orderData.references,
+                    contact: orderData.contact,
+                    userId: currentUser ? currentUser.id : null,
+                    userName: currentUser ? currentUser.first_name : 'Guest',
+                    userUsername: currentUser ? currentUser.username : 'no_username',
+                    source: 'website'
                 })
             });
             
@@ -1337,14 +1346,9 @@ ${orderData.user ? `👤 User: ${orderData.user.first_name} (@${orderData.user.u
             }
         } catch (error) {
             console.error('Error sending order:', error);
-            // Fallback: open Telegram with pre-filled message
-            const telegramUrl = `https://t.me/mcrewdm?text=${encodeURIComponent(message)}`;
-            window.open(telegramUrl, '_blank');
             alert(currentLang === 'en' 
-                ? '✅ Opening Telegram to send your order...' 
-                : '✅ Открываем Telegram для отправки заказа...');
-            form.reset();
-            modal.classList.remove('active');
+                ? '❌ Error sending order. Please try again or contact @mcrewdm directly.' 
+                : '❌ Ошибка отправки заказа. Попробуйте снова или напишите @mcrewdm напрямую.');
         }
     });
 }
@@ -1422,6 +1426,547 @@ document.addEventListener('DOMContentLoaded', () => {
             alert(currentLang === 'en' 
                 ? '💳 MTV Purchase\n\nComing soon! You will be able to buy MTV using Telegram Stars.\n\n1 ⭐ = 10 ɱ\n\nStay tuned!' 
                 : '💳 Покупка MTV\n\nСкоро! Вы сможете купить MTV используя Telegram Stars.\n\n1 ⭐ = 10 ɱ\n\nОставайтесь на связи!');
+        });
+    }
+});
+
+
+// ============================================
+// CRYPTO PAYMENT SYSTEM & PROFILE
+// ============================================
+
+// TON Connect initialization
+let tonConnectUI = null;
+let tonWallet = null;
+
+function initTONConnect() {
+    try {
+        tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: 'https://mcrew-website.pages.dev/tonconnect-manifest.json',
+            buttonRootId: 'ton-connect-button'
+        });
+        
+        tonConnectUI.onStatusChange(wallet => {
+            if (wallet) {
+                tonWallet = wallet;
+                updateTONWalletUI();
+            } else {
+                tonWallet = null;
+                updateTONWalletUI();
+            }
+        });
+    } catch (error) {
+        console.log('TON Connect not available:', error);
+    }
+}
+
+function updateTONWalletUI() {
+    const walletInfo = document.getElementById('ton-wallet-info');
+    const walletAddress = document.getElementById('ton-wallet-address');
+    const connectBtn = document.getElementById('ton-connect-btn');
+    
+    if (tonWallet) {
+        const address = tonWallet.account.address;
+        const shortAddress = address.slice(0, 6) + '...' + address.slice(-4);
+        walletAddress.textContent = shortAddress;
+        walletInfo.classList.remove('hidden');
+        connectBtn.classList.add('hidden');
+    } else {
+        walletInfo.classList.add('hidden');
+        connectBtn.classList.remove('hidden');
+    }
+}
+
+// Profile Navigation
+function showProfile() {
+    if (!currentUser) {
+        showLoginModal();
+        return;
+    }
+    
+    const profileSection = document.getElementById('profile');
+    const otherSections = document.querySelectorAll('section:not(#profile)');
+    const nav = document.getElementById('nav');
+    
+    // Hide all other sections
+    otherSections.forEach(section => {
+        section.style.display = 'none';
+    });
+    
+    // Show profile
+    profileSection.classList.remove('hidden');
+    profileSection.style.display = 'block';
+    
+    // Hide nav
+    nav.style.display = 'none';
+    
+    // Update profile data
+    updateProfileDisplay();
+    loadUserTransactions();
+    loadUserOrders();
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function hideProfile() {
+    const profileSection = document.getElementById('profile');
+    const otherSections = document.querySelectorAll('section:not(#profile)');
+    const nav = document.getElementById('nav');
+    
+    // Show all other sections
+    otherSections.forEach(section => {
+        section.style.display = '';
+    });
+    
+    // Hide profile
+    profileSection.classList.add('hidden');
+    profileSection.style.display = 'none';
+    
+    // Show nav
+    nav.style.display = '';
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Load user transactions
+async function loadUserTransactions() {
+    if (!currentUser) return;
+    
+    const transactionsList = document.getElementById('transactions-list');
+    
+    try {
+        const response = await fetch(`${API_BASE}/api/user/${currentUser.id}/transactions`);
+        if (response.ok) {
+            const data = await response.json();
+            const transactions = data.transactions || [];
+            
+            if (transactions.length === 0) {
+                transactionsList.innerHTML = `<div class="transactions-empty" data-en="No transactions yet" data-ru="Пока нет транзакций">${currentLang === 'en' ? 'No transactions yet' : 'Пока нет транзакций'}</div>`;
+                return;
+            }
+            
+            transactionsList.innerHTML = '';
+            transactions.forEach(tx => {
+                const txEl = createTransactionElement(tx);
+                transactionsList.appendChild(txEl);
+            });
+        } else {
+            transactionsList.innerHTML = `<div class="transactions-empty" data-en="No transactions yet" data-ru="Пока нет транзакций">${currentLang === 'en' ? 'No transactions yet' : 'Пока нет транзакций'}</div>`;
+        }
+    } catch (error) {
+        console.error('Error loading transactions:', error);
+        transactionsList.innerHTML = `<div class="transactions-empty" data-en="No transactions yet" data-ru="Пока нет транзакций">${currentLang === 'en' ? 'No transactions yet' : 'Пока нет транзакций'}</div>`;
+    }
+}
+
+function createTransactionElement(tx) {
+    const div = document.createElement('div');
+    div.className = 'transaction-item';
+    
+    const typeIcon = tx.type === 'deposit' ? '↓' : '↑';
+    const typeClass = tx.type === 'deposit' ? 'tx-deposit' : 'tx-withdraw';
+    const typeText = tx.type === 'deposit' ? 
+        (currentLang === 'en' ? 'Deposit' : 'Пополнение') : 
+        (currentLang === 'en' ? 'Withdraw' : 'Вывод');
+    
+    const date = new Date(tx.createdAt).toLocaleDateString(currentLang === 'en' ? 'en-US' : 'ru-RU');
+    
+    div.innerHTML = `
+        <div class="tx-icon ${typeClass}">${typeIcon}</div>
+        <div class="tx-info">
+            <div class="tx-type">${typeText}</div>
+            <div class="tx-date">${date}</div>
+        </div>
+        <div class="tx-amount ${typeClass}">${tx.type === 'deposit' ? '+' : '-'}${formatMTV(tx.amount)} ɱ</div>
+    `;
+    
+    return div;
+}
+
+// Load user orders
+async function loadUserOrders() {
+    if (!currentUser) return;
+    
+    const ordersList = document.getElementById('orders-history-list');
+    const ordersCount = document.getElementById('profile-orders-count');
+    
+    try {
+        const response = await fetch(`${API_BASE}/api/user/${currentUser.id}/orders`);
+        if (response.ok) {
+            const data = await response.json();
+            const orders = data.orders || [];
+            
+            ordersCount.textContent = orders.length;
+            
+            if (orders.length === 0) {
+                ordersList.innerHTML = `<div class="orders-empty" data-en="No orders yet" data-ru="Пока нет заказов">${currentLang === 'en' ? 'No orders yet' : 'Пока нет заказов'}</div>`;
+                return;
+            }
+            
+            ordersList.innerHTML = '';
+            orders.slice(0, 5).forEach(order => {
+                const orderEl = createOrderHistoryElement(order);
+                ordersList.appendChild(orderEl);
+            });
+        } else {
+            ordersList.innerHTML = `<div class="orders-empty" data-en="No orders yet" data-ru="Пока нет заказов">${currentLang === 'en' ? 'No orders yet' : 'Пока нет заказов'}</div>`;
+            ordersCount.textContent = '0';
+        }
+    } catch (error) {
+        console.error('Error loading orders:', error);
+        ordersList.innerHTML = `<div class="orders-empty" data-en="No orders yet" data-ru="Пока нет заказов">${currentLang === 'en' ? 'No orders yet' : 'Пока нет заказов'}</div>`;
+        ordersCount.textContent = '0';
+    }
+}
+
+function createOrderHistoryElement(order) {
+    const div = document.createElement('div');
+    div.className = 'order-history-item';
+    
+    const statusClass = order.status === 'completed' ? 'order-completed' : 
+                       order.status === 'in-progress' ? 'order-in-progress' : 'order-pending';
+    const statusText = order.status === 'completed' ? 
+        (currentLang === 'en' ? 'Completed' : 'Завершен') :
+        order.status === 'in-progress' ? 
+        (currentLang === 'en' ? 'In Progress' : 'В работе') :
+        (currentLang === 'en' ? 'Pending' : 'Ожидает');
+    
+    const date = new Date(order.createdAt).toLocaleDateString(currentLang === 'en' ? 'en-US' : 'ru-RU');
+    
+    div.innerHTML = `
+        <div class="order-history-info">
+            <div class="order-history-service">${order.service}</div>
+            <div class="order-history-date">${date}</div>
+        </div>
+        <div class="order-history-status ${statusClass}">${statusText}</div>
+    `;
+    
+    return div;
+}
+
+// Crypto deposit modal
+function showCryptoDepositModal() {
+    const modal = document.getElementById('crypto-deposit-modal');
+    modal.classList.add('active');
+}
+
+function showCryptoWithdrawModal() {
+    const modal = document.getElementById('crypto-withdraw-modal');
+    modal.classList.add('active');
+}
+
+// Crypto method switching
+document.querySelectorAll('.crypto-method-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const method = btn.dataset.method;
+        
+        // Update buttons
+        document.querySelectorAll('.crypto-method-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Update content
+        document.querySelectorAll('.crypto-method-content').forEach(c => c.classList.remove('active'));
+        document.querySelector(`.crypto-method-content[data-method="${method}"]`).classList.add('active');
+    });
+});
+
+// TON amount calculation
+const tonAmountInput = document.getElementById('ton-amount');
+if (tonAmountInput) {
+    tonAmountInput.addEventListener('input', (e) => {
+        const tonAmount = parseFloat(e.target.value) || 0;
+        const mtvAmount = Math.floor(tonAmount * 100);
+        document.getElementById('ton-amount-mtv').textContent = mtvAmount;
+    });
+}
+
+// USDT amount calculation
+const usdtAmountInput = document.getElementById('usdt-amount');
+if (usdtAmountInput) {
+    usdtAmountInput.addEventListener('input', (e) => {
+        const usdtAmount = parseFloat(e.target.value) || 0;
+        const mtvAmount = Math.floor(usdtAmount * 100);
+        document.getElementById('usdt-amount-mtv').textContent = mtvAmount;
+    });
+}
+
+// Withdraw amount calculation
+const withdrawAmountInput = document.getElementById('withdraw-amount');
+if (withdrawAmountInput) {
+    withdrawAmountInput.addEventListener('input', (e) => {
+        const mtvAmount = parseFloat(e.target.value) || 0;
+        const tonAmount = (mtvAmount / 100).toFixed(2);
+        document.getElementById('withdraw-amount-crypto').textContent = tonAmount;
+    });
+}
+
+// TON Connect button
+const tonConnectBtn = document.getElementById('ton-connect-btn');
+if (tonConnectBtn) {
+    tonConnectBtn.addEventListener('click', async () => {
+        if (tonConnectUI) {
+            try {
+                await tonConnectUI.openModal();
+            } catch (error) {
+                console.error('Error connecting TON wallet:', error);
+                alert(currentLang === 'en' ? 
+                    'Error connecting wallet. Please try again.' : 
+                    'Ошибка подключения кошелька. Попробуйте снова.');
+            }
+        } else {
+            alert(currentLang === 'en' ? 
+                'TON Connect not available. Please use Telegram Mini App.' : 
+                'TON Connect недоступен. Используйте Telegram Mini App.');
+        }
+    });
+}
+
+// TON Deposit button
+const tonDepositBtn = document.getElementById('ton-deposit-btn');
+if (tonDepositBtn) {
+    tonDepositBtn.addEventListener('click', async () => {
+        const amount = parseFloat(document.getElementById('ton-amount').value);
+        
+        if (!amount || amount < 0.1) {
+            alert(currentLang === 'en' ? 
+                'Minimum deposit: 0.1 TON' : 
+                'Минимальное пополнение: 0.1 TON');
+            return;
+        }
+        
+        if (!tonWallet) {
+            alert(currentLang === 'en' ? 
+                'Please connect your wallet first' : 
+                'Сначала подключите кошелек');
+            return;
+        }
+        
+        try {
+            // Send TON transaction
+            const transaction = {
+                validUntil: Math.floor(Date.now() / 1000) + 600,
+                messages: [
+                    {
+                        address: 'UQBtzC02MspGw-2_st7E-wVW2wUxd-dp9Hn5BNlH10DGkY4S', // Your TON wallet address
+                        amount: (amount * 1000000000).toString(), // Convert to nanotons
+                        payload: btoa(JSON.stringify({
+                            userId: currentUser.id,
+                            type: 'deposit'
+                        }))
+                    }
+                ]
+            };
+            
+            const result = await tonConnectUI.sendTransaction(transaction);
+            
+            // Save transaction to backend
+            await saveTransaction({
+                userId: currentUser.id,
+                type: 'deposit',
+                amount: Math.floor(amount * 100),
+                currency: 'TON',
+                txHash: result.boc
+            });
+            
+            // Update balance
+            userBalance.mini += Math.floor(amount * 100);
+            localStorage.setItem('mcrew_balance_' + currentUser.id, JSON.stringify(userBalance));
+            updateProfileDisplay();
+            
+            alert(currentLang === 'en' ? 
+                '✅ Deposit successful!' : 
+                '✅ Пополнение успешно!');
+            
+            document.getElementById('crypto-deposit-modal').classList.remove('active');
+            
+        } catch (error) {
+            console.error('Error sending TON:', error);
+            alert(currentLang === 'en' ? 
+                'Error processing transaction. Please try again.' : 
+                'Ошибка обработки транзакции. Попробуйте снова.');
+        }
+    });
+}
+
+// USDT Confirm button
+const usdtConfirmBtn = document.getElementById('usdt-confirm-btn');
+if (usdtConfirmBtn) {
+    usdtConfirmBtn.addEventListener('click', async () => {
+        const amount = parseFloat(document.getElementById('usdt-amount').value);
+        
+        if (!amount || amount < 1) {
+            alert(currentLang === 'en' ? 
+                'Minimum deposit: 1 USDT' : 
+                'Минимальное пополнение: 1 USDT');
+            return;
+        }
+        
+        // In real implementation, verify transaction on blockchain
+        const confirmed = confirm(currentLang === 'en' ? 
+            `Confirm USDT deposit of ${amount} USDT?\n\nPlease make sure you've sent the funds to the address shown.` :
+            `Подтвердить пополнение ${amount} USDT?\n\nУбедитесь, что вы отправили средства на указанный адрес.`);
+        
+        if (!confirmed) return;
+        
+        try {
+            // Save pending transaction
+            await saveTransaction({
+                userId: currentUser.id,
+                type: 'deposit',
+                amount: Math.floor(amount * 100),
+                currency: 'USDT',
+                status: 'pending'
+            });
+            
+            alert(currentLang === 'en' ? 
+                '✅ Deposit request received!\n\nYour balance will be updated after confirmation (usually within 10-30 minutes).' :
+                '✅ Запрос на пополнение получен!\n\nВаш баланс будет обновлен после подтверждения (обычно 10-30 минут).');
+            
+            document.getElementById('crypto-deposit-modal').classList.remove('active');
+            
+        } catch (error) {
+            console.error('Error saving transaction:', error);
+            alert(currentLang === 'en' ? 
+                'Error processing request. Please try again.' : 
+                'Ошибка обработки запроса. Попробуйте снова.');
+        }
+    });
+}
+
+// Withdraw button
+const withdrawSubmitBtn = document.getElementById('withdraw-submit-btn');
+if (withdrawSubmitBtn) {
+    withdrawSubmitBtn.addEventListener('click', async () => {
+        const amount = parseFloat(document.getElementById('withdraw-amount').value);
+        const address = document.getElementById('withdraw-address').value.trim();
+        
+        if (!amount || amount < 10) {
+            alert(currentLang === 'en' ? 
+                'Minimum withdrawal: 10 ɱ' : 
+                'Минимальный вывод: 10 ɱ');
+            return;
+        }
+        
+        if (!address) {
+            alert(currentLang === 'en' ? 
+                'Please enter wallet address' : 
+                'Введите адрес кошелька');
+            return;
+        }
+        
+        if (userBalance.mini < amount) {
+            alert(currentLang === 'en' ? 
+                'Insufficient balance' : 
+                'Недостаточно средств');
+            return;
+        }
+        
+        const confirmed = confirm(currentLang === 'en' ? 
+            `Confirm withdrawal of ${formatMTV(amount)} ɱ to ${address}?` :
+            `Подтвердить вывод ${formatMTV(amount)} ɱ на ${address}?`);
+        
+        if (!confirmed) return;
+        
+        try {
+            // Save withdrawal request
+            await saveTransaction({
+                userId: currentUser.id,
+                type: 'withdraw',
+                amount: amount,
+                currency: 'TON',
+                address: address,
+                status: 'pending'
+            });
+            
+            // Deduct from balance
+            userBalance.mini -= amount;
+            localStorage.setItem('mcrew_balance_' + currentUser.id, JSON.stringify(userBalance));
+            updateProfileDisplay();
+            
+            alert(currentLang === 'en' ? 
+                '✅ Withdrawal request submitted!\n\nFunds will be sent within 24 hours.' :
+                '✅ Запрос на вывод отправлен!\n\nСредства будут отправлены в течение 24 часов.');
+            
+            document.getElementById('crypto-withdraw-modal').classList.remove('active');
+            
+        } catch (error) {
+            console.error('Error processing withdrawal:', error);
+            alert(currentLang === 'en' ? 
+                'Error processing request. Please try again.' : 
+                'Ошибка обработки запроса. Попробуйте снова.');
+        }
+    });
+}
+
+// Save transaction to backend
+async function saveTransaction(transaction) {
+    try {
+        const response = await fetch(`${API_BASE}/api/transactions`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(transaction)
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to save transaction');
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error saving transaction:', error);
+        throw error;
+    }
+}
+
+// Copy address helper
+function copyAddress(type) {
+    const address = document.getElementById(`${type}-address`).textContent;
+    navigator.clipboard.writeText(address).then(() => {
+        alert(currentLang === 'en' ? 
+            '✅ Address copied!' : 
+            '✅ Адрес скопирован!');
+    });
+}
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize TON Connect
+    initTONConnect();
+    
+    // Profile link
+    const profileLink = document.getElementById('profile-link');
+    if (profileLink) {
+        profileLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showProfile();
+        });
+    }
+    
+    // Profile back button
+    const profileBackBtn = document.getElementById('profile-back-btn');
+    if (profileBackBtn) {
+        profileBackBtn.addEventListener('click', () => {
+            hideProfile();
+        });
+    }
+    
+    // Deposit button
+    const depositBtn = document.getElementById('deposit-crypto-btn');
+    if (depositBtn) {
+        depositBtn.addEventListener('click', () => {
+            showCryptoDepositModal();
+        });
+    }
+    
+    // Withdraw button
+    const withdrawBtn = document.getElementById('withdraw-crypto-btn');
+    if (withdrawBtn) {
+        withdrawBtn.addEventListener('click', () => {
+            showCryptoWithdrawModal();
         });
     }
 });

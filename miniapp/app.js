@@ -930,6 +930,240 @@ function formatTime(seconds) {
 let currentAdminCategory = 'covers';
 let currentEditItem = null;
 
+// Orders Management Functions
+async function loadOrders() {
+    const listEl = document.getElementById('orders-list');
+    listEl.innerHTML = '<div class="loading">Loading orders...</div>';
+    
+    const categoryFilter = document.getElementById('orders-category-filter').value;
+    const statusFilter = document.getElementById('orders-status-filter').value;
+    
+    try {
+        // Load orders
+        const ordersUrl = `${API_BASE}/api/orders?category=${categoryFilter}&status=${statusFilter}`;
+        const ordersResponse = await fetch(ordersUrl, {
+            headers: {
+                'X-User-ID': tg.initDataUnsafe?.user?.id || ''
+            }
+        });
+        
+        if (!ordersResponse.ok) {
+            throw new Error('Failed to load orders');
+        }
+        
+        const ordersData = await ordersResponse.json();
+        const orders = ordersData.orders || [];
+        
+        // Load stats
+        const statsUrl = `${API_BASE}/api/orders/stats`;
+        const statsResponse = await fetch(statsUrl, {
+            headers: {
+                'X-User-ID': tg.initDataUnsafe?.user?.id || ''
+            }
+        });
+        
+        if (statsResponse.ok) {
+            const statsData = await statsResponse.json();
+            updateOrdersStats(statsData.stats);
+        }
+        
+        // Display orders
+        if (orders.length === 0) {
+            listEl.innerHTML = `<div class="empty-state">${currentLang === 'en' ? 'No orders found' : 'Заказов не найдено'}</div>`;
+            return;
+        }
+        
+        listEl.innerHTML = '';
+        orders.forEach(order => {
+            const orderCard = createOrderCard(order);
+            listEl.appendChild(orderCard);
+        });
+        
+    } catch (error) {
+        console.error('Error loading orders:', error);
+        listEl.innerHTML = `<div class="error-state">${currentLang === 'en' ? 'Error loading orders' : 'Ошибка загрузки заказов'}</div>`;
+    }
+}
+
+function updateOrdersStats(stats) {
+    document.getElementById('stat-total').textContent = stats.total || 0;
+    document.getElementById('stat-pending').textContent = stats.pending || 0;
+    document.getElementById('stat-in-progress').textContent = stats.inProgress || 0;
+    document.getElementById('stat-completed').textContent = stats.completed || 0;
+}
+
+function createOrderCard(order) {
+    const card = document.createElement('div');
+    card.className = 'order-card';
+    card.dataset.orderId = order.id;
+    
+    const statusClass = order.status === 'completed' ? 'status-completed' : 
+                       order.status === 'in-progress' ? 'status-in-progress' : 'status-pending';
+    
+    const statusText = order.status === 'completed' ? (currentLang === 'en' ? 'Completed' : 'Завершен') :
+                      order.status === 'in-progress' ? (currentLang === 'en' ? 'In Progress' : 'В работе') :
+                      (currentLang === 'en' ? 'Pending' : 'Ожидает');
+    
+    const categoryEmoji = {
+        graphic: '🎨',
+        ui: '📱',
+        print: '📄',
+        video: '🎬',
+        motion: '🎭',
+        other: '📦'
+    };
+    
+    const date = new Date(order.createdAt).toLocaleDateString(currentLang === 'en' ? 'en-US' : 'ru-RU');
+    
+    card.innerHTML = `
+        <div class="order-card-header">
+            <div class="order-id">#${order.id.slice(-6)}</div>
+            <div class="order-status ${statusClass}">${statusText}</div>
+        </div>
+        <div class="order-card-body">
+            <div class="order-service">${categoryEmoji[order.category] || '📦'} ${order.service}</div>
+            <div class="order-client">👤 ${order.userName} (@${order.userUsername})</div>
+            <div class="order-contact">📞 ${order.contact}</div>
+            <div class="order-date">📅 ${date}</div>
+        </div>
+        <div class="order-card-actions">
+            <button class="order-view-btn" data-order-id="${order.id}">
+                ${currentLang === 'en' ? '👁️ View Details' : '👁️ Подробнее'}
+            </button>
+            <select class="order-status-select" data-order-id="${order.id}">
+                <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>${currentLang === 'en' ? 'Pending' : 'Ожидает'}</option>
+                <option value="in-progress" ${order.status === 'in-progress' ? 'selected' : ''}>${currentLang === 'en' ? 'In Progress' : 'В работе'}</option>
+                <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>${currentLang === 'en' ? 'Completed' : 'Завершен'}</option>
+            </select>
+        </div>
+    `;
+    
+    // Add event listeners
+    const viewBtn = card.querySelector('.order-view-btn');
+    viewBtn.addEventListener('click', () => {
+        showOrderDetail(order);
+    });
+    
+    const statusSelect = card.querySelector('.order-status-select');
+    statusSelect.addEventListener('change', async (e) => {
+        await updateOrderStatus(order.id, e.target.value);
+    });
+    
+    return card;
+}
+
+function showOrderDetail(order) {
+    const modal = document.getElementById('order-detail-modal');
+    const body = document.getElementById('order-detail-body');
+    
+    const date = new Date(order.createdAt).toLocaleString(currentLang === 'en' ? 'en-US' : 'ru-RU');
+    
+    body.innerHTML = `
+        <div class="order-detail-section">
+            <h4>${currentLang === 'en' ? '📋 Order Information' : '📋 Информация о заказе'}</h4>
+            <div class="order-detail-field">
+                <strong>${currentLang === 'en' ? 'Order ID:' : 'ID заказа:'}</strong>
+                <span>${order.id}</span>
+            </div>
+            <div class="order-detail-field">
+                <strong>${currentLang === 'en' ? 'Service:' : 'Услуга:'}</strong>
+                <span>${order.service}</span>
+            </div>
+            <div class="order-detail-field">
+                <strong>${currentLang === 'en' ? 'Category:' : 'Категория:'}</strong>
+                <span>${order.category}</span>
+            </div>
+            <div class="order-detail-field">
+                <strong>${currentLang === 'en' ? 'Status:' : 'Статус:'}</strong>
+                <span>${order.status}</span>
+            </div>
+            <div class="order-detail-field">
+                <strong>${currentLang === 'en' ? 'Date:' : 'Дата:'}</strong>
+                <span>${date}</span>
+            </div>
+            <div class="order-detail-field">
+                <strong>${currentLang === 'en' ? 'Source:' : 'Источник:'}</strong>
+                <span>${order.source === 'website' ? (currentLang === 'en' ? 'Website' : 'Сайт') : 'Mini App'}</span>
+            </div>
+        </div>
+        
+        <div class="order-detail-section">
+            <h4>${currentLang === 'en' ? '👤 Client Information' : '👤 Информация о клиенте'}</h4>
+            <div class="order-detail-field">
+                <strong>${currentLang === 'en' ? 'Name:' : 'Имя:'}</strong>
+                <span>${order.userName}</span>
+            </div>
+            <div class="order-detail-field">
+                <strong>${currentLang === 'en' ? 'Username:' : 'Username:'}</strong>
+                <span>@${order.userUsername}</span>
+            </div>
+            <div class="order-detail-field">
+                <strong>${currentLang === 'en' ? 'Contact:' : 'Контакт:'}</strong>
+                <span>${order.contact}</span>
+            </div>
+        </div>
+        
+        <div class="order-detail-section">
+            <h4>${currentLang === 'en' ? '📝 Project Details' : '📝 Детали проекта'}</h4>
+            <div class="order-detail-text">
+                <strong>${currentLang === 'en' ? 'Details:' : 'Детали:'}</strong>
+                <p>${order.details}</p>
+            </div>
+            ${order.style ? `
+                <div class="order-detail-text">
+                    <strong>${currentLang === 'en' ? 'Style & Colors:' : 'Стиль и цвета:'}</strong>
+                    <p>${order.style}</p>
+                </div>
+            ` : ''}
+            ${order.requirements ? `
+                <div class="order-detail-text">
+                    <strong>${currentLang === 'en' ? 'Requirements:' : 'Требования:'}</strong>
+                    <p>${order.requirements}</p>
+                </div>
+            ` : ''}
+            <div class="order-detail-text">
+                <strong>${currentLang === 'en' ? 'Deadline & Budget:' : 'Сроки и бюджет:'}</strong>
+                <p>${order.deadlineBudget}</p>
+            </div>
+            ${order.references ? `
+                <div class="order-detail-text">
+                    <strong>${currentLang === 'en' ? 'References:' : 'Референсы:'}</strong>
+                    <p>${order.references}</p>
+                </div>
+            ` : ''}
+        </div>
+    `;
+    
+    modal.classList.add('active');
+}
+
+async function updateOrderStatus(orderId, newStatus) {
+    try {
+        const response = await fetch(`${API_BASE}/api/orders/status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-User-ID': tg.initDataUnsafe?.user?.id || ''
+            },
+            body: JSON.stringify({
+                orderId,
+                status: newStatus
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to update status');
+        }
+        
+        // Reload orders to reflect changes
+        await loadOrders();
+        
+    } catch (error) {
+        console.error('Error updating order status:', error);
+        alert(currentLang === 'en' ? 'Error updating status' : 'Ошибка обновления статуса');
+    }
+}
+
 async function loadAdminPortfolio(category) {
     const listEl = document.getElementById('admin-items-list');
     listEl.innerHTML = '<div class="loading">Loading...</div>';
@@ -1547,7 +1781,8 @@ document.addEventListener('DOMContentLoaded', () => {
             contact: contact,
             userId: currentUser?.id || tg.initDataUnsafe?.user?.id || 'unknown',
             userName: currentUser?.first_name || tg.initDataUnsafe?.user?.first_name || 'Unknown',
-            userUsername: currentUser?.username || tg.initDataUnsafe?.user?.username || 'no_username'
+            userUsername: currentUser?.username || tg.initDataUnsafe?.user?.username || 'no_username',
+            source: 'miniapp'
         };
         
         // Send order to worker API
@@ -1633,9 +1868,67 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 currentAdminCategory = tab.dataset.category;
-                loadAdminPortfolio(currentAdminCategory);
+                
+                // Show/hide sections based on category
+                const ordersSection = document.getElementById('admin-orders-section');
+                const portfolioSection = document.getElementById('admin-portfolio-section');
+                const itemsSection = document.querySelector('.admin-items-section');
+                
+                if (currentAdminCategory === 'orders') {
+                    ordersSection.style.display = 'block';
+                    portfolioSection.style.display = 'none';
+                    itemsSection.style.display = 'none';
+                    loadOrders();
+                } else {
+                    ordersSection.style.display = 'none';
+                    portfolioSection.style.display = 'block';
+                    itemsSection.style.display = 'block';
+                    loadAdminPortfolio(currentAdminCategory);
+                }
             });
         });
+        
+        // Orders filters
+        const categoryFilter = document.getElementById('orders-category-filter');
+        const statusFilter = document.getElementById('orders-status-filter');
+        const ordersRefreshBtn = document.getElementById('orders-refresh-btn');
+        
+        if (categoryFilter) {
+            categoryFilter.addEventListener('change', () => {
+                loadOrders();
+            });
+        }
+        
+        if (statusFilter) {
+            statusFilter.addEventListener('change', () => {
+                loadOrders();
+            });
+        }
+        
+        if (ordersRefreshBtn) {
+            ordersRefreshBtn.addEventListener('click', () => {
+                playSound('select');
+                loadOrders();
+            });
+        }
+        
+        // Order detail modal
+        const orderDetailModal = document.getElementById('order-detail-modal');
+        const orderDetailClose = document.getElementById('order-detail-close');
+        
+        if (orderDetailClose) {
+            orderDetailClose.addEventListener('click', () => {
+                orderDetailModal.classList.remove('active');
+            });
+        }
+        
+        if (orderDetailModal) {
+            orderDetailModal.addEventListener('click', (e) => {
+                if (e.target === orderDetailModal) {
+                    orderDetailModal.classList.remove('active');
+                }
+            });
+        }
         
         // Refresh button
         const refreshBtn = document.getElementById('admin-refresh-btn');

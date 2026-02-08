@@ -54,6 +54,12 @@
             <div class="user-info hidden" id="user-info">
                 <img class="user-avatar" id="user-avatar" alt="">
                 <span class="user-name" id="user-name"></span>
+                <a href="#profile" class="profile-link" id="profile-link">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </a>
             </div>
         </div>
         
@@ -81,6 +87,99 @@
             </div>
             <h1 class="hero-title">MCREW</h1>
             <p class="hero-subtitle" data-en="Creating visual experiences" data-ru="Создаем визуальные впечатления">Creating visual experiences</p>
+        </div>
+    </section>
+
+    <!-- Profile Section -->
+    <section id="profile" class="profile-section hidden">
+        <div class="profile-container">
+            <div class="profile-header">
+                <button class="profile-back-btn" id="profile-back-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h2 class="profile-title" data-en="Profile" data-ru="Профиль">Profile</h2>
+            </div>
+
+            <div class="profile-content">
+                <!-- User Info Card -->
+                <div class="profile-card profile-user-card">
+                    <div class="profile-avatar-section">
+                        <img class="profile-avatar-img" id="profile-avatar-img" alt="">
+                        <div class="profile-user-info">
+                            <h3 class="profile-name" id="profile-name-display"></h3>
+                            <p class="profile-username" id="profile-username-display"></p>
+                        </div>
+                    </div>
+                    <button class="profile-logout-btn" onclick="logout()" data-en="Logout" data-ru="Выйти">Logout</button>
+                </div>
+
+                <!-- Balance Card -->
+                <div class="profile-card profile-balance-card">
+                    <div class="balance-header">
+                        <h3 data-en="Balance" data-ru="Баланс">Balance</h3>
+                        <div class="balance-currency">MTV (ɱ)</div>
+                    </div>
+                    <div class="balance-amount">
+                        <span class="balance-mtv" id="profile-balance-mtv">0.00</span>
+                        <span class="balance-symbol">ɱ</span>
+                    </div>
+                    <div class="balance-mini">
+                        <span id="profile-balance-mini">0</span> Mini
+                    </div>
+                    <div class="balance-actions">
+                        <button class="balance-btn balance-btn-primary" id="deposit-crypto-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12l7 7 7-7"/>
+                            </svg>
+                            <span data-en="Deposit Crypto" data-ru="Пополнить крипту">Deposit Crypto</span>
+                        </button>
+                        <button class="balance-btn balance-btn-secondary" id="withdraw-crypto-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 19V5M5 12l7-7 7 7"/>
+                            </svg>
+                            <span data-en="Withdraw" data-ru="Вывести">Withdraw</span>
+                        </button>
+                    </div>
+                    <div class="balance-info">
+                        <p data-en="1 TON ≈ 100 ɱ" data-ru="1 TON ≈ 100 ɱ">1 TON ≈ 100 ɱ</p>
+                        <p data-en="1 USDT ≈ 100 ɱ" data-ru="1 USDT ≈ 100 ɱ">1 USDT ≈ 100 ɱ</p>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="profile-stats-grid">
+                    <div class="profile-stat-card">
+                        <div class="stat-value" id="profile-orders-count">0</div>
+                        <div class="stat-label" data-en="Orders" data-ru="Заказов">Orders</div>
+                    </div>
+                    <div class="profile-stat-card">
+                        <div class="stat-value" id="profile-spent">0 ɱ</div>
+                        <div class="stat-label" data-en="Spent" data-ru="Потрачено">Spent</div>
+                    </div>
+                    <div class="profile-stat-card">
+                        <div class="stat-value" id="profile-saved">0 ɱ</div>
+                        <div class="stat-label" data-en="Saved" data-ru="Сэкономлено">Saved</div>
+                    </div>
+                </div>
+
+                <!-- Transactions -->
+                <div class="profile-card profile-transactions-card">
+                    <h3 data-en="Recent Transactions" data-ru="Последние транзакции">Recent Transactions</h3>
+                    <div class="transactions-list" id="transactions-list">
+                        <div class="transactions-empty" data-en="No transactions yet" data-ru="Пока нет транзакций">No transactions yet</div>
+                    </div>
+                </div>
+
+                <!-- Orders History -->
+                <div class="profile-card profile-orders-card">
+                    <h3 data-en="Order History" data-ru="История заказов">Order History</h3>
+                    <div class="orders-history-list" id="orders-history-list">
+                        <div class="orders-empty" data-en="No orders yet" data-ru="Пока нет заказов">No orders yet</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -406,7 +505,159 @@
         </div>
     </div>
 
+    <!-- Crypto Deposit Modal -->
+    <div class="modal" id="crypto-deposit-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-medium">
+            <button class="modal-close">&times;</button>
+            <div class="crypto-modal-content">
+                <h2 data-en="Deposit Cryptocurrency" data-ru="Пополнить криптовалюту">Deposit Cryptocurrency</h2>
+                
+                <div class="crypto-method-selector">
+                    <button class="crypto-method-btn active" data-method="ton">
+                        <img src="https://ton.org/download/ton_symbol.svg" alt="TON" class="crypto-icon">
+                        <span>TON</span>
+                    </button>
+                    <button class="crypto-method-btn" data-method="usdt">
+                        <svg class="crypto-icon" viewBox="0 0 32 32" fill="none">
+                            <circle cx="16" cy="16" r="16" fill="#26A17B"/>
+                            <path d="M17.922 17.383v-.002c-.11.008-.677.042-1.942.042-1.01 0-1.721-.03-1.971-.042v.003c-3.888-.171-6.79-.848-6.79-1.658 0-.809 2.902-1.486 6.79-1.66v2.644c.254.018.982.061 1.988.061 1.207 0 1.812-.05 1.925-.06v-2.643c3.88.173 6.775.85 6.775 1.658 0 .81-2.895 1.485-6.775 1.657m0-3.59v-2.366h5.414V7.819H8.595v3.608h5.414v2.365c-4.4.202-7.709 1.074-7.709 2.118 0 1.044 3.309 1.915 7.709 2.118v7.582h3.913v-7.584c4.393-.202 7.694-1.073 7.694-2.116 0-1.043-3.301-1.914-7.694-2.117" fill="white"/>
+                        </svg>
+                        <span>USDT</span>
+                    </button>
+                    <button class="crypto-method-btn" data-method="wallet">
+                        <svg class="crypto-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="5" width="20" height="14" rx="2"/>
+                            <path d="M2 10h20"/>
+                        </svg>
+                        <span data-en="Other Wallet" data-ru="Другой кошелек">Other Wallet</span>
+                    </button>
+                </div>
+
+                <div class="crypto-deposit-content" id="crypto-deposit-content">
+                    <!-- TON Wallet Connect -->
+                    <div class="crypto-method-content active" data-method="ton">
+                        <div class="crypto-info-box">
+                            <p data-en="Connect your TON wallet to deposit" data-ru="Подключите TON кошелек для пополнения">Connect your TON wallet to deposit</p>
+                            <div class="crypto-rate">1 TON ≈ 100 ɱ</div>
+                        </div>
+                        
+                        <div class="crypto-amount-input">
+                            <label data-en="Amount (TON)" data-ru="Сумма (TON)">Amount (TON)</label>
+                            <input type="number" id="ton-amount" class="crypto-input" placeholder="0.00" min="0.1" step="0.1">
+                            <div class="crypto-amount-mtv">≈ <span id="ton-amount-mtv">0</span> ɱ</div>
+                        </div>
+
+                        <button class="crypto-connect-btn" id="ton-connect-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            </svg>
+                            <span data-en="Connect TON Wallet" data-ru="Подключить TON кошелек">Connect TON Wallet</span>
+                        </button>
+
+                        <div class="crypto-wallet-info hidden" id="ton-wallet-info">
+                            <div class="wallet-address" id="ton-wallet-address"></div>
+                            <button class="crypto-deposit-btn" id="ton-deposit-btn" data-en="Deposit TON" data-ru="Пополнить TON">Deposit TON</button>
+                        </div>
+                    </div>
+
+                    <!-- USDT -->
+                    <div class="crypto-method-content" data-method="usdt">
+                        <div class="crypto-info-box">
+                            <p data-en="Deposit USDT (TRC-20)" data-ru="Пополнить USDT (TRC-20)">Deposit USDT (TRC-20)</p>
+                            <div class="crypto-rate">1 USDT ≈ 100 ɱ</div>
+                        </div>
+                        
+                        <div class="crypto-amount-input">
+                            <label data-en="Amount (USDT)" data-ru="Сумма (USDT)">Amount (USDT)</label>
+                            <input type="number" id="usdt-amount" class="crypto-input" placeholder="0.00" min="1" step="1">
+                            <div class="crypto-amount-mtv">≈ <span id="usdt-amount-mtv">0</span> ɱ</div>
+                        </div>
+
+                        <div class="crypto-address-box">
+                            <label data-en="Deposit Address (TRC-20)" data-ru="Адрес для пополнения (TRC-20)">Deposit Address (TRC-20)</label>
+                            <div class="crypto-address-display">
+                                <code id="usdt-address">TGhjP46Q82kckKQeMgPLL1cTqcaD1CNxep</code>
+                                <button class="copy-btn" onclick="copyAddress('usdt')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="crypto-qr-code">
+                            <div class="qr-placeholder" id="usdt-qr">
+                                <svg width="200" height="200" viewBox="0 0 200 200">
+                                    <rect width="200" height="200" fill="#f0f0f0"/>
+                                    <text x="100" y="100" text-anchor="middle" fill="#666" font-size="14">QR Code</text>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <button class="crypto-confirm-btn" id="usdt-confirm-btn" data-en="I've Sent USDT" data-ru="Я отправил USDT">I've Sent USDT</button>
+                    </div>
+
+                    <!-- Other Wallet -->
+                    <div class="crypto-method-content" data-method="wallet">
+                        <div class="crypto-info-box">
+                            <p data-en="Connect external wallet" data-ru="Подключить внешний кошелек">Connect external wallet</p>
+                        </div>
+
+                        <div class="wallet-options">
+                            <button class="wallet-option-btn">
+                                <img src="https://metamask.io/images/metamask-logo.png" alt="MetaMask" class="wallet-icon">
+                                <span>MetaMask</span>
+                            </button>
+                            <button class="wallet-option-btn">
+                                <img src="https://trustwallet.com/assets/images/media/assets/TWT.png" alt="Trust Wallet" class="wallet-icon">
+                                <span>Trust Wallet</span>
+                            </button>
+                            <button class="wallet-option-btn">
+                                <svg class="wallet-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 6v6l4 2"/>
+                                </svg>
+                                <span>WalletConnect</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Crypto Withdraw Modal -->
+    <div class="modal" id="crypto-withdraw-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-medium">
+            <button class="modal-close">&times;</button>
+            <div class="crypto-modal-content">
+                <h2 data-en="Withdraw Cryptocurrency" data-ru="Вывести криптовалюту">Withdraw Cryptocurrency</h2>
+                
+                <div class="crypto-info-box">
+                    <p data-en="Minimum withdrawal: 10 ɱ (0.1 TON)" data-ru="Минимальный вывод: 10 ɱ (0.1 TON)">Minimum withdrawal: 10 ɱ (0.1 TON)</p>
+                </div>
+
+                <div class="crypto-amount-input">
+                    <label data-en="Amount (ɱ)" data-ru="Сумма (ɱ)">Amount (ɱ)</label>
+                    <input type="number" id="withdraw-amount" class="crypto-input" placeholder="0.00" min="10" step="1">
+                    <div class="crypto-amount-mtv">≈ <span id="withdraw-amount-crypto">0</span> TON</div>
+                </div>
+
+                <div class="crypto-address-input">
+                    <label data-en="Wallet Address" data-ru="Адрес кошелька">Wallet Address</label>
+                    <input type="text" id="withdraw-address" class="crypto-input" placeholder="EQD...">
+                </div>
+
+                <button class="crypto-withdraw-btn" id="withdraw-submit-btn" data-en="Withdraw" data-ru="Вывести">Withdraw</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://telegram.org/js/telegram-widget.js?22"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
