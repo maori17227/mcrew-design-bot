@@ -365,6 +365,12 @@ body {
     transition: background 0.3s ease;
 }
 
+/* Screen header with pricelist image - no padding */
+.screen-header:has(.pricelist-img) {
+    padding: 0;
+    display: block;
+}
+
 .screen-header h2 {
     font-size: 20px;
     font-weight: 700;
@@ -379,6 +385,7 @@ body {
     height: auto;
     object-fit: contain;
     max-width: 100%;
+    display: block;
 }
 
 /* Services List */
