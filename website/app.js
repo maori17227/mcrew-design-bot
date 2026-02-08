@@ -2053,3 +2053,79 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+
+// Copy USDT address function
+function copyUSDTAddress() {
+    const address = 'TJDENsfBJs4RFETt1X1W8wMDc8M5XnJhCe';
+    
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(address).then(() => {
+            const btn = document.querySelector('.crypto-copy-btn span');
+            const originalText = btn.textContent;
+            btn.textContent = currentLang === 'en' ? 'Copied!' : 'Скопировано!';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy:', err);
+            fallbackCopy(address);
+        });
+    } else {
+        fallbackCopy(address);
+    }
+}
+
+function fallbackCopy(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        alert(currentLang === 'en' ? 'Address copied!' : 'Адрес скопирован!');
+    } catch (err) {
+        console.error('Fallback copy failed:', err);
+    }
+    document.body.removeChild(textArea);
+}
+
+// Generate QR code for USDT address
+function generateUSDTQR() {
+    const address = 'TJDENsfBJs4RFETt1X1W8wMDc8M5XnJhCe';
+    const qrContainer = document.getElementById('usdt-qr-code');
+    
+    if (qrContainer && typeof QRCode !== 'undefined') {
+        qrContainer.innerHTML = '';
+        new QRCode(qrContainer, {
+            text: address,
+            width: 200,
+            height: 200,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    } else {
+        // Fallback: show address as text
+        if (qrContainer) {
+            qrContainer.innerHTML = `<div style="padding: 20px; text-align: center; font-size: 12px; word-break: break-all;">${address}</div>`;
+        }
+    }
+}
+
+// Initialize QR code when modal opens
+document.addEventListener('DOMContentLoaded', () => {
+    const cryptoModal = document.getElementById('crypto-deposit-modal');
+    if (cryptoModal) {
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.target.classList.contains('active')) {
+                    setTimeout(generateUSDTQR, 100);
+                }
+            });
+        });
+        observer.observe(cryptoModal, { attributes: true, attributeFilter: ['class'] });
+    }
+});

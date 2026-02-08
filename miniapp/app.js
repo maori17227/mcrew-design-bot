@@ -2352,3 +2352,77 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAndUpdateRate(); // Update TON rate on load
     setupCryptoPaymentListeners();
 });
+
+
+// Copy USDT address function for miniapp
+function copyUSDTAddress() {
+    const address = 'TJDENsfBJs4RFETt1X1W8wMDc8M5XnJhCe';
+    
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(address).then(() => {
+            showNotification(currentLang === 'en' ? 'Address copied!' : 'Адрес скопирован!');
+        }).catch(err => {
+            console.error('Failed to copy:', err);
+            fallbackCopyMiniapp(address);
+        });
+    } else {
+        fallbackCopyMiniapp(address);
+    }
+}
+
+function fallbackCopyMiniapp(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        showNotification(currentLang === 'en' ? 'Address copied!' : 'Адрес скопирован!');
+    } catch (err) {
+        console.error('Fallback copy failed:', err);
+    }
+    document.body.removeChild(textArea);
+}
+
+// Show notification
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification-toast';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 2000);
+}
+
+// Generate QR code for USDT address in miniapp
+function generateUSDTQRMiniapp() {
+    const address = 'TJDENsfBJs4RFETt1X1W8wMDc8M5XnJhCe';
+    const qrContainer = document.getElementById('usdt-qr-miniapp');
+    
+    if (qrContainer && typeof QRCode !== 'undefined') {
+        qrContainer.innerHTML = '';
+        new QRCode(qrContainer, {
+            text: address,
+            width: 180,
+            height: 180,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    } else {
+        if (qrContainer) {
+            qrContainer.innerHTML = `<div style="padding: 15px; text-align: center; font-size: 11px; word-break: break-all;">${address}</div>`;
+        }
+    }
+}
