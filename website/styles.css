@@ -3339,3 +3339,242 @@ section {
     line-height: 1.6;
     color: var(--text);
 }
+
+
+/* ===== NAV CARD (Mini MC Bank Card) ===== */
+.nav-card {
+    position: relative;
+    width: 100px;
+    height: 63px;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.nav-card:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.nav-card-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.nav-card-balance {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    height: 100%;
+    padding-top: 8px;
+    gap: 4px;
+}
+
+.nav-card-symbol {
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.nav-card-amount {
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* ===== PROFILE PAGE - CLEAN DESIGN ===== */
+.profile-page {
+    min-height: 100vh;
+    padding: 100px 60px 60px;
+    background: var(--bg);
+    transition: background 0.2s ease;
+}
+
+.profile-page-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.profile-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+
+.profile-page-header h1 {
+    font-size: 36px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--text);
+}
+
+.profile-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+[data-theme="light"] .profile-back-btn {
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.profile-back-btn:hover {
+    background: var(--red);
+    border-color: var(--red);
+    color: white;
+    transform: translateX(-4px);
+}
+
+.profile-logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 12px;
+    color: var(--red);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.profile-logout-btn:hover {
+    background: var(--red);
+    border-color: var(--red);
+    color: white;
+}
+
+.profile-card-section {
+    margin-bottom: 40px;
+}
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.profile-stat {
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+[data-theme="light"] .profile-stat {
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.profile-stat:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.profile-stat .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+.profile-stat .stat-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.profile-section {
+    padding: 32px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    margin-bottom: 24px;
+}
+
+[data-theme="light"] .profile-section {
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.profile-section h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.transactions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.empty-state {
+    padding: 40px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .profile-page {
+        padding: 100px 20px 40px;
+    }
+    
+    .profile-page-header h1 {
+        font-size: 24px;
+    }
+    
+    .profile-stats {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .nav-card {
+        width: 80px;
+        height: 50px;
+    }
+    
+    .nav-card-symbol {
+        font-size: 14px;
+    }
+    
+    .nav-card-amount {
+        font-size: 16px;
+    }
+}

@@ -716,26 +716,11 @@ function updateUserUI() {
     const profileSection = document.getElementById('profile');
     
     if (currentUser) {
-        loginBtn.classList.add('hidden');
-        userInfo.classList.remove('hidden');
-        
-        if (currentUser.photo_url) {
-            userAvatar.src = currentUser.photo_url;
-        }
-        userName.textContent = currentUser.first_name;
-        
-        userInfo.addEventListener('click', () => {
-            // Scroll to profile
-            profileSection.classList.remove('hidden');
-            profileSection.scrollIntoView({ behavior: 'smooth' });
-            updateProfileDisplay();
-        });
-        
-        // Show profile section
-        profileSection.classList.remove('hidden');
-        
         // Load balance
         loadUserBalance();
+        
+        // Update nav card
+        updateNavCard();
         
         // Update contact username in order form
         const contactUsernameDisplay = document.getElementById('contact-username-display');
@@ -743,9 +728,8 @@ function updateUserUI() {
             contactUsernameDisplay.textContent = '@' + currentUser.username;
         }
     } else {
-        loginBtn.classList.remove('hidden');
-        userInfo.classList.add('hidden');
-        profileSection.classList.add('hidden');
+        // Update nav card (hide it)
+        updateNavCard();
     }
 }
 
@@ -775,8 +759,9 @@ async function loadUserBalance() {
     // Save to localStorage
     localStorage.setItem('mcrew_balance_' + currentUser.id, JSON.stringify(userBalance));
     
-    // Update profile display
+    // Update displays
     updateProfileDisplay();
+    updateNavCard();
 }
 
 // Update profile display
@@ -2129,3 +2114,84 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(cryptoModal, { attributes: true, attributeFilter: ['class'] });
     }
 });
+
+
+// Profile page functions
+function openProfile() {
+    const profilePage = document.getElementById('profile');
+    const sections = document.querySelectorAll('section:not(#profile)');
+    const nav = document.getElementById('nav');
+    
+    // Hide all other sections
+    sections.forEach(section => section.style.display = 'none');
+    
+    // Show profile
+    profilePage.classList.remove('hidden');
+    profilePage.style.display = 'block';
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Update profile data
+    updateProfilePage();
+}
+
+function closeProfile() {
+    const profilePage = document.getElementById('profile');
+    const sections = document.querySelectorAll('section:not(#profile)');
+    
+    // Hide profile
+    profilePage.classList.add('hidden');
+    profilePage.style.display = 'none';
+    
+    // Show all other sections
+    sections.forEach(section => section.style.display = '');
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function openDepositModal() {
+    const modal = document.getElementById('crypto-deposit-modal');
+    if (modal) {
+        modal.classList.add('active');
+    }
+}
+
+function updateProfilePage() {
+    if (!currentUser) return;
+    
+    // Update balance
+    const balanceDisplay = document.getElementById('profile-balance-display');
+    if (balanceDisplay) {
+        balanceDisplay.textContent = formatMTV(userBalance.mini);
+    }
+    
+    // Update stats
+    const ordersStat = document.getElementById('profile-orders-stat');
+    const spentStat = document.getElementById('profile-spent-stat');
+    const savedStat = document.getElementById('profile-saved-stat');
+    
+    if (ordersStat) ordersStat.textContent = '0';
+    if (spentStat) spentStat.textContent = 'ɱ 0.0';
+    if (savedStat) savedStat.textContent = 'ɱ 0.0';
+}
+
+function updateNavCard() {
+    const navCard = document.getElementById('nav-card');
+    const navCardAmount = document.getElementById('nav-card-amount');
+    const loginBtn = document.getElementById('login-btn');
+    
+    if (currentUser && navCard && navCardAmount && loginBtn) {
+        // Show card, hide login button
+        navCard.classList.remove('hidden');
+        loginBtn.classList.add('hidden');
+        
+        // Update balance
+        navCardAmount.textContent = formatMTV(userBalance.mini);
+    } else if (navCard && loginBtn) {
+        // Hide card, show login button
+        navCard.classList.add('hidden');
+        loginBtn.classList.remove('hidden');
+    }
+}
