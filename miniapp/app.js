@@ -3,6 +3,9 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 tg.ready();
 
+// Hide main button
+tg.MainButton.hide();
+
 // Admin user ID
 const ADMIN_USER_ID = 8017281019;
 const isAdmin = tg.initDataUnsafe?.user?.id === ADMIN_USER_ID;
