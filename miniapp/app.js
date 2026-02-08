@@ -1164,7 +1164,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Telegram back button
-    tg.BackButton.onClick(goBack);
+    tg.BackButton.onClick(() => {
+        playSound('select');
+        goBack();
+    });
     
     // Order form submit
     document.getElementById('order-form').addEventListener('submit', async (e) => {

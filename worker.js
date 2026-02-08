@@ -1263,8 +1263,8 @@ Example: <code>/list covers</code>`
           
           // Send welcome message with logo photo
           await sendPhoto(chatId, MEDIA_FILE_IDS.logo, welcomeText, keyboard, BOT_TOKEN)
-        } else if (text) {
-          // Handle order text message
+        } else if (text && !text.startsWith('/')) {
+          // Handle order text message (only if not a command)
           const orderText = getText(userId, 'new_order', {
             name: user.first_name || 'Unknown',
             username: user.username || 'no_username',
