@@ -403,20 +403,37 @@ function initPortfolioCategories() {
             video.muted = true;
             video.preload = 'auto';
             video.playsInline = true;
+            video.autoplay = true;
+            
+            // Add multiple event listeners to ensure loading
+            video.addEventListener('loadeddata', () => {
+                console.log('Video loaded successfully');
+                video.play().catch(e => console.log('Autoplay prevented:', e));
+            });
+            
+            video.addEventListener('canplay', () => {
+                video.play().catch(e => console.log('Autoplay prevented:', e));
+            });
             
             // Force load video immediately
             video.load();
             
-            // Try to play after a short delay to ensure loading
+            // Try to play after a short delay
             setTimeout(() => {
-                video.play().catch(e => {
-                    console.log('Initial autoplay prevented, will play on interaction');
-                    // Try again on user interaction
-                    document.addEventListener('click', () => {
-                        video.play().catch(() => {});
-                    }, { once: true });
-                });
-            }, 100);
+                if (video.paused) {
+                    video.play().catch(e => {
+                        console.log('Initial autoplay prevented, will play on interaction');
+                        // Try again on any user interaction
+                        const playOnInteraction = () => {
+                            video.play().catch(() => {});
+                            document.removeEventListener('click', playOnInteraction);
+                            document.removeEventListener('scroll', playOnInteraction);
+                        };
+                        document.addEventListener('click', playOnInteraction, { once: true });
+                        document.addEventListener('scroll', playOnInteraction, { once: true });
+                    });
+                }
+            }, 200);
             
             // Autoplay when visible - БЕЗ ОСТАНОВКИ ПРИ НАВЕДЕНИИ
             const observer = new IntersectionObserver((entries) => {
@@ -427,7 +444,7 @@ function initPortfolioCategories() {
                         video.pause();
                     }
                 });
-            }, { threshold: 0.5 });
+            }, { threshold: 0.3 });
             
             observer.observe(category);
             
@@ -1104,11 +1121,12 @@ function initOrderForm() {
         
         const orderData = {
             service: service,
-            name: document.getElementById('order-name').value,
+            details: document.getElementById('order-details').value,
+            style: document.getElementById('order-style').value,
+            requirements: document.getElementById('order-requirements').value,
+            deadline_budget: document.getElementById('order-deadline-budget').value,
+            references: document.getElementById('order-references').value,
             contact: document.getElementById('order-contact').value,
-            description: document.getElementById('order-description').value,
-            budget: document.getElementById('order-budget').value,
-            deadline: document.getElementById('order-deadline').value,
             timestamp: new Date().toISOString()
         };
         
