@@ -1336,41 +1336,38 @@ document.addEventListener('DOMContentLoaded', () => {
         const menuGrid = homeScreen.querySelector('.menu-grid');
         const menuItems = menuGrid.querySelectorAll('.menu-item');
         
-        // Prepare main screen (hidden, positioned below)
+        // Prepare main screen (hidden initially)
         homeScreen.style.opacity = '1';
         hero.style.opacity = '0';
         hero.style.transform = 'translateY(0)';
         menuGrid.style.opacity = '1';
         
-        // Hide all menu items initially
-        menuItems.forEach(item => {
-            item.style.opacity = '0';
-            item.style.transform = 'translateY(60px)';
-        });
+        // Menu items are already hidden in CSS (opacity: 0, translateY: 60px)
+        // No need to set initial state here
         
-        // Phase 1: Logo moves to top and shrinks (0-600ms) - FASTER
+        // Phase 1: Logo moves to top and shrinks (0-600ms)
         splashLogo.style.transition = 'all 0.6s cubic-bezier(0.25, 0.1, 0.25, 1)';
         splashLogo.style.transform = `translateY(${finalTranslateY}px) scale(${finalScale})`;
         splashLogo.style.opacity = '1';
         
-        // Phase 2: Splash fades out (300-700ms) - FASTER
+        // Phase 2: Splash fades out (300-700ms)
         setTimeout(() => {
             splashScreen.style.transition = 'opacity 0.4s ease';
             splashScreen.style.opacity = '0';
         }, 300);
         
-        // Phase 3: Show hero with logo (500ms) - FASTER
+        // Phase 3: Show hero with logo (500ms)
         setTimeout(() => {
             hero.style.transition = 'opacity 0.3s ease';
             hero.style.opacity = '1';
         }, 500);
         
-        // Phase 4: Play startup sound RIGHT when hero appears (500ms)
+        // Phase 4: Play startup sound when hero appears (500ms)
         setTimeout(() => {
             playSound('startup');
         }, 500);
         
-        // Phase 5: Menu items slide up one by one starting RIGHT after sound (550ms start)
+        // Phase 5: Menu items slide up one by one (550ms start)
         setTimeout(() => {
             menuItems.forEach((item, index) => {
                 setTimeout(() => {
@@ -1381,7 +1378,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }, 550);
         
-        // Cleanup (900ms) - FASTER
+        // Cleanup (900ms)
         setTimeout(() => {
             splashScreen.classList.remove('active');
             splashScreen.style.opacity = '';
