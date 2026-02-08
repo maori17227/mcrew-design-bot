@@ -1107,15 +1107,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (swipeDistance > 0) {
             const progress = Math.min(swipeDistance / 250, 1);
             
-            // Scale from 320px to 60px
+            // Scale from 320px (1.0) to 60px (0.1875)
             const scale = 1 - (progress * 0.8125);
             
-            // Move up smoothly - increase distance for smoother effect
-            const translateY = -progress * 450;
+            // Calculate final position: logo should end up at top (20px from top)
+            // Screen center is ~50vh, logo needs to move to ~20px from top
+            // That's approximately -45vh movement
+            const translateY = -progress * window.innerHeight * 0.45;
             
             splashLogo.classList.add('shrinking');
             splashLogo.style.transform = `scale(${scale}) translateY(${translateY}px)`;
-            splashLogo.style.opacity = 1 - (progress * 0.3);
+            splashLogo.style.opacity = 1;
         }
     });
     
@@ -1155,15 +1157,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (swipeDistance > 0) {
             const progress = Math.min(swipeDistance / 250, 1);
             
-            // Scale from 320px to 60px
+            // Scale from 320px (1.0) to 60px (0.1875)
             const scale = 1 - (progress * 0.8125);
             
-            // Move up smoothly
-            const translateY = -progress * 450;
+            // Calculate final position: logo should end up at top (20px from top)
+            const translateY = -progress * window.innerHeight * 0.45;
             
             splashLogo.classList.add('shrinking');
             splashLogo.style.transform = `scale(${scale}) translateY(${translateY}px)`;
-            splashLogo.style.opacity = 1 - (progress * 0.3);
+            splashLogo.style.opacity = 1;
         }
     });
     
@@ -1211,9 +1213,12 @@ document.addEventListener('DOMContentLoaded', () => {
         isTransitioning = true;
         splashScreen.classList.add('transitioning');
         
+        // Calculate final position for logo (top of screen, 20px from top)
+        const finalTranslateY = -window.innerHeight * 0.45;
+        
         // Smooth animation: logo moves to top and shrinks
         splashLogo.style.transition = 'all 0.8s cubic-bezier(0.25, 0.1, 0.25, 1)';
-        splashLogo.style.transform = 'scale(0.1875) translateY(-50vh)';
+        splashLogo.style.transform = `scale(0.1875) translateY(${finalTranslateY}px)`;
         splashLogo.style.opacity = '1';
         
         // Fade out splash screen after logo animation starts
