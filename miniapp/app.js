@@ -727,9 +727,7 @@ function initAudioPlayers() {
         const durationEl = player.querySelector('.duration');
         
         const TRAILER_DURATION = 13; // 13 seconds trailer
-        const FADE_START = 11; // Start fade at 11 seconds
         const TARGET_VOLUME = 0.316; // Target volume (-10dB)
-        let fadeInterval = null;
         
         // Set initial volume
         audio.volume = TARGET_VOLUME;
@@ -758,23 +756,19 @@ function initAudioPlayers() {
             } else {
                 audio.pause();
                 btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
-                if (fadeInterval) {
-                    clearInterval(fadeInterval);
-                    fadeInterval = null;
-                }
             }
         });
         
-        // Update duration when loaded (show 15 seconds max)
+        // Update duration when loaded (show 13 seconds max)
         audio.addEventListener('loadedmetadata', () => {
             durationEl.textContent = formatTime(TRAILER_DURATION);
         });
         
-        // Update progress and handle 15 second limit with fade
+        // Update progress and handle 13 second limit
         audio.addEventListener('timeupdate', () => {
             const currentTime = audio.currentTime;
             
-            // Stop at 15 seconds
+            // Stop at 13 seconds
             if (currentTime >= TRAILER_DURATION) {
                 audio.pause();
                 audio.currentTime = 0;
@@ -782,19 +776,7 @@ function initAudioPlayers() {
                 btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
                 progressFill.style.width = '0%';
                 currentTimeEl.textContent = '0:00';
-                if (fadeInterval) {
-                    clearInterval(fadeInterval);
-                    fadeInterval = null;
-                }
                 return;
-            }
-            
-            // Smooth fade out from 13 to 15 seconds (2 second fade)
-            if (currentTime >= FADE_START && !fadeInterval) {
-                fadeInterval = setInterval(() => {
-                    const fadeProgress = (audio.currentTime - FADE_START) / (TRAILER_DURATION - FADE_START);
-                    audio.volume = Math.max(0, TARGET_VOLUME * (1 - fadeProgress));
-                }, 50); // Update every 50ms for smooth fade
             }
             
             const progress = (currentTime / TRAILER_DURATION) * 100;
@@ -809,22 +791,14 @@ function initAudioPlayers() {
             btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
             progressFill.style.width = '0%';
             currentTimeEl.textContent = '0:00';
-            if (fadeInterval) {
-                clearInterval(fadeInterval);
-                fadeInterval = null;
-            }
         });
         
-        // Seek functionality (within 15 seconds)
+        // Seek functionality (within 13 seconds)
         progressBar.addEventListener('click', (e) => {
             const rect = progressBar.getBoundingClientRect();
             const pos = (e.clientX - rect.left) / rect.width;
             audio.currentTime = pos * TRAILER_DURATION;
             audio.volume = TARGET_VOLUME;
-            if (fadeInterval) {
-                clearInterval(fadeInterval);
-                fadeInterval = null;
-            }
         });
     });
 }
