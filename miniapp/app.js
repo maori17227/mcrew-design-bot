@@ -765,13 +765,17 @@ function initAudioPlayers() {
                 return;
             }
             
-            // Start fade out at 13 seconds
-            if (currentTime >= FADE_START && !fadeInterval) {
-                fadeInterval = setInterval(() => {
-                    if (audio.volume > 0.02) {
-                        audio.volume = Math.max(0, audio.volume - 0.016);
-                    }
-                }, 100);
+            // Smooth fade out from 13 to 15 seconds (2 second fade)
+            if (currentTime >= FADE_START) {
+                if (!fadeInterval) {
+                    // Start smooth fade out
+                    const initialVolume = 0.316;
+                    fadeInterval = setInterval(() => {
+                        const fadeProgress = (audio.currentTime - FADE_START) / (TRAILER_DURATION - FADE_START);
+                        const targetVolume = initialVolume * (1 - fadeProgress);
+                        audio.volume = Math.max(0, targetVolume);
+                    }, 50); // Update every 50ms for smoother fade
+                }
             }
             
             const progress = (currentTime / TRAILER_DURATION) * 100;
