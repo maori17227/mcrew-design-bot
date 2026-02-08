@@ -61,6 +61,12 @@
                     <h3 data-en="Contact" data-ru="Контакты">Contact</h3>
                     <p data-en="Get in touch" data-ru="Связаться">Get in touch</p>
                 </div>
+                
+                <!-- Admin button - only visible for admin -->
+                <div class="menu-item admin-only" data-page="admin" style="display: none;">
+                    <h3 data-en="⚙️ Admin Panel" data-ru="⚙️ Админ панель">⚙️ Admin Panel</h3>
+                    <p data-en="Manage portfolio" data-ru="Управление портфолио">Manage portfolio</p>
+                </div>
             </div>
         </div>
 
@@ -220,6 +226,73 @@
             <button class="cta-button" onclick="window.open('https://t.me/mcrewdm')">
                 <span data-en="Contact Us" data-ru="Связаться">Contact Us</span>
             </button>
+        </div>
+        
+        <!-- Admin Panel Screen -->
+        <div id="admin-screen" class="screen">
+            <div class="screen-header">
+                <h2 data-en="⚙️ Admin Panel" data-ru="⚙️ Админ панель">⚙️ Admin Panel</h2>
+            </div>
+
+            <div class="admin-content">
+                <div class="admin-tabs">
+                    <button class="admin-tab active" data-category="covers">
+                        <span data-en="Track Covers" data-ru="Обложки">Track Covers</span>
+                    </button>
+                    <button class="admin-tab" data-category="posters">
+                        <span data-en="Posters" data-ru="Постеры">Posters</span>
+                    </button>
+                    <button class="admin-tab" data-category="motion">
+                        <span data-en="Motion" data-ru="Моушн">Motion</span>
+                    </button>
+                </div>
+
+                <div class="admin-add-section">
+                    <h3 data-en="Add New Item" data-ru="Добавить новый элемент">Add New Item</h3>
+                    
+                    <form id="admin-add-form">
+                        <div class="form-group">
+                            <label data-en="Type" data-ru="Тип">Type</label>
+                            <select id="admin-type" required>
+                                <option value="track">Track (with audio)</option>
+                                <option value="photo">Photo</option>
+                                <option value="video">Video</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="admin-artist-group">
+                            <label data-en="Artist" data-ru="Артист">Artist</label>
+                            <input type="text" id="admin-artist" placeholder="Artist name">
+                        </div>
+
+                        <div class="form-group" id="admin-track-group">
+                            <label data-en="Track Name" data-ru="Название трека">Track Name</label>
+                            <input type="text" id="admin-track" placeholder="Track name">
+                        </div>
+
+                        <div class="form-group">
+                            <label data-en="Cover/Image URL" data-ru="URL обложки/изображения">Cover/Image URL</label>
+                            <input type="url" id="admin-cover" required placeholder="https://...">
+                        </div>
+
+                        <div class="form-group" id="admin-audio-group">
+                            <label data-en="Audio URL" data-ru="URL аудио">Audio URL</label>
+                            <input type="url" id="admin-audio" placeholder="https://...">
+                        </div>
+
+                        <button type="submit" class="cta-button">
+                            <span data-en="➕ Add Item" data-ru="➕ Добавить">➕ Add Item</span>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="admin-items-section">
+                    <h3 data-en="Current Items" data-ru="Текущие элементы">Current Items</h3>
+                    <div id="admin-items-list" class="admin-items-list">
+                        <div class="loading" data-en="Loading..." data-ru="Загрузка...">Loading...</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

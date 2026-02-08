@@ -3,6 +3,13 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 tg.ready();
 
+// Admin user ID
+const ADMIN_USER_ID = 8017281019;
+const isAdmin = tg.initDataUnsafe?.user?.id === ADMIN_USER_ID;
+
+// API base URL (your Cloudflare Worker URL)
+const API_BASE = 'https://mcrew-bot.maori17227.workers.dev';
+
 // Setup Main Button to open bot
 tg.MainButton.text = 'Open Bot';
 tg.MainButton.color = '#ff0000';
@@ -778,6 +785,109 @@ function formatTime(seconds) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
+// Admin API functions
+let currentAdminCategory = 'covers';
+
+async function loadAdminPortfolio(category) {
+    const listEl = document.getElementById('admin-items-list');
+    listEl.innerHTML = '<div class="loading">Loading...</div>';
+    
+    try {
+        const response = await fetch(`${API_BASE}/api/portfolio?category=${category}`, {
+            headers: {
+                'X-User-ID': tg.initDataUnsafe?.user?.id || ''
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load');
+        
+        const data = await response.json();
+        const items = data.items || [];
+        
+        if (items.length === 0) {
+            listEl.innerHTML = `<p style="text-align: center; color: var(--text-secondary);">${currentLang === 'en' ? 'No items yet' : 'Пока нет элементов'}</p>`;
+            return;
+        }
+        
+        listEl.innerHTML = '';
+        items.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'admin-item';
+            
+            const thumb = item.cover || item.file || '';
+            const title = item.artist ? `${item.artist} - ${item.track}` : (item.title?.[currentLang] || 'Item');
+            const type = item.type || 'unknown';
+            
+            div.innerHTML = `
+                <img src="${thumb}" alt="${title}" class="admin-item-thumb" onerror="this.style.display='none'">
+                <div class="admin-item-info">
+                    <h4>${title}</h4>
+                    <p>${type} • ${new Date(item.createdAt).toLocaleDateString()}</p>
+                </div>
+                <button class="admin-item-delete" data-id="${item.id}">Delete</button>
+            `;
+            
+            listEl.appendChild(div);
+        });
+        
+        // Add delete handlers
+        document.querySelectorAll('.admin-item-delete').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const itemId = btn.dataset.id;
+                if (confirm(currentLang === 'en' ? 'Delete this item?' : 'Удалить этот элемент?')) {
+                    await deleteAdminItem(currentAdminCategory, itemId);
+                }
+            });
+        });
+        
+    } catch (error) {
+        console.error('Error loading admin portfolio:', error);
+        listEl.innerHTML = `<p style="text-align: center; color: var(--accent-red);">${currentLang === 'en' ? 'Error loading items' : 'Ошибка загрузки'}</p>`;
+    }
+}
+
+async function addAdminItem(category, item) {
+    try {
+        const response = await fetch(`${API_BASE}/api/portfolio`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-User-ID': tg.initDataUnsafe?.user?.id || ''
+            },
+            body: JSON.stringify({ category, item })
+        });
+        
+        if (!response.ok) throw new Error('Failed to add');
+        
+        alert(currentLang === 'en' ? '✅ Item added!' : '✅ Элемент добавлен!');
+        await loadAdminPortfolio(category);
+        
+    } catch (error) {
+        console.error('Error adding item:', error);
+        alert(currentLang === 'en' ? '❌ Error adding item' : '❌ Ошибка добавления');
+    }
+}
+
+async function deleteAdminItem(category, itemId) {
+    try {
+        const response = await fetch(`${API_BASE}/api/portfolio?category=${category}&id=${itemId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-User-ID': tg.initDataUnsafe?.user?.id || ''
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to delete');
+        
+        alert(currentLang === 'en' ? '✅ Item deleted!' : '✅ Элемент удален!');
+        await loadAdminPortfolio(category);
+        
+    } catch (error) {
+        console.error('Error deleting item:', error);
+        alert(currentLang === 'en' ? '❌ Error deleting item' : '❌ Ошибка удаления');
+    }
+}
+
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize theme
@@ -1101,4 +1211,88 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Set theme colors
     applyTheme(currentTheme);
+    
+    // Show admin button if user is admin
+    if (isAdmin) {
+        document.querySelector('.admin-only').style.display = 'block';
+    }
+    
+    // Admin panel handlers
+    if (isAdmin) {
+        // Tab switching
+        document.querySelectorAll('.admin-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentAdminCategory = tab.dataset.category;
+                loadAdminPortfolio(currentAdminCategory);
+            });
+        });
+        
+        // Type change handler
+        const typeSelect = document.getElementById('admin-type');
+        const artistGroup = document.getElementById('admin-artist-group');
+        const trackGroup = document.getElementById('admin-track-group');
+        const audioGroup = document.getElementById('admin-audio-group');
+        
+        typeSelect.addEventListener('change', () => {
+            const type = typeSelect.value;
+            if (type === 'track') {
+                artistGroup.style.display = 'block';
+                trackGroup.style.display = 'block';
+                audioGroup.style.display = 'block';
+                document.getElementById('admin-artist').required = true;
+                document.getElementById('admin-track').required = true;
+                document.getElementById('admin-audio').required = true;
+            } else {
+                artistGroup.style.display = 'none';
+                trackGroup.style.display = 'none';
+                audioGroup.style.display = 'none';
+                document.getElementById('admin-artist').required = false;
+                document.getElementById('admin-track').required = false;
+                document.getElementById('admin-audio').required = false;
+            }
+        });
+        
+        // Add form handler
+        document.getElementById('admin-add-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const type = document.getElementById('admin-type').value;
+            const cover = document.getElementById('admin-cover').value;
+            
+            let item = { type };
+            
+            if (type === 'track') {
+                item.artist = document.getElementById('admin-artist').value;
+                item.track = document.getElementById('admin-track').value;
+                item.cover = cover;
+                item.audio = document.getElementById('admin-audio').value;
+            } else if (type === 'photo') {
+                item.file = cover;
+                item.title = { en: 'Photo', ru: 'Фото' };
+                item.description = { en: 'Portfolio item', ru: 'Элемент портфолио' };
+            } else if (type === 'video') {
+                item.file = cover;
+                item.title = { en: 'Video', ru: 'Видео' };
+                item.description = { en: 'Portfolio item', ru: 'Элемент портфолио' };
+            }
+            
+            await addAdminItem(currentAdminCategory, item);
+            
+            // Reset form
+            e.target.reset();
+        });
+        
+        // Load initial portfolio when admin screen is shown
+        const adminScreen = document.getElementById('admin-screen');
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.target.classList.contains('active')) {
+                    loadAdminPortfolio(currentAdminCategory);
+                }
+            });
+        });
+        observer.observe(adminScreen, { attributes: true, attributeFilter: ['class'] });
+    }
 });

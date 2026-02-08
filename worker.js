@@ -3,6 +3,9 @@
  * Fast, reliable, never goes down
  */
 
+// Admin user ID
+const ADMIN_USER_ID = 8017281019;
+
 export default {
   async fetch(request, env, ctx) {
     return handleRequest(request, env)
@@ -827,6 +830,115 @@ async function handleShowExamples(chatId, userId, token) {
   await sendMessage(chatId, finalText, keyboard, token)
 }
 
+// Admin API handlers
+async function handleAdminAPI(request, env, url) {
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, X-User-ID',
+  }
+  
+  // Handle CORS preflight
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders })
+  }
+  
+  // Check admin authorization
+  const userId = request.headers.get('X-User-ID')
+  if (!userId || parseInt(userId) !== ADMIN_USER_ID) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 403,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
+  }
+  
+  const path = url.pathname
+  
+  try {
+    // Get portfolio items
+    if (path === '/api/portfolio' && request.method === 'GET') {
+      const category = url.searchParams.get('category')
+      if (!category) {
+        return new Response(JSON.stringify({ error: 'Category required' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
+      
+      const key = `portfolio_${category}`
+      const data = await env.PORTFOLIO_KV.get(key, 'json')
+      
+      return new Response(JSON.stringify({ items: data || [] }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+    
+    // Add portfolio item
+    if (path === '/api/portfolio' && request.method === 'POST') {
+      const body = await request.json()
+      const { category, item } = body
+      
+      if (!category || !item) {
+        return new Response(JSON.stringify({ error: 'Category and item required' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
+      
+      const key = `portfolio_${category}`
+      const data = await env.PORTFOLIO_KV.get(key, 'json') || []
+      
+      // Add new item with ID
+      const newItem = {
+        ...item,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString()
+      }
+      
+      data.push(newItem)
+      await env.PORTFOLIO_KV.put(key, JSON.stringify(data))
+      
+      return new Response(JSON.stringify({ success: true, item: newItem }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+    
+    // Delete portfolio item
+    if (path === '/api/portfolio' && request.method === 'DELETE') {
+      const category = url.searchParams.get('category')
+      const itemId = url.searchParams.get('id')
+      
+      if (!category || !itemId) {
+        return new Response(JSON.stringify({ error: 'Category and ID required' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
+      
+      const key = `portfolio_${category}`
+      const data = await env.PORTFOLIO_KV.get(key, 'json') || []
+      
+      const filtered = data.filter(item => item.id !== itemId)
+      await env.PORTFOLIO_KV.put(key, JSON.stringify(filtered))
+      
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+    
+    return new Response(JSON.stringify({ error: 'Not found' }), {
+      status: 404,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
+    
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
+  }
+}
+
 // Main request handler
 async function handleRequest(request, env) {
   // Check if environment variables are set
@@ -839,6 +951,12 @@ async function handleRequest(request, env) {
   
   const BOT_TOKEN = env.BOT_TOKEN
   const ADMIN_CHAT_ID = env.ADMIN_CHAT_ID || null
+  const url = new URL(request.url)
+  
+  // Handle API endpoints for admin panel
+  if (url.pathname.startsWith('/api/')) {
+    return handleAdminAPI(request, env, url)
+  }
   
   // Handle GET requests (health check)
   if (request.method === 'GET') {
