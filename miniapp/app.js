@@ -818,6 +818,51 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 800);
     }
     
+    // Swipe down on home screen to show splash again
+    const homeScreen = document.getElementById('home-screen');
+    let homeSwipeStartY = 0;
+    let homeSwipeEndY = 0;
+    
+    homeScreen.addEventListener('touchstart', (e) => {
+        // Only if on home screen and not clicking on buttons
+        if (!e.target.closest('.menu-item')) {
+            homeSwipeStartY = e.touches[0].clientY;
+        }
+    });
+    
+    homeScreen.addEventListener('touchmove', (e) => {
+        if (!e.target.closest('.menu-item') && homeSwipeStartY > 0) {
+            homeSwipeEndY = e.touches[0].clientY;
+        }
+    });
+    
+    homeScreen.addEventListener('touchend', () => {
+        if (!isTransitioning && homeSwipeStartY > 0) {
+            const swipeDistance = homeSwipeEndY - homeSwipeStartY;
+            
+            // If swiped down more than 100px from top area
+            if (swipeDistance > 100 && homeSwipeStartY < 200) {
+                showSplashScreen();
+            }
+            
+            homeSwipeStartY = 0;
+            homeSwipeEndY = 0;
+        }
+    });
+    
+    function showSplashScreen() {
+        isTransitioning = true;
+        
+        // Show splash screen without animations
+        splashLogo.style.animation = 'none';
+        splashScreen.classList.add('active');
+        splashScreen.style.opacity = '1';
+        
+        setTimeout(() => {
+            isTransitioning = false;
+        }, 100);
+    }
+    
     // Close keyboard when clicking outside input fields
     document.addEventListener('click', (e) => {
         if (!e.target.matches('input, textarea')) {
