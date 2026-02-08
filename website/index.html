@@ -313,22 +313,26 @@
             </div>
 
             <div class="profile-balance-section">
-                <div class="balance-card">
-                    <div class="balance-card-header">
-                        <span class="balance-card-label" data-en="Your Balance" data-ru="Ваш баланс">Your Balance</span>
-                        <span class="balance-card-currency">MTV (Motive)</span>
+                <div class="mcbank-card">
+                    <img src="https://raw.githubusercontent.com/maori17227/mcrew-design-bot/main/images/mcbank.png" alt="MC Bank" class="mcbank-bg">
+                    <div class="mcbank-overlay"></div>
+                    <div class="mcbank-content">
+                        <div class="mcbank-header">
+                            <span class="mcbank-label" data-en="Your Balance" data-ru="Ваш баланс">Your Balance</span>
+                            <span class="mcbank-currency">MTV</span>
+                        </div>
+                        <div class="mcbank-amount">
+                            <span class="mcbank-symbol">ɱ</span>
+                            <span id="profile-balance-mtv" class="mcbank-value">0</span>
+                        </div>
+                        <button class="mcbank-btn" id="buy-mtv-button">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                <line x1="1" y1="10" x2="23" y2="10"></line>
+                            </svg>
+                            <span data-en="Buy MTV" data-ru="Купить MTV">Buy MTV</span>
+                        </button>
                     </div>
-                    <div class="balance-card-amount">
-                        <span class="balance-card-symbol">ɱ</span>
-                        <span id="profile-balance-mtv" class="balance-card-value">0</span>
-                    </div>
-                    <button class="buy-mtv-button" id="buy-mtv-button">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                            <line x1="1" y1="10" x2="23" y2="10"></line>
-                        </svg>
-                        <span data-en="Buy MTV" data-ru="Купить MTV">Buy MTV</span>
-                    </button>
                 </div>
             </div>
 

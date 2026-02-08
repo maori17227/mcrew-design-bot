@@ -2172,74 +2172,122 @@ section {
     margin-bottom: 30px;
 }
 
-.balance-card {
-    background: linear-gradient(135deg, rgba(255, 0, 0, 0.95) 0%, rgba(200, 0, 0, 0.9) 100%);
-    backdrop-filter: blur(20px);
+.mcbank-card {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 1.586;
     border-radius: 24px;
-    padding: 40px;
-    box-shadow: 0 20px 60px rgba(255, 0, 0, 0.3);
+    overflow: hidden;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
+    margin: 0 auto;
 }
 
-.balance-card-header {
+.mcbank-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mcbank-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 100%);
+}
+
+.mcbank-content {
+    position: relative;
+    z-index: 2;
+    padding: 32px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.mcbank-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
 }
 
-.balance-card-label {
+.mcbank-label {
+    font-size: 16px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.95);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.mcbank-currency {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.8);
-    text-transform: uppercase;
-    letter-spacing: 2px;
     font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 6px 16px;
+    border-radius: 14px;
 }
 
-.balance-card-currency {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.6);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.balance-card-amount {
+.mcbank-amount {
     display: flex;
     align-items: baseline;
     gap: 12px;
-    margin-bottom: 12px;
 }
 
-.balance-card-symbol {
+.mcbank-symbol {
     font-size: 42px;
-    color: #ffffff;
-    font-weight: 300;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 3px 15px rgba(0, 0, 0, 0.4);
 }
 
-.balance-card-value {
+.mcbank-value {
     font-size: 64px;
     font-weight: 700;
-    color: #ffffff;
+    color: white;
+    text-shadow: 0 3px 15px rgba(0, 0, 0, 0.4);
     line-height: 1;
 }
 
-.balance-card-mini {
+.mcbank-btn {
     display: flex;
-    align-items: baseline;
-    gap: 8px;
-    margin-bottom: 30px;
-}
-
-.balance-card-mini-value {
-    font-size: 20px;
-    color: rgba(255, 255, 255, 0.9);
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 32px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: none;
+    border-radius: 16px;
+    color: #000;
+    font-size: 16px;
     font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
-.balance-card-mini-label {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.6);
-    text-transform: uppercase;
-    letter-spacing: 1px;
+.mcbank-btn:hover {
+    background: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.mcbank-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.mcbank-btn svg {
+    width: 20px;
+    height: 20px;
 }
 
 .buy-mtv-button {

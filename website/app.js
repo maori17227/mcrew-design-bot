@@ -805,7 +805,7 @@ function updateProfileDisplay() {
     }
     
     if (balanceMtv) {
-        const mtv = Math.ceil(userBalance.mini / 100);
+        const mtv = Math.round(userBalance.mini / 100);
         balanceMtv.textContent = mtv;
     }
     
@@ -816,7 +816,7 @@ function updateProfileDisplay() {
 
 // Format MTV amount
 function formatMTV(mini) {
-    const mtv = Math.ceil(mini / 100);
+    const mtv = Math.round(mini / 100);
     return `${mtv}`;
 }
 
@@ -1449,7 +1449,7 @@ async function updateTONPrice() {
         
         if (data && data['the-open-network'] && data['the-open-network'].usd) {
             tonToUsdRate = data['the-open-network'].usd;
-            tonToMtvRate = Math.ceil(tonToUsdRate); // Round up in our favor
+            tonToMtvRate = Math.round(tonToUsdRate); // Round to nearest
             
             // Update rate display in profile
             const rateElements = document.querySelectorAll('[data-en="1 TON ≈ 100 ɱ"]');
@@ -1744,7 +1744,7 @@ const tonAmountInput = document.getElementById('ton-amount');
 if (tonAmountInput) {
     tonAmountInput.addEventListener('input', (e) => {
         const tonAmount = parseFloat(e.target.value) || 0;
-        const mtvAmount = Math.ceil(tonAmount * tonToMtvRate);
+        const mtvAmount = Math.round(tonAmount * tonToMtvRate);
         document.getElementById('ton-amount-mtv').textContent = mtvAmount;
     });
 }
@@ -1754,7 +1754,7 @@ const usdtAmountInput = document.getElementById('usdt-amount');
 if (usdtAmountInput) {
     usdtAmountInput.addEventListener('input', (e) => {
         const usdtAmount = parseFloat(e.target.value) || 0;
-        const mtvAmount = Math.ceil(usdtAmount * 1);
+        const mtvAmount = Math.round(usdtAmount * 1);
         document.getElementById('usdt-amount-mtv').textContent = mtvAmount;
     });
 }
@@ -1832,13 +1832,13 @@ if (tonDepositBtn) {
             await saveTransaction({
                 userId: currentUser.id,
                 type: 'deposit',
-                amount: Math.ceil(amount * tonToMtvRate),
+                amount: Math.round(amount * tonToMtvRate),
                 currency: 'TON',
                 txHash: result.boc
             });
             
             // Update balance
-            userBalance.mini += Math.ceil(amount * tonToMtvRate);
+            userBalance.mini += Math.round(amount * tonToMtvRate);
             localStorage.setItem('mcrew_balance_' + currentUser.id, JSON.stringify(userBalance));
             updateProfileDisplay();
             
@@ -1882,7 +1882,7 @@ if (usdtConfirmBtn) {
             await saveTransaction({
                 userId: currentUser.id,
                 type: 'deposit',
-                amount: Math.ceil(amount * 1),
+                amount: Math.round(amount * 1),
                 currency: 'USDT',
                 status: 'pending'
             });

@@ -87,17 +87,27 @@
             </div>
 
             <div class="profile-balance-card">
-                <div class="balance-header">
-                    <span class="balance-label" data-en="Your Balance" data-ru="Ваш баланс">Your Balance</span>
-                    <span class="balance-currency">MTV (Motive)</span>
+                <div class="mcbank-card">
+                    <img src="https://raw.githubusercontent.com/maori17227/mcrew-design-bot/main/images/mcbank.png" alt="MC Bank" class="mcbank-bg">
+                    <div class="mcbank-overlay"></div>
+                    <div class="mcbank-content">
+                        <div class="mcbank-header">
+                            <span class="mcbank-label" data-en="Your Balance" data-ru="Ваш баланс">Your Balance</span>
+                            <span class="mcbank-currency">MTV</span>
+                        </div>
+                        <div class="mcbank-amount">
+                            <span class="mcbank-symbol">ɱ</span>
+                            <span id="balance-mtv" class="mcbank-value">0</span>
+                        </div>
+                        <button class="mcbank-btn" id="buy-mtv-btn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                <line x1="1" y1="10" x2="23" y2="10"></line>
+                            </svg>
+                            <span data-en="Buy MTV" data-ru="Купить MTV">Buy MTV</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="balance-amount">
-                    <span class="balance-symbol">ɱ</span>
-                    <span id="balance-mtv" class="balance-value">0</span>
-                </div>
-                <button class="buy-mtv-btn" id="buy-mtv-btn">
-                    <span data-en="💳 Buy MTV" data-ru="💳 Купить MTV">💳 Buy MTV</span>
-                </button>
             </div>
 
             <div class="profile-stats">
