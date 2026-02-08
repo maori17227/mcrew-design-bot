@@ -1039,6 +1039,221 @@ async function handleRequest(request, env) {
         const text = update.message.text || ''
         const user = update.message.from
         
+        // Admin file upload handling
+        if (userId === ADMIN_USER_ID) {
+          // Handle photo uploads for portfolio
+          if (update.message.photo) {
+            const photo = update.message.photo[update.message.photo.length - 1] // Get largest photo
+            const caption = update.message.caption || ''
+            
+            // Parse caption: category|artist|track or category|title
+            const parts = caption.split('|').map(p => p.trim())
+            
+            if (parts.length >= 1) {
+              const category = parts[0].toLowerCase() // covers, posters, motion
+              
+              if (['covers', 'posters', 'motion'].includes(category)) {
+                let item = {
+                  type: 'photo',
+                  file: photo.file_id,
+                  id: Date.now().toString(),
+                  createdAt: new Date().toISOString()
+                }
+                
+                if (category === 'covers' && parts.length >= 3) {
+                  // Track cover: covers|artist|track
+                  item.type = 'track'
+                  item.artist = parts[1]
+                  item.track = parts[2]
+                  item.cover = photo.file_id
+                  item.audio = null // Will be added separately
+                } else {
+                  // Photo/poster
+                  item.title = { en: parts[1] || 'Portfolio Item', ru: parts[1] || 'Элемент портфолио' }
+                  item.description = { en: 'Portfolio work', ru: 'Работа из портфолио' }
+                }
+                
+                // Save to KV
+                const key = `portfolio_${category}`
+                const data = await env.PORTFOLIO_KV.get(key, 'json') || []
+                data.push(item)
+                await env.PORTFOLIO_KV.put(key, JSON.stringify(data))
+                
+                await sendMessage(chatId, `✅ Added to ${category}!\n\nItem ID: ${item.id}`, null, BOT_TOKEN)
+              } else {
+                await sendMessage(chatId, `❌ Invalid category. Use: covers, posters, or motion\n\nExample:\ncovers|Artist Name|Track Name`, null, BOT_TOKEN)
+              }
+            } else {
+              await sendMessage(chatId, `📝 Send photo with caption:\n\n<b>For track cover:</b>\ncovers|Artist Name|Track Name\n\n<b>For poster:</b>\nposters|Title\n\n<b>For motion:</b>\nmotion|Title`, null, BOT_TOKEN)
+            }
+            return new Response('OK', { status: 200 })
+          }
+          
+          // Handle audio uploads for tracks
+          if (update.message.audio || update.message.voice || update.message.document) {
+            const audio = update.message.audio || update.message.voice || update.message.document
+            const caption = update.message.caption || ''
+            
+            // Parse caption: itemId or category|artist|track
+            if (caption) {
+              const parts = caption.split('|').map(p => p.trim())
+              
+              if (parts.length === 1) {
+                // Update existing track with audio: itemId
+                const itemId = parts[0]
+                const key = 'portfolio_covers'
+                const data = await env.PORTFOLIO_KV.get(key, 'json') || []
+                
+                const item = data.find(i => i.id === itemId)
+                if (item && item.type === 'track') {
+                  item.audio = audio.file_id
+                  await env.PORTFOLIO_KV.put(key, JSON.stringify(data))
+                  await sendMessage(chatId, `✅ Audio added to track!\n\nArtist: ${item.artist}\nTrack: ${item.track}`, null, BOT_TOKEN)
+                } else {
+                  await sendMessage(chatId, `❌ Track not found with ID: ${itemId}`, null, BOT_TOKEN)
+                }
+              } else if (parts.length >= 3) {
+                // Create new track with audio: covers|artist|track
+                const category = parts[0].toLowerCase()
+                if (category === 'covers') {
+                  const item = {
+                    type: 'track',
+                    artist: parts[1],
+                    track: parts[2],
+                    cover: null, // Will be added separately
+                    audio: audio.file_id,
+                    id: Date.now().toString(),
+                    createdAt: new Date().toISOString()
+                  }
+                  
+                  const key = 'portfolio_covers'
+                  const data = await env.PORTFOLIO_KV.get(key, 'json') || []
+                  data.push(item)
+                  await env.PORTFOLIO_KV.put(key, JSON.stringify(data))
+                  
+                  await sendMessage(chatId, `✅ Track created!\n\nItem ID: ${item.id}\n\nNow send cover photo with caption:\n${item.id}`, null, BOT_TOKEN)
+                }
+              }
+            } else {
+              await sendMessage(chatId, `📝 Send audio with caption:\n\n<b>To add audio to existing track:</b>\nitemId\n\n<b>To create new track:</b>\ncovers|Artist Name|Track Name`, null, BOT_TOKEN)
+            }
+            return new Response('OK', { status: 200 })
+          }
+          
+          // Handle video uploads
+          if (update.message.video) {
+            const video = update.message.video
+            const caption = update.message.caption || ''
+            
+            const parts = caption.split('|').map(p => p.trim())
+            
+            if (parts.length >= 1) {
+              const category = parts[0].toLowerCase()
+              
+              if (category === 'motion') {
+                const item = {
+                  type: 'video',
+                  file: video.file_id,
+                  title: { en: parts[1] || 'Video', ru: parts[1] || 'Видео' },
+                  description: { en: 'Motion graphics', ru: 'Моушн графика' },
+                  id: Date.now().toString(),
+                  createdAt: new Date().toISOString()
+                }
+                
+                const key = 'portfolio_motion'
+                const data = await env.PORTFOLIO_KV.get(key, 'json') || []
+                data.push(item)
+                await env.PORTFOLIO_KV.put(key, JSON.stringify(data))
+                
+                await sendMessage(chatId, `✅ Video added to motion!\n\nItem ID: ${item.id}`, null, BOT_TOKEN)
+              } else {
+                await sendMessage(chatId, `❌ Invalid category. Use: motion\n\nExample:\nmotion|Video Title`, null, BOT_TOKEN)
+              }
+            } else {
+              await sendMessage(chatId, `📝 Send video with caption:\n\nmotion|Video Title`, null, BOT_TOKEN)
+            }
+            return new Response('OK', { status: 200 })
+          }
+          
+          // Admin commands
+          if (text === '/admin' || text === '/help') {
+            const helpText = `🔧 <b>ADMIN COMMANDS</b>
+
+<b>📸 Add Track Cover:</b>
+1. Send photo with caption:
+   <code>covers|Artist Name|Track Name</code>
+2. You'll get an Item ID
+3. Send audio with caption:
+   <code>ItemID</code>
+
+<b>🖼️ Add Poster:</b>
+Send photo with caption:
+<code>posters|Title</code>
+
+<b>🎬 Add Video:</b>
+Send video with caption:
+<code>motion|Title</code>
+
+<b>🗑️ Delete Item:</b>
+<code>/delete category itemId</code>
+Example: <code>/delete covers 1234567890</code>
+
+<b>📋 List Items:</b>
+<code>/list category</code>
+Example: <code>/list covers</code>`
+            
+            await sendMessage(chatId, helpText, null, BOT_TOKEN)
+            return new Response('OK', { status: 200 })
+          }
+          
+          // Delete command
+          if (text.startsWith('/delete ')) {
+            const parts = text.split(' ')
+            if (parts.length === 3) {
+              const category = parts[1]
+              const itemId = parts[2]
+              
+              const key = `portfolio_${category}`
+              const data = await env.PORTFOLIO_KV.get(key, 'json') || []
+              const filtered = data.filter(item => item.id !== itemId)
+              
+              if (filtered.length < data.length) {
+                await env.PORTFOLIO_KV.put(key, JSON.stringify(filtered))
+                await sendMessage(chatId, `✅ Item deleted from ${category}!`, null, BOT_TOKEN)
+              } else {
+                await sendMessage(chatId, `❌ Item not found`, null, BOT_TOKEN)
+              }
+            } else {
+              await sendMessage(chatId, `❌ Usage: /delete category itemId`, null, BOT_TOKEN)
+            }
+            return new Response('OK', { status: 200 })
+          }
+          
+          // List command
+          if (text.startsWith('/list ')) {
+            const category = text.split(' ')[1]
+            const key = `portfolio_${category}`
+            const data = await env.PORTFOLIO_KV.get(key, 'json') || []
+            
+            if (data.length === 0) {
+              await sendMessage(chatId, `📭 No items in ${category}`, null, BOT_TOKEN)
+            } else {
+              let listText = `📋 <b>${category.toUpperCase()}</b> (${data.length} items)\n\n`
+              data.forEach((item, i) => {
+                if (item.type === 'track') {
+                  listText += `${i + 1}. ${item.artist} - ${item.track}\n   ID: <code>${item.id}</code>\n\n`
+                } else {
+                  const title = item.title?.en || item.title || 'Item'
+                  listText += `${i + 1}. ${title}\n   ID: <code>${item.id}</code>\n\n`
+                }
+              })
+              await sendMessage(chatId, listText, null, BOT_TOKEN)
+            }
+            return new Response('OK', { status: 200 })
+          }
+        }
+        
+        // Regular user messages
         if (text === '/start') {
           // Set default language to English
           setUserLanguage(userId, 'en')
