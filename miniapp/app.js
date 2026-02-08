@@ -1841,16 +1841,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
-    // Buy MTV button
-    const buyMtvBtn = document.getElementById('buy-mtv-btn');
-    if (buyMtvBtn) {
-        buyMtvBtn.addEventListener('click', () => {
-            playSound('select');
-            alert(currentLang === 'en' 
-                ? '💳 MTV Purchase\n\nComing soon! You will be able to buy MTV using Telegram Stars.\n\n1 ⭐ = 10 ɱ' 
-                : '💳 Покупка MTV\n\nСкоро! Вы сможете купить MTV используя Telegram Stars.\n\n1 ⭐ = 10 ɱ');
-        });
-    }
+    // Buy MTV button - handled in crypto section below
     
     // Set theme colors
     applyTheme(currentTheme);
@@ -1977,4 +1968,348 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         observer.observe(adminScreen, { attributes: true, attributeFilter: ['class'] });
     }
+});
+
+
+// ============================================
+// CRYPTO PAYMENT SYSTEM FOR MINIAPP
+// ============================================
+
+// Initialize TON Connect
+function initTONConnectMiniapp() {
+    try {
+        tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: 'https://raw.githubusercontent.com/maori17227/mcrew-design-bot/main/miniapp/tonconnect-manifest.json',
+            buttonRootId: null
+        });
+    } catch (error) {
+        console.log('TON Connect init error:', error);
+    }
+}
+
+// Show crypto modal
+function showCryptoModal() {
+    const modal = document.getElementById('crypto-modal');
+    modal.classList.add('active');
+    playSound('select');
+}
+
+// Close crypto modal
+function closeCryptoModal() {
+    const modal = document.getElementById('crypto-modal');
+    modal.classList.remove('active');
+}
+
+// Copy address helper
+function copyAddressMiniapp() {
+    const address = document.getElementById('usdt-address-miniapp').textContent;
+    
+    // Try to copy to clipboard
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(address).then(() => {
+            tg.showAlert(currentLang === 'en' ? 
+                '✅ Address copied!' : 
+                '✅ Адрес скопирован!');
+        });
+    } else {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = address;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        tg.showAlert(currentLang === 'en' ? 
+            '✅ Address copied!' : 
+            '✅ Адрес скопирован!');
+    }
+}
+
+// Save transaction
+async function saveTransactionMiniapp(transaction) {
+    try {
+        const response = await fetch(`${API_BASE}/api/transactions`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(transaction)
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to save transaction');
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error saving transaction:', error);
+        throw error;
+    }
+}
+
+// Setup crypto payment event listeners
+function setupCryptoPaymentListeners() {
+    // Crypto tab switching
+    document.querySelectorAll('.crypto-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const method = tab.dataset.method;
+            selectedCrypto = method;
+            
+            // Update tabs
+            document.querySelectorAll('.crypto-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.crypto-method-content').forEach(c => c.classList.remove('active'));
+            document.querySelector(`.crypto-method-content[data-method="${method}"]`).classList.add('active');
+            
+            playSound('select');
+        });
+    });
+
+    // Amount button selection
+    document.querySelectorAll('.amount-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remove active from all buttons in same group
+            const parent = btn.closest('.amount-buttons');
+            parent.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Get amount
+            if (btn.dataset.ton) {
+                selectedAmount = parseFloat(btn.dataset.ton);
+            } else if (btn.dataset.usdt) {
+                selectedAmount = parseFloat(btn.dataset.usdt);
+            } else if (btn.dataset.stars) {
+                selectedAmount = parseFloat(btn.dataset.stars);
+            }
+            
+            playSound('select');
+        });
+    });
+
+    // TON custom amount
+    const tonCustomInput = document.getElementById('ton-custom-amount');
+    if (tonCustomInput) {
+        tonCustomInput.addEventListener('input', (e) => {
+            const amount = parseFloat(e.target.value) || 0;
+            const mtv = Math.floor(amount * 100);
+            document.getElementById('ton-mtv-preview').textContent = mtv;
+            selectedAmount = amount;
+            
+            // Deselect preset buttons
+            document.querySelectorAll('.crypto-method-content[data-method="ton"] .amount-btn').forEach(b => b.classList.remove('active'));
+        });
+    }
+
+    // USDT custom amount
+    const usdtCustomInput = document.getElementById('usdt-custom-amount');
+    if (usdtCustomInput) {
+        usdtCustomInput.addEventListener('input', (e) => {
+            const amount = parseFloat(e.target.value) || 0;
+            const mtv = Math.floor(amount * 100);
+            document.getElementById('usdt-mtv-preview').textContent = mtv;
+            selectedAmount = amount;
+            
+            // Deselect preset buttons
+            document.querySelectorAll('.crypto-method-content[data-method="usdt"] .amount-btn').forEach(b => b.classList.remove('active'));
+        });
+    }
+
+    // TON Payment
+    const tonPayBtn = document.getElementById('ton-pay-btn');
+    if (tonPayBtn) {
+        tonPayBtn.addEventListener('click', async () => {
+            if (!selectedAmount || selectedAmount < 0.1) {
+                tg.showAlert(currentLang === 'en' ? 
+                    'Minimum amount: 0.1 TON' : 
+                    'Минимальная сумма: 0.1 TON');
+                return;
+            }
+            
+            try {
+                if (!tonConnectUI) {
+                    initTONConnectMiniapp();
+                }
+                
+                // Connect wallet if not connected
+                if (!tonConnectUI.connected) {
+                    await tonConnectUI.openModal();
+                    return;
+                }
+                
+                // Send transaction
+                const transaction = {
+                    validUntil: Math.floor(Date.now() / 1000) + 600,
+                    messages: [
+                        {
+                            address: 'EQDtFpEwcFAEcRe5mLVh2N6C0x-_hJEM7W61_JLnSF74p4q2',
+                            amount: (selectedAmount * 1000000000).toString(),
+                            payload: btoa(JSON.stringify({
+                                userId: currentUser.id,
+                                type: 'deposit',
+                                amount: Math.floor(selectedAmount * 100)
+                            }))
+                        }
+                    ]
+                };
+                
+                const result = await tonConnectUI.sendTransaction(transaction);
+                
+                // Save transaction
+                await saveTransactionMiniapp({
+                    userId: currentUser.id,
+                    type: 'deposit',
+                    amount: Math.floor(selectedAmount * 100),
+                    currency: 'TON',
+                    txHash: result.boc,
+                    status: 'completed'
+                });
+                
+                // Update balance
+                userBalance.mini += Math.floor(selectedAmount * 100);
+                localStorage.setItem('mcrew_balance', JSON.stringify(userBalance));
+                updateProfileUI();
+                
+                tg.showAlert(currentLang === 'en' ? 
+                    '✅ Payment successful!' : 
+                    '✅ Оплата успешна!');
+                
+                closeCryptoModal();
+                
+            } catch (error) {
+                console.error('TON payment error:', error);
+                tg.showAlert(currentLang === 'en' ? 
+                    'Payment failed. Please try again.' : 
+                    'Ошибка оплаты. Попробуйте снова.');
+            }
+        });
+    }
+
+    // USDT Confirmation
+    const usdtConfirmBtn = document.getElementById('usdt-confirm-btn');
+    if (usdtConfirmBtn) {
+        usdtConfirmBtn.addEventListener('click', async () => {
+            if (!selectedAmount || selectedAmount < 1) {
+                tg.showAlert(currentLang === 'en' ? 
+                    'Minimum amount: 1 USDT' : 
+                    'Минимальная сумма: 1 USDT');
+                return;
+            }
+            
+            const confirmed = await tg.showConfirm(currentLang === 'en' ? 
+                `Confirm USDT deposit of ${selectedAmount} USDT?\n\nMake sure you've sent the funds to the address shown.` :
+                `Подтвердить пополнение ${selectedAmount} USDT?\n\nУбедитесь, что вы отправили средства на указанный адрес.`);
+            
+            if (!confirmed) return;
+            
+            try {
+                // Save pending transaction
+                await saveTransactionMiniapp({
+                    userId: currentUser.id,
+                    type: 'deposit',
+                    amount: Math.floor(selectedAmount * 100),
+                    currency: 'USDT',
+                    status: 'pending'
+                });
+                
+                tg.showAlert(currentLang === 'en' ? 
+                    '✅ Deposit request received!\n\nYour balance will be updated after confirmation (usually 10-30 minutes).' :
+                    '✅ Запрос на пополнение получен!\n\nВаш баланс будет обновлен после подтверждения (обычно 10-30 минут).');
+                
+                closeCryptoModal();
+                
+            } catch (error) {
+                console.error('USDT confirmation error:', error);
+                tg.showAlert(currentLang === 'en' ? 
+                    'Error processing request. Please try again.' : 
+                    'Ошибка обработки запроса. Попробуйте снова.');
+            }
+        });
+    }
+
+    // Telegram Stars Payment
+    const starsPayBtn = document.getElementById('stars-pay-btn');
+    if (starsPayBtn) {
+        starsPayBtn.addEventListener('click', async () => {
+            if (!selectedAmount || selectedAmount < 1) {
+                tg.showAlert(currentLang === 'en' ? 
+                    'Minimum amount: 1 Star' : 
+                    'Минимальная сумма: 1 Star');
+                return;
+            }
+            
+            try {
+                // Create invoice for Telegram Stars
+                const invoice = {
+                    title: 'MTV Purchase',
+                    description: `Buy ${Math.floor(selectedAmount * 10)} ɱ`,
+                    payload: JSON.stringify({
+                        userId: currentUser.id,
+                        amount: Math.floor(selectedAmount * 10),
+                        type: 'mtv_purchase'
+                    }),
+                    provider_token: '',
+                    currency: 'XTR',
+                    prices: [{
+                        label: `${Math.floor(selectedAmount * 10)} ɱ`,
+                        amount: selectedAmount
+                    }]
+                };
+                
+                // Open invoice
+                tg.openInvoice(invoice.url, (status) => {
+                    if (status === 'paid') {
+                        // Update balance
+                        userBalance.mini += Math.floor(selectedAmount * 10);
+                        localStorage.setItem('mcrew_balance', JSON.stringify(userBalance));
+                        updateProfileUI();
+                        
+                        tg.showAlert(currentLang === 'en' ? 
+                            '✅ Payment successful!' : 
+                            '✅ Оплата успешна!');
+                        
+                        closeCryptoModal();
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Stars payment error:', error);
+                tg.showAlert(currentLang === 'en' ? 
+                    'Payment failed. Please try again.' : 
+                    'Ошибка оплаты. Попробуйте снова.');
+            }
+        });
+    }
+
+    // Buy MTV button handler
+    const buyMtvBtn = document.getElementById('buy-mtv-btn');
+    if (buyMtvBtn) {
+        buyMtvBtn.addEventListener('click', () => {
+            showCryptoModal();
+        });
+    }
+
+    // Close modal button
+    const cryptoModalClose = document.getElementById('crypto-modal-close');
+    if (cryptoModalClose) {
+        cryptoModalClose.addEventListener('click', () => {
+            closeCryptoModal();
+        });
+    }
+
+    // Close on overlay click
+    const cryptoModalOverlay = document.querySelector('.crypto-modal-overlay');
+    if (cryptoModalOverlay) {
+        cryptoModalOverlay.addEventListener('click', () => {
+            closeCryptoModal();
+        });
+    }
+}
+
+// Initialize crypto payment system
+document.addEventListener('DOMContentLoaded', () => {
+    initTONConnectMiniapp();
+    setupCryptoPaymentListeners();
 });
