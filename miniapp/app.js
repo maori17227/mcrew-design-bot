@@ -1079,10 +1079,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize sounds
     initSounds();
     
-    // Play startup sound
-    setTimeout(() => {
-        playSound('startup');
-    }, 100);
+    // Don't play startup sound on load - it will play after swipe animation
     
     // Splash screen swipe up
     const splashScreen = document.getElementById('splash-screen');
@@ -1233,8 +1230,13 @@ document.addEventListener('DOMContentLoaded', () => {
         homeScreen.style.opacity = '1';
         hero.style.opacity = '0';
         hero.style.transform = 'translateY(0)';
-        menuGrid.style.opacity = '0';
-        menuGrid.style.transform = 'translateY(100px)';
+        menuGrid.style.opacity = '1';
+        
+        // Hide all menu items initially
+        menuItems.forEach(item => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(50px)';
+        });
         
         // Phase 1: Logo moves to top and shrinks (0-800ms)
         splashLogo.style.transition = 'all 0.8s cubic-bezier(0.25, 0.1, 0.25, 1)';
@@ -1253,23 +1255,21 @@ document.addEventListener('DOMContentLoaded', () => {
             hero.style.opacity = '1';
         }, 800);
         
-        // Phase 4: Menu slides up from bottom (900-1600ms)
+        // Phase 4: Play startup sound when logo is in place (850ms)
         setTimeout(() => {
-            menuGrid.style.transition = 'all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)'; // Bouncy easing
-            menuGrid.style.opacity = '1';
-            menuGrid.style.transform = 'translateY(0)';
-            
-            // Stagger animation for each menu item
+            playSound('startup');
+        }, 850);
+        
+        // Phase 5: Menu items slide up one by one (950ms start)
+        setTimeout(() => {
             menuItems.forEach((item, index) => {
-                item.style.opacity = '0';
-                item.style.transform = 'translateY(30px)';
                 setTimeout(() => {
-                    item.style.transition = 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                    item.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
                     item.style.opacity = '1';
                     item.style.transform = 'translateY(0)';
-                }, index * 80); // 80ms delay between each item
+                }, index * 150); // 150ms delay between each button
             });
-        }, 900);
+        }, 950);
         
         // Cleanup (1300ms)
         setTimeout(() => {
