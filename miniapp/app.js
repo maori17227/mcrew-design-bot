@@ -257,119 +257,119 @@ const PORTFOLIO = {
                 artist: 'whylovly, iwabi!',
                 track: 'эфирный план',
                 cover: `${GITHUB_BASE}porftolio/covers/whylovly iwabi! эфирный план.jpg`,
-                audio: `${GITHUB_BASE}porftolio/covers/trailers/Эфирный план - iwabi!.mp3`
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/трейлеры - Эфирный план - iwabi!.wav`
             },
             {
                 type: 'track',
                 artist: 'whylovly',
                 track: 'любят',
                 cover: `${GITHUB_BASE}porftolio/covers/whylovly любят .jpg`,
-                audio: `${GITHUB_BASE}porftolio/covers/trailers/любят - whylovly.mp3`
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/трейлеры - любят - whylovly.wav`
             },
             {
                 type: 'track',
                 artist: 'whylovly',
                 track: 'нужен покой',
                 cover: `${GITHUB_BASE}porftolio/covers/whylovly lowsignal.jpg`,
-                audio: `${GITHUB_BASE}porftolio/covers/trailers/нужен покой - whylovly.mp3`
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/трейлеры - нужен покой - whylovly.wav`
             },
             {
                 type: 'track',
                 artist: 'whylovly',
                 track: 'прошу',
                 cover: `${GITHUB_BASE}porftolio/covers/whylovly vindictaNots.jpg`,
-                audio: `${GITHUB_BASE}porftolio/covers/trailers/прошу - whylovly.mp3`
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/трейлеры - прошу - whylovly.wav`
             },
             {
                 type: 'track',
                 artist: 'so brody',
                 track: '1TAKE',
                 cover: `${GITHUB_BASE}porftolio/covers/so brody 1take.jpg`,
-                audio: `${GITHUB_BASE}porftolio/covers/trailers/1TAKE - So brody.mp3`
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/трейлеры - 1TAKE - So brody.wav`
             },
             {
                 type: 'track',
                 artist: 'so brody',
                 track: 'AMERICA2',
                 cover: `${GITHUB_BASE}porftolio/covers/so brody amecrica 2 .jpg`,
-                audio: `${GITHUB_BASE}porftolio/covers/trailers/AMERICA2 - So brody.mp3`
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/трейлеры - AMERICA2 - So brody.wav`
             },
             {
                 type: 'track',
                 artist: 'lil flash$ ft. Kinderlil',
                 track: 'best',
                 cover: `${GITHUB_BASE}porftolio/covers/lil flash$ ft. Kinderlil Best.jpg`,
-                audio: `${GITHUB_BASE}porftolio/covers/trailers/best (ft. kinderlil).mp3`
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/трейлеры - best (ft. kinderlil).wav`
             },
             {
                 type: 'track',
                 artist: 'angelik',
                 track: 'wya',
                 cover: `${GITHUB_BASE}porftolio/covers/angelik wya.jpg`,
-                audio: `${GITHUB_BASE}porftolio/covers/trailers/wya - angelik.mp3`
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/трейлеры - wya - angelik.wav`
             },
             {
                 type: 'track',
                 artist: 'HELLOVERCAVI, SODA LUV',
                 track: 'СВАГА',
                 cover: `${GITHUB_BASE}porftolio/covers/HELLOVERCAVI, SODA LUV СВАГА.jpg`,
-                audio: `${GITHUB_BASE}porftolio/covers/trailers/СВАГА - HELLOVERCAVI.mp3`
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/трейлеры - СВАГА - HELLOVERCAVI.wav`
             },
             {
                 type: 'track',
                 artist: 'HELLOVERCAVI',
                 track: 'Калыван кляйн',
                 cover: `${GITHUB_BASE}porftolio/covers/HELLOVERCAVI Калыван кляйн.jpg`,
-                audio: `${GITHUB_BASE}porftolio/covers/trailers/Калыван Кляйн - HELLOVERCAVI.mp3`
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/трейлеры - Калыван Кляйн - HELLOVERCAVI.wav`
             },
             {
                 type: 'track',
                 artist: 'valeksi',
                 track: 'BIRKIN',
                 cover: `${GITHUB_BASE}porftolio/covers/valeksi BIRKIN.jpg`,
-                audio: `${GITHUB_BASE}porftolio/covers/trailers/BIRKIN - Valeksi.mp3`
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/трейлеры - BIRKIN - Valeksi.wav`
             },
             {
                 type: 'track',
                 artist: 'valeksi',
                 track: 'GEEK0INIGHT',
                 cover: `${GITHUB_BASE}porftolio/covers/valeksi GEEK0INIGHT.jpg`,
-                audio: `${GITHUB_BASE}porftolio/covers/trailers/GEEK0lNIGHT - Valeksi.mp3`
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/трейлеры - GEEK0lNIGHT - Valeksi.wav`
             },
             {
                 type: 'track',
                 artist: 'valeksi',
                 track: 'ZAPOMNISH',
                 cover: `${GITHUB_BASE}porftolio/covers/valeksi ZAPOMNISH.jpg`,
-                audio: `${GITHUB_BASE}porftolio/covers/trailers/ZAPOMNISH - Valeksi.mp3`
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/трейлеры - ZAPOMNISH - Valeksi.wav`
             },
             {
                 type: 'track',
                 artist: 'valeksi',
                 track: 'SELF-LOVER',
                 cover: `${GITHUB_BASE}porftolio/covers/valeksi RAGE LOVER-EP.jpg`,
-                audio: `${GITHUB_BASE}porftolio/covers/trailers/SELF-LOVER - Valeksi.mp3`
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/трейлеры - valeksi-SELF-LOVER.wav`
             },
             {
                 type: 'track',
                 artist: 'valeksi',
                 track: 'FILL ME UP',
                 cover: `${GITHUB_BASE}porftolio/covers/valeksi LAST CASE.jpg`,
-                audio: `${GITHUB_BASE}porftolio/covers/trailers/FILL ME UP - Valeksi.mp3`
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/трейлеры - FILL ME UP - Valeksi.wav`
             },
             {
                 type: 'track',
                 artist: 'fffuckyousway',
                 track: 'fff',
                 cover: `${GITHUB_BASE}porftolio/covers/fffuckyousway - fff.jpg`,
-                audio: `${GITHUB_BASE}porftolio/covers/trailers/fffuckyousway.mp3`
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/трейлеры - fffuckyousway.wav`
             },
             {
                 type: 'track',
                 artist: 'thot$14er',
                 track: 'курить',
                 cover: `${GITHUB_BASE}porftolio/covers/thot$14er %23курить.jpg`,
-                audio: `${GITHUB_BASE}porftolio/covers/trailers/Курить - thot$14er.mp3`
+                audio: `${GITHUB_BASE}porftolio/covers/trailers/трейлеры - Курить - thot$14er.wav`
             }
         ]
     },
@@ -668,7 +668,7 @@ async function loadPortfolioCategory(category) {
                     ${item.audio ? `
                         <div class="custom-player" data-player-id="${playerId}">
                             <audio id="${playerId}" preload="metadata">
-                                <source src="${item.audio}" type="audio/mpeg">
+                                <source src="${item.audio}" type="audio/wav">
                             </audio>
                             <button class="play-btn" data-audio-id="${playerId}">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
