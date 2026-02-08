@@ -1072,9 +1072,21 @@ async function handleRequest(request, env) {
               const category = parts[0].toLowerCase() // covers, posters, motion
               
               if (['covers', 'posters', 'motion'].includes(category)) {
+                // Get file URL from Telegram
+                const fileResponse = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${photo.file_id}`)
+                const fileData = await fileResponse.json()
+                
+                if (!fileData.ok) {
+                  await sendMessage(chatId, `❌ Ошибка получения файла`, null, BOT_TOKEN)
+                  return new Response('OK', { status: 200 })
+                }
+                
+                const fileUrl = `https://api.telegram.org/file/bot${BOT_TOKEN}/${fileData.result.file_path}`
+                
                 let item = {
                   type: 'photo',
-                  file: photo.file_id,
+                  file: fileUrl,
+                  file_id: photo.file_id,
                   id: Date.now().toString(),
                   createdAt: new Date().toISOString()
                 }
@@ -1084,8 +1096,11 @@ async function handleRequest(request, env) {
                   item.type = 'track'
                   item.artist = parts[1]
                   item.track = parts[2]
-                  item.cover = photo.file_id
+                  item.cover = fileUrl
+                  item.cover_file_id = photo.file_id
                   item.audio = null // Will be added separately
+                  delete item.file
+                  delete item.file_id
                 } else {
                   // Photo/poster
                   item.title = { en: parts[1] || 'Portfolio Item', ru: parts[1] || 'Элемент портфолио' }
@@ -1113,6 +1128,17 @@ async function handleRequest(request, env) {
             const audio = update.message.audio || update.message.voice || update.message.document
             const caption = update.message.caption || ''
             
+            // Get audio file URL
+            const audioFileResponse = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${audio.file_id}`)
+            const audioFileData = await audioFileResponse.json()
+            
+            if (!audioFileData.ok) {
+              await sendMessage(chatId, `❌ Ошибка получения аудио файла`, null, BOT_TOKEN)
+              return new Response('OK', { status: 200 })
+            }
+            
+            const audioUrl = `https://api.telegram.org/file/bot${BOT_TOKEN}/${audioFileData.result.file_path}`
+            
             // Parse caption: itemId or category|artist|track
             if (caption) {
               const parts = caption.split('|').map(p => p.trim())
@@ -1125,7 +1151,8 @@ async function handleRequest(request, env) {
                 
                 const item = data.find(i => i.id === itemId)
                 if (item && item.type === 'track') {
-                  item.audio = audio.file_id
+                  item.audio = audioUrl
+                  item.audio_file_id = audio.file_id
                   await env.PORTFOLIO_KV.put(key, JSON.stringify(data))
                   await sendMessage(chatId, `✅ Аудио добавлено к треку!\n\nАртист: ${item.artist}\nТрек: ${item.track}`, null, BOT_TOKEN)
                 } else {
@@ -1140,7 +1167,8 @@ async function handleRequest(request, env) {
                     artist: parts[1],
                     track: parts[2],
                     cover: null, // Will be added separately
-                    audio: audio.file_id,
+                    audio: audioUrl,
+                    audio_file_id: audio.file_id,
                     id: Date.now().toString(),
                     createdAt: new Date().toISOString()
                   }
@@ -1164,6 +1192,17 @@ async function handleRequest(request, env) {
             const video = update.message.video
             const caption = update.message.caption || ''
             
+            // Get video file URL
+            const videoFileResponse = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${video.file_id}`)
+            const videoFileData = await videoFileResponse.json()
+            
+            if (!videoFileData.ok) {
+              await sendMessage(chatId, `❌ Ошибка получения видео файла`, null, BOT_TOKEN)
+              return new Response('OK', { status: 200 })
+            }
+            
+            const videoUrl = `https://api.telegram.org/file/bot${BOT_TOKEN}/${videoFileData.result.file_path}`
+            
             const parts = caption.split('|').map(p => p.trim())
             
             if (parts.length >= 1) {
@@ -1172,7 +1211,8 @@ async function handleRequest(request, env) {
               if (category === 'motion') {
                 const item = {
                   type: 'video',
-                  file: video.file_id,
+                  file: videoUrl,
+                  file_id: video.file_id,
                   title: { en: parts[1] || 'Video', ru: parts[1] || 'Видео' },
                   description: { en: 'Motion graphics', ru: 'Моушн графика' },
                   id: Date.now().toString(),
