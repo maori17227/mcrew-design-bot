@@ -1248,31 +1248,9 @@ body {
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-}
-
-.mcbank-header {
-    display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-}
-
-.mcbank-label {
-    font-size: 14px;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.9);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.mcbank-currency {
-    font-size: 12px;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.8);
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    padding: 4px 12px;
-    border-radius: 12px;
+    gap: 20px;
 }
 
 .mcbank-amount {
@@ -1282,14 +1260,14 @@ body {
 }
 
 .mcbank-symbol {
-    font-size: 32px;
+    font-size: 36px;
     font-weight: 700;
     color: white;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .mcbank-value {
-    font-size: 48px;
+    font-size: 52px;
     font-weight: 700;
     color: white;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
@@ -1312,6 +1290,7 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    width: 100%;
 }
 
 .mcbank-btn:active {
@@ -2346,4 +2325,18 @@ body {
 .crypto-warning p {
     font-size: 12px;
     line-height: 1.5;
+}
+
+
+/* Fix TON Connect modal z-index */
+#tc-widget-root {
+    z-index: 99999 !important;
+}
+
+#tc-widget-root > div {
+    z-index: 99999 !important;
+}
+
+.tc-modal {
+    z-index: 99999 !important;
 }

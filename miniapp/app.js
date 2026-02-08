@@ -32,6 +32,9 @@ function initUser() {
         // Load user balance from API or localStorage
         loadUserBalance();
         
+        // Start USDT transaction checker
+        startUSDTChecker();
+        
         console.log('User auto-logged in:', currentUser);
     } else {
         // Try to load from localStorage
@@ -39,6 +42,7 @@ function initUser() {
         if (saved) {
             currentUser = JSON.parse(saved);
             loadUserBalance();
+            startUSDTChecker();
         }
     }
 }
@@ -2424,5 +2428,120 @@ function generateUSDTQRMiniapp() {
         if (qrContainer) {
             qrContainer.innerHTML = `<div style="padding: 15px; text-align: center; font-size: 11px; word-break: break-all;">${address}</div>`;
         }
+    }
+}
+
+
+// USDT Transaction Checker
+const USDT_ADDRESS = 'TJDENsfBJs4RFETt1X1W8wMDc8M5XnJhCe';
+const USDT_CONTRACT = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'; // USDT TRC-20 contract
+let checkingTransactions = false;
+let lastCheckedTimestamp = 0;
+
+async function checkUSDTTransactions() {
+    if (checkingTransactions) return;
+    checkingTransactions = true;
+    
+    try {
+        // Get last checked timestamp from localStorage
+        const savedTimestamp = localStorage.getItem('last_usdt_check_' + currentUser.id);
+        if (savedTimestamp) {
+            lastCheckedTimestamp = parseInt(savedTimestamp);
+        }
+        
+        // Fetch transactions from TronScan API
+        const response = await fetch(`https://apilist.tronscanapi.com/api/token_trc20/transfers?relatedAddress=${USDT_ADDRESS}&contract_address=${USDT_CONTRACT}&limit=20`);
+        
+        if (!response.ok) {
+            console.error('Failed to fetch USDT transactions');
+            checkingTransactions = false;
+            return;
+        }
+        
+        const data = await response.json();
+        
+        if (data.token_transfers && data.token_transfers.length > 0) {
+            // Filter new transactions
+            const newTransactions = data.token_transfers.filter(tx => {
+                return tx.block_ts > lastCheckedTimestamp && 
+                       tx.to_address === USDT_ADDRESS &&
+                       tx.confirmed;
+            });
+            
+            // Process new transactions
+            for (const tx of newTransactions) {
+                const amount = parseFloat(tx.quant) / 1000000; // USDT has 6 decimals
+                const mtvAmount = Math.round(amount); // 1 USDT = 1 MTV
+                
+                // Add to balance
+                userBalance.mini += mtvAmount * 100; // Convert to mini
+                
+                // Save transaction
+                await saveTransaction({
+                    userId: currentUser.id,
+                    type: 'deposit',
+                    amount: mtvAmount * 100,
+                    currency: 'USDT',
+                    txHash: tx.transaction_id,
+                    timestamp: tx.block_ts
+                });
+                
+                // Show notification
+                showNotification(currentLang === 'en' ? 
+                    `+${mtvAmount} ɱ deposited!` : 
+                    `+${mtvAmount} ɱ зачислено!`);
+                
+                // Update last checked timestamp
+                if (tx.block_ts > lastCheckedTimestamp) {
+                    lastCheckedTimestamp = tx.block_ts;
+                }
+            }
+            
+            // Save balance and timestamp
+            if (newTransactions.length > 0) {
+                localStorage.setItem('mcrew_balance_' + currentUser.id, JSON.stringify(userBalance));
+                localStorage.setItem('last_usdt_check_' + currentUser.id, lastCheckedTimestamp.toString());
+                updateProfileDisplay();
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error checking USDT transactions:', error);
+    }
+    
+    checkingTransactions = false;
+}
+
+// Start checking transactions every 30 seconds
+function startUSDTChecker() {
+    if (!currentUser) return;
+    
+    // Check immediately
+    checkUSDTTransactions();
+    
+    // Then check every 30 seconds
+    setInterval(() => {
+        if (currentUser) {
+            checkUSDTTransactions();
+        }
+    }, 30000);
+}
+
+// Save transaction to backend
+async function saveTransaction(transaction) {
+    try {
+        const response = await fetch(`${API_BASE}/api/transactions`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(transaction)
+        });
+        
+        if (response.ok) {
+            console.log('Transaction saved successfully');
+        }
+    } catch (error) {
+        console.error('Error saving transaction:', error);
     }
 }
