@@ -862,7 +862,6 @@ async function handleAdminAPI(request, env, url) {
       const orderText = `🔔 <b>НОВЫЙ ЗАКАЗ из Mini App!</b>
 
 👤 <b>Клиент:</b> ${userName} (@${userUsername})
-🆔 <b>User ID:</b> ${userId}
 
 📋 <b>Услуга:</b> ${service}
 
