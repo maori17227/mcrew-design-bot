@@ -5,7 +5,7 @@ compatibility_date = "2024-01-01"
 # KV Namespace for portfolio storage
 [[kv_namespaces]]
 binding = "PORTFOLIO_KV"
-id = "YOUR_KV_NAMESPACE_ID"
+id = "db3c31ed75934b19a4b90bccc7d89c08"
 
 # Add your environment variables in Cloudflare Dashboard:
 # Workers & Pages → Your Worker → Settings → Variables

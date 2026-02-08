@@ -8,7 +8,7 @@ const ADMIN_USER_ID = 8017281019;
 const isAdmin = tg.initDataUnsafe?.user?.id === ADMIN_USER_ID;
 
 // API base URL (your Cloudflare Worker URL)
-const API_BASE = 'https://mcrew-bot.maori17227.workers.dev';
+const API_BASE = 'https://mcrew-bot.141avatar141.workers.dev';
 
 // Setup Main Button to open bot
 tg.MainButton.text = 'Open Bot';
