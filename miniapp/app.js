@@ -1182,6 +1182,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Send order to worker API
         try {
+            console.log('Sending order to API...', formData);
+            
             const response = await fetch(`${API_BASE}/api/order`, {
                 method: 'POST',
                 headers: {
@@ -1190,7 +1192,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(formData)
             });
             
-            if (!response.ok) {
+            console.log('Response status:', response.status);
+            
+            const result = await response.json();
+            console.log('Response data:', result);
+            
+            if (!response.ok || !result.success) {
                 throw new Error('Failed to send order');
             }
             
