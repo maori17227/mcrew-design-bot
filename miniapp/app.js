@@ -1092,6 +1092,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let isTransitioning = false;
     let isDragging = false;
     
+    // Define exact positions
+    const LOGO_START_Y = window.innerHeight / 2; // Center of screen
+    const LOGO_END_Y = 70; // 70px from top (final position)
+    const LOGO_START_SIZE = 320; // 320px
+    const LOGO_END_SIZE = 60; // 60px
+    
     // Touch events
     splashScreen.addEventListener('touchstart', (e) => {
         if (isTransitioning) return;
@@ -1103,21 +1109,19 @@ document.addEventListener('DOMContentLoaded', () => {
         touchEndY = e.touches[0].clientY;
         const swipeDistance = touchStartY - touchEndY;
         
-        // Transform logo during swipe - very smooth
+        // Transform logo during swipe
         if (swipeDistance > 0) {
-            const progress = Math.min(swipeDistance / 250, 1);
+            const progress = Math.min(swipeDistance / 300, 1); // 300px swipe for full animation
             
-            // Scale from 320px (1.0) to 60px (0.1875)
-            const scale = 1 - (progress * 0.8125);
+            // Calculate scale: from 1.0 (320px) to 0.1875 (60px)
+            const scale = 1 - (progress * (1 - LOGO_END_SIZE / LOGO_START_SIZE));
             
-            // Logo needs to move from center (50vh) to top (~50px from top)
-            // That's approximately 50vh - 50px = ~(innerHeight/2 - 50)px
-            const centerY = window.innerHeight / 2;
-            const targetY = 50; // 50px from top
-            const translateY = -progress * (centerY - targetY);
+            // Calculate position: from center to top
+            const currentY = LOGO_START_Y - (progress * (LOGO_START_Y - LOGO_END_Y));
+            const translateY = currentY - LOGO_START_Y;
             
             splashLogo.classList.add('shrinking');
-            splashLogo.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+            splashLogo.style.transform = `translateY(${translateY}px) scale(${scale})`;
             splashLogo.style.opacity = 1;
         }
     });
@@ -1126,8 +1130,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isTransitioning) return;
         const swipeDistance = touchStartY - touchEndY;
         
-        // If swiped up more than 80px
-        if (swipeDistance > 80) {
+        // If swiped up more than 100px
+        if (swipeDistance > 100) {
             hideSplashScreen();
         } else {
             // Reset logo smoothly
@@ -1154,20 +1158,19 @@ document.addEventListener('DOMContentLoaded', () => {
         touchEndY = e.clientY;
         const swipeDistance = touchStartY - touchEndY;
         
-        // Transform logo during swipe - very smooth
+        // Transform logo during swipe
         if (swipeDistance > 0) {
-            const progress = Math.min(swipeDistance / 250, 1);
+            const progress = Math.min(swipeDistance / 300, 1);
             
-            // Scale from 320px (1.0) to 60px (0.1875)
-            const scale = 1 - (progress * 0.8125);
+            // Calculate scale
+            const scale = 1 - (progress * (1 - LOGO_END_SIZE / LOGO_START_SIZE));
             
-            // Logo needs to move from center to top
-            const centerY = window.innerHeight / 2;
-            const targetY = 50;
-            const translateY = -progress * (centerY - targetY);
+            // Calculate position
+            const currentY = LOGO_START_Y - (progress * (LOGO_START_Y - LOGO_END_Y));
+            const translateY = currentY - LOGO_START_Y;
             
             splashLogo.classList.add('shrinking');
-            splashLogo.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+            splashLogo.style.transform = `translateY(${translateY}px) scale(${scale})`;
             splashLogo.style.opacity = 1;
         }
     });
@@ -1179,8 +1182,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const swipeDistance = touchStartY - touchEndY;
         
-        // If swiped up more than 80px
-        if (swipeDistance > 80) {
+        // If swiped up more than 100px
+        if (swipeDistance > 100) {
             hideSplashScreen();
         } else {
             // Reset logo smoothly
@@ -1216,23 +1219,22 @@ document.addEventListener('DOMContentLoaded', () => {
         isTransitioning = true;
         splashScreen.classList.add('transitioning');
         
-        // Calculate final position for logo (50px from top of screen)
-        const centerY = window.innerHeight / 2;
-        const targetY = 50;
-        const finalTranslateY = -(centerY - targetY);
+        // Calculate final position
+        const finalTranslateY = LOGO_END_Y - LOGO_START_Y;
+        const finalScale = LOGO_END_SIZE / LOGO_START_SIZE;
         
-        // Smooth animation: logo moves to top and shrinks
+        // Smooth animation: logo moves to exact top position and shrinks
         splashLogo.style.transition = 'all 0.8s cubic-bezier(0.25, 0.1, 0.25, 1)';
-        splashLogo.style.transform = `scale(0.1875) translateY(${finalTranslateY}px)`;
+        splashLogo.style.transform = `translateY(${finalTranslateY}px) scale(${finalScale})`;
         splashLogo.style.opacity = '1';
         
-        // Fade out splash screen after logo animation starts
+        // Fade out splash screen
         setTimeout(() => {
-            splashScreen.style.transition = 'opacity 0.4s ease';
+            splashScreen.style.transition = 'opacity 0.5s ease';
             splashScreen.style.opacity = '0';
-        }, 400);
+        }, 500);
         
-        // Clean up and show main screen
+        // Show main screen with fade in animation
         setTimeout(() => {
             splashScreen.classList.remove('active');
             splashScreen.style.opacity = '';
@@ -1242,7 +1244,15 @@ document.addEventListener('DOMContentLoaded', () => {
             splashLogo.style.opacity = '';
             splashLogo.classList.remove('shrinking');
             isTransitioning = false;
-        }, 1200);
+            
+            // Fade in main screen
+            const homeScreen = document.getElementById('home-screen');
+            homeScreen.style.opacity = '0';
+            setTimeout(() => {
+                homeScreen.style.transition = 'opacity 0.6s ease';
+                homeScreen.style.opacity = '1';
+            }, 50);
+        }, 1300);
     }
     
     // Swipe down on home screen to show splash again
