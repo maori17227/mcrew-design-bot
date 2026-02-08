@@ -363,13 +363,17 @@ body {
     top: 0;
     z-index: 100;
     transition: background 0.3s ease;
+    min-height: 60px;
 }
 
-/* Screen header with pricelist image - full width, auto height */
+/* Screen header with pricelist image - same size as portfolio header */
 #services-screen .screen-header {
     padding: 0;
     background: transparent;
     border-bottom: none;
+    height: 60px;
+    min-height: 60px;
+    overflow: hidden;
 }
 
 .screen-header h2 {
@@ -383,8 +387,8 @@ body {
 
 .screen-header .pricelist-img {
     width: 100%;
-    height: auto;
-    object-fit: contain;
+    height: 100%;
+    object-fit: cover;
     display: block;
 }
 
