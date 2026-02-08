@@ -350,13 +350,9 @@ body {
     transition: color 0.3s ease;
 }
 
-.menu-item:active h3 {
-    transform: translateX(10px);
-    color: var(--accent-red);
-}
-
-.menu-item:active p {
-    color: var(--accent-red);
+.menu-item:active {
+    transform: scale(0.98);
+    background: rgba(255, 0, 0, 0.1);
 }
 
 /* Screen Header */

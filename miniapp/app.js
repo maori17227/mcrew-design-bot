@@ -785,13 +785,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Also allow click to dismiss
-    splashScreen.addEventListener('click', () => {
-        if (!isTransitioning) {
-            hideSplashScreen();
-        }
-    });
-    
     function hideSplashScreen() {
         isTransitioning = true;
         splashScreen.classList.add('transitioning');
@@ -814,6 +807,14 @@ document.addEventListener('DOMContentLoaded', () => {
             splashLogo.style.opacity = '';
             splashLogo.classList.remove('shrinking');
             isTransitioning = false;
+            
+            // Trigger button animations
+            document.querySelectorAll('.menu-item').forEach((item, index) => {
+                item.style.animation = 'none';
+                setTimeout(() => {
+                    item.style.animation = '';
+                }, 10);
+            });
         }, 800);
     }
     
