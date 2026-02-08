@@ -1110,10 +1110,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Scale from 320px (1.0) to 60px (0.1875)
             const scale = 1 - (progress * 0.8125);
             
-            // Calculate final position: logo should end up at top (20px from top)
-            // Screen center is ~50vh, logo needs to move to ~20px from top
-            // That's approximately -45vh movement
-            const translateY = -progress * window.innerHeight * 0.45;
+            // Logo needs to move from center (50vh) to top (~50px from top)
+            // That's approximately 50vh - 50px = ~(innerHeight/2 - 50)px
+            const centerY = window.innerHeight / 2;
+            const targetY = 50; // 50px from top
+            const translateY = -progress * (centerY - targetY);
             
             splashLogo.classList.add('shrinking');
             splashLogo.style.transform = `scale(${scale}) translateY(${translateY}px)`;
@@ -1160,8 +1161,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Scale from 320px (1.0) to 60px (0.1875)
             const scale = 1 - (progress * 0.8125);
             
-            // Calculate final position: logo should end up at top (20px from top)
-            const translateY = -progress * window.innerHeight * 0.45;
+            // Logo needs to move from center to top
+            const centerY = window.innerHeight / 2;
+            const targetY = 50;
+            const translateY = -progress * (centerY - targetY);
             
             splashLogo.classList.add('shrinking');
             splashLogo.style.transform = `scale(${scale}) translateY(${translateY}px)`;
@@ -1213,8 +1216,10 @@ document.addEventListener('DOMContentLoaded', () => {
         isTransitioning = true;
         splashScreen.classList.add('transitioning');
         
-        // Calculate final position for logo (top of screen, 20px from top)
-        const finalTranslateY = -window.innerHeight * 0.45;
+        // Calculate final position for logo (50px from top of screen)
+        const centerY = window.innerHeight / 2;
+        const targetY = 50;
+        const finalTranslateY = -(centerY - targetY);
         
         // Smooth animation: logo moves to top and shrinks
         splashLogo.style.transition = 'all 0.8s cubic-bezier(0.25, 0.1, 0.25, 1)';
