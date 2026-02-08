@@ -806,17 +806,35 @@ async function loadAdminPortfolio(category) {
     const listEl = document.getElementById('admin-items-list');
     listEl.innerHTML = '<div class="loading">Loading...</div>';
     
+    console.log('Loading admin portfolio for category:', category);
+    console.log('API Base:', API_BASE);
+    console.log('User ID:', tg.initDataUnsafe?.user?.id);
+    
     try {
-        const response = await fetch(`${API_BASE}/api/portfolio?category=${category}`, {
+        const url = `${API_BASE}/api/portfolio?category=${category}`;
+        console.log('Fetching from:', url);
+        
+        const response = await fetch(url, {
             headers: {
                 'X-User-ID': tg.initDataUnsafe?.user?.id || ''
             }
         });
         
-        if (!response.ok) throw new Error('Failed to load');
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Response error:', errorText);
+            throw new Error('Failed to load');
+        }
         
         const data = await response.json();
+        console.log('Received data:', data);
+        
         const items = data.items || [];
+        console.log('Items count:', items.length);
+        console.log('Items:', items);
         
         if (items.length === 0) {
             listEl.innerHTML = `<p style="text-align: center; color: var(--text-secondary); padding: 40px 20px;">${currentLang === 'en' ? 'No items yet. Upload via bot!' : 'Пока нет элементов. Загрузите через бота!'}</p>`;
@@ -825,6 +843,8 @@ async function loadAdminPortfolio(category) {
         
         listEl.innerHTML = '';
         items.forEach(item => {
+            console.log('Processing item:', item);
+            
             const card = document.createElement('div');
             card.className = 'admin-item-card';
             
@@ -840,6 +860,9 @@ async function loadAdminPortfolio(category) {
             } else {
                 previewUrl = item.file || '';
             }
+            
+            console.log('Preview URL:', previewUrl);
+            console.log('Preview type:', previewType);
             
             // Get title
             let title = '';
@@ -857,7 +880,7 @@ async function loadAdminPortfolio(category) {
             card.innerHTML = `
                 ${previewType === 'video' 
                     ? `<video class="admin-item-preview" src="${previewUrl}" muted loop playsinline></video>`
-                    : `<img class="admin-item-preview" src="${previewUrl}" alt="${title}" onerror="this.style.display='none'">`
+                    : `<img class="admin-item-preview" src="${previewUrl}" alt="${title}" onerror="this.style.display='none'; console.error('Failed to load image:', '${previewUrl}')">`
                 }
                 <div class="admin-item-content">
                     <div class="admin-item-title">${title}</div>
@@ -924,7 +947,8 @@ async function loadAdminPortfolio(category) {
         
     } catch (error) {
         console.error('Error loading admin portfolio:', error);
-        listEl.innerHTML = `<p style="text-align: center; color: var(--accent-red); padding: 40px 20px;">${currentLang === 'en' ? 'Error loading items' : 'Ошибка загрузки'}</p>`;
+        console.error('Error stack:', error.stack);
+        listEl.innerHTML = `<p style="text-align: center; color: var(--accent-red); padding: 40px 20px;">${currentLang === 'en' ? 'Error loading items' : 'Ошибка загрузки'}<br><small>${error.message}</small></p>`;
     }
 }
 
