@@ -1235,43 +1235,43 @@ document.addEventListener('DOMContentLoaded', () => {
         // Hide all menu items initially
         menuItems.forEach(item => {
             item.style.opacity = '0';
-            item.style.transform = 'translateY(50px)';
+            item.style.transform = 'translateY(60px)';
         });
         
-        // Phase 1: Logo moves to top and shrinks (0-800ms)
-        splashLogo.style.transition = 'all 0.8s cubic-bezier(0.25, 0.1, 0.25, 1)';
+        // Phase 1: Logo moves to top and shrinks (0-600ms) - FASTER
+        splashLogo.style.transition = 'all 0.6s cubic-bezier(0.25, 0.1, 0.25, 1)';
         splashLogo.style.transform = `translateY(${finalTranslateY}px) scale(${finalScale})`;
         splashLogo.style.opacity = '1';
         
-        // Phase 2: Splash fades out (500-1000ms)
+        // Phase 2: Splash fades out (300-700ms) - FASTER
         setTimeout(() => {
-            splashScreen.style.transition = 'opacity 0.5s ease';
+            splashScreen.style.transition = 'opacity 0.4s ease';
             splashScreen.style.opacity = '0';
+        }, 300);
+        
+        // Phase 3: Show hero with logo (500ms) - FASTER
+        setTimeout(() => {
+            hero.style.transition = 'opacity 0.3s ease';
+            hero.style.opacity = '1';
         }, 500);
         
-        // Phase 3: Show hero with logo (800ms)
-        setTimeout(() => {
-            hero.style.transition = 'opacity 0.4s ease';
-            hero.style.opacity = '1';
-        }, 800);
-        
-        // Phase 4: Play startup sound when logo is in place (850ms)
+        // Phase 4: Play startup sound RIGHT when hero appears (500ms)
         setTimeout(() => {
             playSound('startup');
-        }, 850);
+        }, 500);
         
-        // Phase 5: Menu items slide up one by one (950ms start)
+        // Phase 5: Menu items slide up one by one starting RIGHT after sound (550ms start)
         setTimeout(() => {
             menuItems.forEach((item, index) => {
                 setTimeout(() => {
-                    item.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                    item.style.transition = 'all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)';
                     item.style.opacity = '1';
                     item.style.transform = 'translateY(0)';
-                }, index * 150); // 150ms delay between each button
+                }, index * 180); // 180ms delay between each button for smooth wave effect
             });
-        }, 950);
+        }, 550);
         
-        // Cleanup (1300ms)
+        // Cleanup (900ms) - FASTER
         setTimeout(() => {
             splashScreen.classList.remove('active');
             splashScreen.style.opacity = '';
@@ -1281,7 +1281,7 @@ document.addEventListener('DOMContentLoaded', () => {
             splashLogo.style.opacity = '';
             splashLogo.classList.remove('shrinking');
             isTransitioning = false;
-        }, 1300);
+        }, 900);
     }
     
     // Swipe down on home screen to show splash again
