@@ -1687,7 +1687,7 @@ const usdtAmountInput = document.getElementById('usdt-amount');
 if (usdtAmountInput) {
     usdtAmountInput.addEventListener('input', (e) => {
         const usdtAmount = parseFloat(e.target.value) || 0;
-        const mtvAmount = Math.floor(usdtAmount * 100);
+        const mtvAmount = Math.floor(usdtAmount * 1);
         document.getElementById('usdt-amount-mtv').textContent = mtvAmount;
     });
 }
@@ -1815,7 +1815,7 @@ if (usdtConfirmBtn) {
             await saveTransaction({
                 userId: currentUser.id,
                 type: 'deposit',
-                amount: Math.floor(amount * 100),
+                amount: Math.floor(amount * 1),
                 currency: 'USDT',
                 status: 'pending'
             });

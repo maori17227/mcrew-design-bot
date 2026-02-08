@@ -2108,7 +2108,7 @@ function setupCryptoPaymentListeners() {
     if (usdtCustomInput) {
         usdtCustomInput.addEventListener('input', (e) => {
             const amount = parseFloat(e.target.value) || 0;
-            const mtv = Math.floor(amount * 100);
+            const mtv = Math.floor(amount * 1);
             document.getElementById('usdt-mtv-preview').textContent = mtv;
             selectedAmount = amount;
             
@@ -2209,7 +2209,7 @@ function setupCryptoPaymentListeners() {
                 await saveTransactionMiniapp({
                     userId: currentUser.id,
                     type: 'deposit',
-                    amount: Math.floor(selectedAmount * 100),
+                    amount: Math.floor(selectedAmount * 1),
                     currency: 'USDT',
                     status: 'pending'
                 });

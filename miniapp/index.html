@@ -451,6 +451,172 @@
         </div>
     </div>
 
+    <!-- Crypto Deposit Modal -->
+    <div id="crypto-modal" class="crypto-modal">
+        <div class="crypto-modal-overlay"></div>
+        <div class="crypto-modal-content">
+            <button class="crypto-modal-close" id="crypto-modal-close">✖️</button>
+            
+            <h2 data-en="Buy MTV with Crypto" data-ru="Купить MTV за крипту">Buy MTV with Crypto</h2>
+            
+            <div class="crypto-tabs">
+                <button class="crypto-tab active" data-method="ton">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                    </svg>
+                    <span>TON</span>
+                </button>
+                <button class="crypto-tab" data-method="usdt">
+                    <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="16" r="16" fill="#26A17B"/>
+                        <path d="M17.922 17.383v-.002c-.11.008-.677.042-1.942.042-1.01 0-1.721-.03-1.971-.042v.003c-3.888-.171-6.79-.848-6.79-1.658 0-.809 2.902-1.486 6.79-1.66v2.644c.254.018.982.061 1.988.061 1.207 0 1.812-.05 1.925-.06v-2.643c3.88.173 6.775.85 6.775 1.658 0 .81-2.895 1.485-6.775 1.657m0-3.59v-2.366h5.414V7.819H8.595v3.608h5.414v2.365c-4.4.202-7.709 1.074-7.709 2.118 0 1.044 3.309 1.915 7.709 2.118v7.582h3.913v-7.584c4.393-.202 7.694-1.073 7.694-2.116 0-1.043-3.301-1.914-7.694-2.117" fill="white"/>
+                    </svg>
+                    <span>USDT</span>
+                </button>
+                <button class="crypto-tab" data-method="stars">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    <span>Stars</span>
+                </button>
+            </div>
+
+            <!-- TON Payment -->
+            <div class="crypto-method-content active" data-method="ton">
+                <div class="crypto-info-box">
+                    <p data-en="Pay with TON from your Telegram Wallet" data-ru="Оплатите TON из вашего Telegram кошелька">Pay with TON from your Telegram Wallet</p>
+                    <div class="crypto-rate">1 TON ≈ 100 ɱ</div>
+                </div>
+                
+                <div class="crypto-amount-selector">
+                    <label data-en="Select Amount" data-ru="Выберите сумму">Select Amount</label>
+                    <div class="amount-buttons">
+                        <button class="amount-btn" data-ton="0.5" data-mtv="50">
+                            <span class="amount-crypto">0.5 TON</span>
+                            <span class="amount-mtv">50 ɱ</span>
+                        </button>
+                        <button class="amount-btn" data-ton="1" data-mtv="100">
+                            <span class="amount-crypto">1 TON</span>
+                            <span class="amount-mtv">100 ɱ</span>
+                        </button>
+                        <button class="amount-btn" data-ton="2" data-mtv="200">
+                            <span class="amount-crypto">2 TON</span>
+                            <span class="amount-mtv">200 ɱ</span>
+                        </button>
+                        <button class="amount-btn" data-ton="5" data-mtv="500">
+                            <span class="amount-crypto">5 TON</span>
+                            <span class="amount-mtv">500 ɱ</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="custom-amount">
+                    <label data-en="Or enter custom amount (TON)" data-ru="Или введите свою сумму (TON)">Or enter custom amount (TON)</label>
+                    <input type="number" id="ton-custom-amount" class="crypto-input" placeholder="0.0" min="0.1" step="0.1">
+                    <div class="amount-preview">≈ <span id="ton-mtv-preview">0</span> ɱ</div>
+                </div>
+
+                <button class="crypto-pay-btn" id="ton-pay-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    </svg>
+                    <span data-en="Pay with TON" data-ru="Оплатить TON">Pay with TON</span>
+                </button>
+            </div>
+
+            <!-- USDT Payment -->
+            <div class="crypto-method-content" data-method="usdt">
+                <div class="crypto-info-box">
+                    <p data-en="Send USDT (TRC-20) to the address below" data-ru="Отправьте USDT (TRC-20) на адрес ниже">Send USDT (TRC-20) to the address below</p>
+                    <div class="crypto-rate">1 USDT = 1 ɱ</div>
+                </div>
+
+                <div class="crypto-amount-selector">
+                    <label data-en="Select Amount" data-ru="Выберите сумму">Select Amount</label>
+                    <div class="amount-buttons">
+                        <button class="amount-btn" data-usdt="5" data-mtv="5">
+                            <span class="amount-crypto">5 USDT</span>
+                            <span class="amount-mtv">5 ɱ</span>
+                        </button>
+                        <button class="amount-btn" data-usdt="10" data-mtv="10">
+                            <span class="amount-crypto">10 USDT</span>
+                            <span class="amount-mtv">10 ɱ</span>
+                        </button>
+                        <button class="amount-btn" data-usdt="20" data-mtv="20">
+                            <span class="amount-crypto">20 USDT</span>
+                            <span class="amount-mtv">20 ɱ</span>
+                        </button>
+                        <button class="amount-btn" data-usdt="50" data-mtv="50">
+                            <span class="amount-crypto">50 USDT</span>
+                            <span class="amount-mtv">50 ɱ</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="custom-amount">
+                    <label data-en="Or enter custom amount (USDT)" data-ru="Или введите свою сумму (USDT)">Or enter custom amount (USDT)</label>
+                    <input type="number" id="usdt-custom-amount" class="crypto-input" placeholder="0" min="1" step="1">
+                    <div class="amount-preview">≈ <span id="usdt-mtv-preview">0</span> ɱ</div>
+                </div>
+
+                <div class="crypto-address-box">
+                    <label data-en="Send USDT (TRC-20) to:" data-ru="Отправьте USDT (TRC-20) на:">Send USDT (TRC-20) to:</label>
+                    <div class="crypto-address">
+                        <code id="usdt-address-miniapp">TJDENsfBJs4RFETt1X1W8wMDc8M5XnJhCe</code>
+                        <button class="copy-address-btn" onclick="copyAddressMiniapp()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <button class="crypto-pay-btn" id="usdt-confirm-btn">
+                    <span data-en="I've Sent USDT" data-ru="Я отправил USDT">I've Sent USDT</span>
+                </button>
+            </div>
+
+            <!-- Telegram Stars Payment -->
+            <div class="crypto-method-content" data-method="stars">
+                <div class="crypto-info-box">
+                    <p data-en="Pay with Telegram Stars" data-ru="Оплатите Telegram Stars">Pay with Telegram Stars</p>
+                    <div class="crypto-rate">1 ⭐ = 10 ɱ</div>
+                </div>
+
+                <div class="crypto-amount-selector">
+                    <label data-en="Select Amount" data-ru="Выберите сумму">Select Amount</label>
+                    <div class="amount-buttons">
+                        <button class="amount-btn" data-stars="10" data-mtv="100">
+                            <span class="amount-crypto">10 ⭐</span>
+                            <span class="amount-mtv">100 ɱ</span>
+                        </button>
+                        <button class="amount-btn" data-stars="50" data-mtv="500">
+                            <span class="amount-crypto">50 ⭐</span>
+                            <span class="amount-mtv">500 ɱ</span>
+                        </button>
+                        <button class="amount-btn" data-stars="100" data-mtv="1000">
+                            <span class="amount-crypto">100 ⭐</span>
+                            <span class="amount-mtv">1000 ɱ</span>
+                        </button>
+                        <button class="amount-btn" data-stars="250" data-mtv="2500">
+                            <span class="amount-crypto">250 ⭐</span>
+                            <span class="amount-mtv">2500 ɱ</span>
+                        </button>
+                    </div>
+                </div>
+
+                <button class="crypto-pay-btn" id="stars-pay-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    <span data-en="Pay with Stars" data-ru="Оплатить Stars">Pay with Stars</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
