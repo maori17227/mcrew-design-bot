@@ -258,7 +258,7 @@ body {
 .hero {
     text-align: center;
     padding: 20px 40px 30px;
-    background: var(--bg-secondary);
+    background: #000000;
     transition: background 0.3s ease;
     position: relative;
     overflow: hidden;

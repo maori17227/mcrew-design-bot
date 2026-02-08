@@ -756,18 +756,19 @@ document.addEventListener('DOMContentLoaded', () => {
         touchEndY = e.touches[0].clientY;
         const swipeDistance = touchStartY - touchEndY;
         
-        // Transform logo during swipe
+        // Transform logo during swipe - very smooth
         if (swipeDistance > 0) {
-            const progress = Math.min(swipeDistance / 200, 1);
+            const progress = Math.min(swipeDistance / 250, 1);
             
             // Scale from 320px to 60px
             const scale = 1 - (progress * 0.8125);
             
-            // Move up from center
-            const translateY = -progress * 300;
+            // Move up smoothly - increase distance for smoother effect
+            const translateY = -progress * 450;
             
             splashLogo.classList.add('shrinking');
             splashLogo.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+            splashLogo.style.opacity = 1 - (progress * 0.3);
         }
     });
     
@@ -775,13 +776,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isTransitioning) return;
         const swipeDistance = touchStartY - touchEndY;
         
-        // If swiped up more than 100px
-        if (swipeDistance > 100) {
+        // If swiped up more than 80px
+        if (swipeDistance > 80) {
             hideSplashScreen();
         } else {
-            // Reset logo
+            // Reset logo smoothly
+            splashLogo.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
             splashLogo.style.transform = '';
-            splashLogo.classList.remove('shrinking');
+            splashLogo.style.opacity = '';
+            setTimeout(() => {
+                splashLogo.style.transition = '';
+                splashLogo.classList.remove('shrinking');
+            }, 300);
         }
     });
     
@@ -789,33 +795,27 @@ document.addEventListener('DOMContentLoaded', () => {
         isTransitioning = true;
         splashScreen.classList.add('transitioning');
         
-        // Animate logo up and out
-        splashLogo.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-        splashLogo.style.transform = 'scale(0.1875) translateY(-400px)';
+        // Very smooth animation - logo goes all the way up
+        splashLogo.style.transition = 'all 0.8s cubic-bezier(0.25, 0.1, 0.25, 1)';
+        splashLogo.style.transform = 'scale(0.1875) translateY(-600px)';
         splashLogo.style.opacity = '0';
         
-        // Fade out splash screen
+        // Fade out splash screen smoothly
         setTimeout(() => {
+            splashScreen.style.transition = 'opacity 0.4s ease';
             splashScreen.style.opacity = '0';
-        }, 300);
+        }, 400);
         
         setTimeout(() => {
             splashScreen.classList.remove('active');
             splashScreen.style.opacity = '';
+            splashScreen.style.transition = '';
             splashLogo.style.transform = '';
             splashLogo.style.transition = '';
             splashLogo.style.opacity = '';
             splashLogo.classList.remove('shrinking');
             isTransitioning = false;
-            
-            // Trigger button animations
-            document.querySelectorAll('.menu-item').forEach((item, index) => {
-                item.style.animation = 'none';
-                setTimeout(() => {
-                    item.style.animation = '';
-                }, 10);
-            });
-        }, 800);
+        }, 1200);
     }
     
     // Swipe down on home screen to show splash again
