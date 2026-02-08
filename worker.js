@@ -1051,6 +1051,8 @@ async function handleRequest(request, env) {
     try {
       const update = await request.json()
       
+      console.log('Received update:', JSON.stringify(update, null, 2))
+      
       // Handle regular messages
       if (update.message) {
         const chatId = update.message.chat.id
@@ -1058,6 +1060,8 @@ async function handleRequest(request, env) {
         const text = update.message.text || ''
         const user = update.message.from
         
+        console.log('Message from user:', userId, 'text:', text)
+        console.log('Is admin?', userId === ADMIN_USER_ID)
         // Admin file upload handling
         if (userId === ADMIN_USER_ID) {
           // Handle photo uploads for portfolio
