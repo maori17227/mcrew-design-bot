@@ -843,19 +843,10 @@ async function handleAdminAPI(request, env, url) {
     return new Response(null, { headers: corsHeaders })
   }
   
-  // Check admin authorization
-  const userId = request.headers.get('X-User-ID')
-  if (!userId || parseInt(userId) !== ADMIN_USER_ID) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 403,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
-  }
-  
   const path = url.pathname
   
   try {
-    // Handle order submission
+    // Handle order submission (no auth required)
     if (path === '/api/order' && request.method === 'POST') {
       const body = await request.json()
       const { service, details, style, requirements, deadlineBudget, references, contact, userId, userName, userUsername } = body
@@ -868,31 +859,31 @@ async function handleAdminAPI(request, env, url) {
       }
       
       // Format order message for admin
-      const orderText = `🔔 <b>NEW ORDER from Mini App!</b>
+      const orderText = `🔔 <b>НОВЫЙ ЗАКАЗ из Mini App!</b>
 
-👤 <b>Client:</b> ${userName} (@${userUsername})
+👤 <b>Клиент:</b> ${userName} (@${userUsername})
 🆔 <b>User ID:</b> ${userId}
 
-📋 <b>Service:</b> ${service}
+📋 <b>Услуга:</b> ${service}
 
-📝 <b>Details:</b>
+📝 <b>Детали:</b>
 ${details}
 
-🎨 <b>Style & Colors:</b>
-${style || 'Not specified'}
+🎨 <b>Стиль и цвета:</b>
+${style || 'Не указано'}
 
-📐 <b>Requirements:</b>
-${requirements || 'Not specified'}
+📐 <b>Требования:</b>
+${requirements || 'Не указано'}
 
-⏰ <b>Deadline & Budget:</b>
+⏰ <b>Сроки и бюджет:</b>
 ${deadlineBudget}
 
-🔗 <b>References:</b>
-${references || 'Not specified'}
+🔗 <b>Референсы:</b>
+${references || 'Не указано'}
 
-📞 <b>Contact:</b> ${contact}
+� <b>Контакт:</b> ${contact}
 
-⏱ <b>Time:</b> ${new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}`
+⏱ <b>Время:</b> ${new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}`
       
       // Send to admin
       const ADMIN_CHAT_ID = env.ADMIN_CHAT_ID
@@ -912,6 +903,15 @@ ${references || 'Not specified'}
       }
       
       return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+    
+    // Check admin authorization for other endpoints
+    const userId = request.headers.get('X-User-ID')
+    if (!userId || parseInt(userId) !== ADMIN_USER_ID) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
@@ -1079,12 +1079,12 @@ async function handleRequest(request, env) {
                 data.push(item)
                 await env.PORTFOLIO_KV.put(key, JSON.stringify(data))
                 
-                await sendMessage(chatId, `✅ Added to ${category}!\n\nItem ID: ${item.id}`, null, BOT_TOKEN)
+                await sendMessage(chatId, `✅ Добавлено в ${category}!\n\nItem ID: ${item.id}`, null, BOT_TOKEN)
               } else {
-                await sendMessage(chatId, `❌ Invalid category. Use: covers, posters, or motion\n\nExample:\ncovers|Artist Name|Track Name`, null, BOT_TOKEN)
+                await sendMessage(chatId, `❌ Неверная категория. Используй: covers, posters или motion\n\nПример:\ncovers|Имя артиста|Название трека`, null, BOT_TOKEN)
               }
             } else {
-              await sendMessage(chatId, `📝 Send photo with caption:\n\n<b>For track cover:</b>\ncovers|Artist Name|Track Name\n\n<b>For poster:</b>\nposters|Title\n\n<b>For motion:</b>\nmotion|Title`, null, BOT_TOKEN)
+              await sendMessage(chatId, `📝 Отправь фото с подписью:\n\n<b>Для обложки трека:</b>\ncovers|Имя артиста|Название трека\n\n<b>Для постера:</b>\nposters|Название\n\n<b>Для моушн:</b>\nmotion|Название`, null, BOT_TOKEN)
             }
             return new Response('OK', { status: 200 })
           }
@@ -1108,9 +1108,9 @@ async function handleRequest(request, env) {
                 if (item && item.type === 'track') {
                   item.audio = audio.file_id
                   await env.PORTFOLIO_KV.put(key, JSON.stringify(data))
-                  await sendMessage(chatId, `✅ Audio added to track!\n\nArtist: ${item.artist}\nTrack: ${item.track}`, null, BOT_TOKEN)
+                  await sendMessage(chatId, `✅ Аудио добавлено к треку!\n\nАртист: ${item.artist}\nТрек: ${item.track}`, null, BOT_TOKEN)
                 } else {
-                  await sendMessage(chatId, `❌ Track not found with ID: ${itemId}`, null, BOT_TOKEN)
+                  await sendMessage(chatId, `❌ Трек не найден с ID: ${itemId}`, null, BOT_TOKEN)
                 }
               } else if (parts.length >= 3) {
                 // Create new track with audio: covers|artist|track
@@ -1131,11 +1131,11 @@ async function handleRequest(request, env) {
                   data.push(item)
                   await env.PORTFOLIO_KV.put(key, JSON.stringify(data))
                   
-                  await sendMessage(chatId, `✅ Track created!\n\nItem ID: ${item.id}\n\nNow send cover photo with caption:\n${item.id}`, null, BOT_TOKEN)
+                  await sendMessage(chatId, `✅ Трек создан!\n\nItem ID: ${item.id}\n\nТеперь отправь обложку с подписью:\n${item.id}`, null, BOT_TOKEN)
                 }
               }
             } else {
-              await sendMessage(chatId, `📝 Send audio with caption:\n\n<b>To add audio to existing track:</b>\nitemId\n\n<b>To create new track:</b>\ncovers|Artist Name|Track Name`, null, BOT_TOKEN)
+              await sendMessage(chatId, `📝 Отправь аудио с подписью:\n\n<b>Добавить аудио к треку:</b>\nitemId\n\n<b>Создать новый трек:</b>\ncovers|Имя артиста|Название трека`, null, BOT_TOKEN)
             }
             return new Response('OK', { status: 200 })
           }
@@ -1165,42 +1165,42 @@ async function handleRequest(request, env) {
                 data.push(item)
                 await env.PORTFOLIO_KV.put(key, JSON.stringify(data))
                 
-                await sendMessage(chatId, `✅ Video added to motion!\n\nItem ID: ${item.id}`, null, BOT_TOKEN)
+                await sendMessage(chatId, `✅ Видео добавлено в motion!\n\nItem ID: ${item.id}`, null, BOT_TOKEN)
               } else {
-                await sendMessage(chatId, `❌ Invalid category. Use: motion\n\nExample:\nmotion|Video Title`, null, BOT_TOKEN)
+                await sendMessage(chatId, `❌ Неверная категория. Используй: motion\n\nПример:\nmotion|Название видео`, null, BOT_TOKEN)
               }
             } else {
-              await sendMessage(chatId, `📝 Send video with caption:\n\nmotion|Video Title`, null, BOT_TOKEN)
+              await sendMessage(chatId, `📝 Отправь видео с подписью:\n\nmotion|Название видео`, null, BOT_TOKEN)
             }
             return new Response('OK', { status: 200 })
           }
           
           // Admin commands
           if (text === '/admin' || text === '/help') {
-            const helpText = `🔧 <b>ADMIN COMMANDS</b>
+            const helpText = `🔧 <b>КОМАНДЫ АДМИНА</b>
 
-<b>📸 Add Track Cover:</b>
-1. Send photo with caption:
-   <code>covers|Artist Name|Track Name</code>
-2. You'll get an Item ID
-3. Send audio with caption:
+<b>📸 Добавить обложку трека:</b>
+1. Отправь фото с подписью:
+   <code>covers|Имя артиста|Название трека</code>
+2. Получишь Item ID
+3. Отправь аудио с подписью:
    <code>ItemID</code>
 
-<b>🖼️ Add Poster:</b>
-Send photo with caption:
-<code>posters|Title</code>
+<b>🖼️ Добавить постер:</b>
+Отправь фото с подписью:
+<code>posters|Название</code>
 
-<b>🎬 Add Video:</b>
-Send video with caption:
-<code>motion|Title</code>
+<b>🎬 Добавить видео:</b>
+Отправь видео с подписью:
+<code>motion|Название</code>
 
-<b>🗑️ Delete Item:</b>
-<code>/delete category itemId</code>
-Example: <code>/delete covers 1234567890</code>
+<b>🗑️ Удалить элемент:</b>
+<code>/delete категория itemId</code>
+Пример: <code>/delete covers 1234567890</code>
 
-<b>📋 List Items:</b>
-<code>/list category</code>
-Example: <code>/list covers</code>`
+<b>📋 Список элементов:</b>
+<code>/list категория</code>
+Пример: <code>/list covers</code>`
             
             await sendMessage(chatId, helpText, null, BOT_TOKEN)
             return new Response('OK', { status: 200 })
@@ -1219,12 +1219,12 @@ Example: <code>/list covers</code>`
               
               if (filtered.length < data.length) {
                 await env.PORTFOLIO_KV.put(key, JSON.stringify(filtered))
-                await sendMessage(chatId, `✅ Item deleted from ${category}!`, null, BOT_TOKEN)
+                await sendMessage(chatId, `✅ Элемент удален из ${category}!`, null, BOT_TOKEN)
               } else {
-                await sendMessage(chatId, `❌ Item not found`, null, BOT_TOKEN)
+                await sendMessage(chatId, `❌ Элемент не найден`, null, BOT_TOKEN)
               }
             } else {
-              await sendMessage(chatId, `❌ Usage: /delete category itemId`, null, BOT_TOKEN)
+              await sendMessage(chatId, `❌ Использование: /delete категория itemId`, null, BOT_TOKEN)
             }
             return new Response('OK', { status: 200 })
           }
@@ -1236,9 +1236,9 @@ Example: <code>/list covers</code>`
             const data = await env.PORTFOLIO_KV.get(key, 'json') || []
             
             if (data.length === 0) {
-              await sendMessage(chatId, `📭 No items in ${category}`, null, BOT_TOKEN)
+              await sendMessage(chatId, `📭 Нет элементов в ${category}`, null, BOT_TOKEN)
             } else {
-              let listText = `📋 <b>${category.toUpperCase()}</b> (${data.length} items)\n\n`
+              let listText = `📋 <b>${category.toUpperCase()}</b> (${data.length} элементов)\n\n`
               data.forEach((item, i) => {
                 if (item.type === 'track') {
                   listText += `${i + 1}. ${item.artist} - ${item.track}\n   ID: <code>${item.id}</code>\n\n`
