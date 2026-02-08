@@ -473,19 +473,13 @@
                     </svg>
                     <span>USDT</span>
                 </button>
-                <button class="crypto-tab" data-method="stars">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                    </svg>
-                    <span>Stars</span>
-                </button>
             </div>
 
             <!-- TON Payment -->
             <div class="crypto-method-content active" data-method="ton">
                 <div class="crypto-info-box">
                     <p data-en="Pay with TON from your Telegram Wallet" data-ru="Оплатите TON из вашего Telegram кошелька">Pay with TON from your Telegram Wallet</p>
-                    <div class="crypto-rate">1 TON ≈ 100 ɱ</div>
+                    <div class="crypto-rate" id="ton-rate-miniapp">1 TON ≈ 100 ɱ</div>
                 </div>
                 
                 <div class="crypto-amount-selector">
@@ -578,41 +572,6 @@
             </div>
 
             <!-- Telegram Stars Payment -->
-            <div class="crypto-method-content" data-method="stars">
-                <div class="crypto-info-box">
-                    <p data-en="Pay with Telegram Stars" data-ru="Оплатите Telegram Stars">Pay with Telegram Stars</p>
-                    <div class="crypto-rate">1 ⭐ = 10 ɱ</div>
-                </div>
-
-                <div class="crypto-amount-selector">
-                    <label data-en="Select Amount" data-ru="Выберите сумму">Select Amount</label>
-                    <div class="amount-buttons">
-                        <button class="amount-btn" data-stars="10" data-mtv="100">
-                            <span class="amount-crypto">10 ⭐</span>
-                            <span class="amount-mtv">100 ɱ</span>
-                        </button>
-                        <button class="amount-btn" data-stars="50" data-mtv="500">
-                            <span class="amount-crypto">50 ⭐</span>
-                            <span class="amount-mtv">500 ɱ</span>
-                        </button>
-                        <button class="amount-btn" data-stars="100" data-mtv="1000">
-                            <span class="amount-crypto">100 ⭐</span>
-                            <span class="amount-mtv">1000 ɱ</span>
-                        </button>
-                        <button class="amount-btn" data-stars="250" data-mtv="2500">
-                            <span class="amount-crypto">250 ⭐</span>
-                            <span class="amount-mtv">2500 ɱ</span>
-                        </button>
-                    </div>
-                </div>
-
-                <button class="crypto-pay-btn" id="stars-pay-btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                    </svg>
-                    <span data-en="Pay with Stars" data-ru="Оплатить Stars">Pay with Stars</span>
-                </button>
-            </div>
         </div>
     </div>
 

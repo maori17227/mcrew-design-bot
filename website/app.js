@@ -1438,6 +1438,73 @@ document.addEventListener('DOMContentLoaded', () => {
 // TON Connect initialization
 let tonConnectUI = null;
 let tonWallet = null;
+let tonToUsdRate = 5.0; // Default rate, will be updated from API
+let tonToMtvRate = 100; // Will be calculated based on 1 USDT = 1 MTV
+
+// Fetch TON price from CoinGecko API
+async function updateTONPrice() {
+    try {
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd');
+        const data = await response.json();
+        
+        if (data && data['the-open-network'] && data['the-open-network'].usd) {
+            tonToUsdRate = data['the-open-network'].usd;
+            tonToMtvRate = Math.floor(tonToUsdRate); // 1 USDT = 1 MTV, so TON rate = TON price in USD
+            
+            // Update rate display in profile
+            const rateElements = document.querySelectorAll('[data-en="1 TON ≈ 100 ɱ"]');
+            rateElements.forEach(el => {
+                el.setAttribute('data-en', `1 TON ≈ ${tonToMtvRate} ɱ`);
+                el.setAttribute('data-ru', `1 TON ≈ ${tonToMtvRate} ɱ`);
+                el.textContent = `1 TON ≈ ${tonToMtvRate} ɱ`;
+            });
+            
+            // Save to localStorage with timestamp
+            localStorage.setItem('ton_rate', JSON.stringify({
+                rate: tonToMtvRate,
+                usdRate: tonToUsdRate,
+                timestamp: Date.now()
+            }));
+            
+            console.log(`TON rate updated: 1 TON = ${tonToUsdRate} USD = ${tonToMtvRate} ɱ`);
+        }
+    } catch (error) {
+        console.error('Error fetching TON price:', error);
+        // Use cached rate if available
+        const cached = localStorage.getItem('ton_rate');
+        if (cached) {
+            const data = JSON.parse(cached);
+            tonToMtvRate = data.rate;
+            tonToUsdRate = data.usdRate;
+        }
+    }
+}
+
+// Check if rate needs update (once per day)
+function checkAndUpdateRate() {
+    const cached = localStorage.getItem('ton_rate');
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
+    
+    if (!cached) {
+        updateTONPrice();
+    } else {
+        const data = JSON.parse(cached);
+        if (now - data.timestamp > oneDay) {
+            updateTONPrice();
+        } else {
+            tonToMtvRate = data.rate;
+            tonToUsdRate = data.usdRate;
+            // Update display with cached rate
+            const rateElements = document.querySelectorAll('[data-en="1 TON ≈ 100 ɱ"]');
+            rateElements.forEach(el => {
+                el.setAttribute('data-en', `1 TON ≈ ${tonToMtvRate} ɱ`);
+                el.setAttribute('data-ru', `1 TON ≈ ${tonToMtvRate} ɱ`);
+                el.textContent = `1 TON ≈ ${tonToMtvRate} ɱ`;
+            });
+        }
+    }
+}
 
 function initTONConnect() {
     try {
@@ -1677,7 +1744,7 @@ const tonAmountInput = document.getElementById('ton-amount');
 if (tonAmountInput) {
     tonAmountInput.addEventListener('input', (e) => {
         const tonAmount = parseFloat(e.target.value) || 0;
-        const mtvAmount = Math.floor(tonAmount * 100);
+        const mtvAmount = Math.floor(tonAmount * tonToMtvRate);
         document.getElementById('ton-amount-mtv').textContent = mtvAmount;
     });
 }
@@ -1765,13 +1832,13 @@ if (tonDepositBtn) {
             await saveTransaction({
                 userId: currentUser.id,
                 type: 'deposit',
-                amount: Math.floor(amount * 100),
+                amount: Math.floor(amount * tonToMtvRate),
                 currency: 'TON',
                 txHash: result.boc
             });
             
             // Update balance
-            userBalance.mini += Math.floor(amount * 100);
+            userBalance.mini += Math.floor(amount * tonToMtvRate);
             localStorage.setItem('mcrew_balance_' + currentUser.id, JSON.stringify(userBalance));
             updateProfileDisplay();
             
@@ -1936,6 +2003,7 @@ function copyAddress(type) {
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize TON Connect
     initTONConnect();
+    checkAndUpdateRate(); // Update TON rate on load
     
     // Profile link
     const profileLink = document.getElementById('profile-link');

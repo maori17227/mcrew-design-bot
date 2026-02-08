@@ -1975,6 +1975,74 @@ document.addEventListener('DOMContentLoaded', () => {
 // CRYPTO PAYMENT SYSTEM FOR MINIAPP
 // ============================================
 
+// Global variables
+let tonConnectUI = null;
+let selectedAmount = 0;
+let selectedCrypto = 'ton';
+let tonToUsdRate = 5.0; // Default rate, will be updated from API
+let tonToMtvRate = 100; // Will be calculated based on 1 USDT = 1 MTV
+
+// Fetch TON price from CoinGecko API
+async function updateTONPrice() {
+    try {
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd');
+        const data = await response.json();
+        
+        if (data && data['the-open-network'] && data['the-open-network'].usd) {
+            tonToUsdRate = data['the-open-network'].usd;
+            tonToMtvRate = Math.floor(tonToUsdRate); // 1 USDT = 1 MTV, so TON rate = TON price in USD
+            
+            // Update rate display
+            const rateElement = document.getElementById('ton-rate-miniapp');
+            if (rateElement) {
+                rateElement.textContent = `1 TON ≈ ${tonToMtvRate} ɱ`;
+            }
+            
+            // Save to localStorage with timestamp
+            localStorage.setItem('ton_rate', JSON.stringify({
+                rate: tonToMtvRate,
+                usdRate: tonToUsdRate,
+                timestamp: Date.now()
+            }));
+            
+            console.log(`TON rate updated: 1 TON = ${tonToUsdRate} USD = ${tonToMtvRate} ɱ`);
+        }
+    } catch (error) {
+        console.error('Error fetching TON price:', error);
+        // Use cached rate if available
+        const cached = localStorage.getItem('ton_rate');
+        if (cached) {
+            const data = JSON.parse(cached);
+            tonToMtvRate = data.rate;
+            tonToUsdRate = data.usdRate;
+        }
+    }
+}
+
+// Check if rate needs update (once per day)
+function checkAndUpdateRate() {
+    const cached = localStorage.getItem('ton_rate');
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
+    
+    if (!cached) {
+        updateTONPrice();
+    } else {
+        const data = JSON.parse(cached);
+        if (now - data.timestamp > oneDay) {
+            updateTONPrice();
+        } else {
+            tonToMtvRate = data.rate;
+            tonToUsdRate = data.usdRate;
+            // Update display with cached rate
+            const rateElement = document.getElementById('ton-rate-miniapp');
+            if (rateElement) {
+                rateElement.textContent = `1 TON ≈ ${tonToMtvRate} ɱ`;
+            }
+        }
+    }
+}
+
 // Initialize TON Connect
 function initTONConnectMiniapp() {
     try {
@@ -2081,8 +2149,6 @@ function setupCryptoPaymentListeners() {
                 selectedAmount = parseFloat(btn.dataset.ton);
             } else if (btn.dataset.usdt) {
                 selectedAmount = parseFloat(btn.dataset.usdt);
-            } else if (btn.dataset.stars) {
-                selectedAmount = parseFloat(btn.dataset.stars);
             }
             
             playSound('select');
@@ -2094,7 +2160,7 @@ function setupCryptoPaymentListeners() {
     if (tonCustomInput) {
         tonCustomInput.addEventListener('input', (e) => {
             const amount = parseFloat(e.target.value) || 0;
-            const mtv = Math.floor(amount * 100);
+            const mtv = Math.floor(amount * tonToMtvRate);
             document.getElementById('ton-mtv-preview').textContent = mtv;
             selectedAmount = amount;
             
@@ -2149,7 +2215,7 @@ function setupCryptoPaymentListeners() {
                             payload: btoa(JSON.stringify({
                                 userId: currentUser.id,
                                 type: 'deposit',
-                                amount: Math.floor(selectedAmount * 100)
+                                amount: Math.floor(selectedAmount * tonToMtvRate)
                             }))
                         }
                     ]
@@ -2161,14 +2227,14 @@ function setupCryptoPaymentListeners() {
                 await saveTransactionMiniapp({
                     userId: currentUser.id,
                     type: 'deposit',
-                    amount: Math.floor(selectedAmount * 100),
+                    amount: Math.floor(selectedAmount * tonToMtvRate),
                     currency: 'TON',
                     txHash: result.boc,
                     status: 'completed'
                 });
                 
                 // Update balance
-                userBalance.mini += Math.floor(selectedAmount * 100);
+                userBalance.mini += Math.floor(selectedAmount * tonToMtvRate);
                 localStorage.setItem('mcrew_balance', JSON.stringify(userBalance));
                 updateProfileUI();
                 
@@ -2229,60 +2295,6 @@ function setupCryptoPaymentListeners() {
         });
     }
 
-    // Telegram Stars Payment
-    const starsPayBtn = document.getElementById('stars-pay-btn');
-    if (starsPayBtn) {
-        starsPayBtn.addEventListener('click', async () => {
-            if (!selectedAmount || selectedAmount < 1) {
-                tg.showAlert(currentLang === 'en' ? 
-                    'Minimum amount: 1 Star' : 
-                    'Минимальная сумма: 1 Star');
-                return;
-            }
-            
-            try {
-                // Create invoice for Telegram Stars
-                const invoice = {
-                    title: 'MTV Purchase',
-                    description: `Buy ${Math.floor(selectedAmount * 10)} ɱ`,
-                    payload: JSON.stringify({
-                        userId: currentUser.id,
-                        amount: Math.floor(selectedAmount * 10),
-                        type: 'mtv_purchase'
-                    }),
-                    provider_token: '',
-                    currency: 'XTR',
-                    prices: [{
-                        label: `${Math.floor(selectedAmount * 10)} ɱ`,
-                        amount: selectedAmount
-                    }]
-                };
-                
-                // Open invoice
-                tg.openInvoice(invoice.url, (status) => {
-                    if (status === 'paid') {
-                        // Update balance
-                        userBalance.mini += Math.floor(selectedAmount * 10);
-                        localStorage.setItem('mcrew_balance', JSON.stringify(userBalance));
-                        updateProfileUI();
-                        
-                        tg.showAlert(currentLang === 'en' ? 
-                            '✅ Payment successful!' : 
-                            '✅ Оплата успешна!');
-                        
-                        closeCryptoModal();
-                    }
-                });
-                
-            } catch (error) {
-                console.error('Stars payment error:', error);
-                tg.showAlert(currentLang === 'en' ? 
-                    'Payment failed. Please try again.' : 
-                    'Ошибка оплаты. Попробуйте снова.');
-            }
-        });
-    }
-
     // Buy MTV button handler
     const buyMtvBtn = document.getElementById('buy-mtv-btn');
     if (buyMtvBtn) {
@@ -2311,5 +2323,6 @@ function setupCryptoPaymentListeners() {
 // Initialize crypto payment system
 document.addEventListener('DOMContentLoaded', () => {
     initTONConnectMiniapp();
+    checkAndUpdateRate(); // Update TON rate on load
     setupCryptoPaymentListeners();
 });
