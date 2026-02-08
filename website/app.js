@@ -805,9 +805,8 @@ function updateProfileDisplay() {
     }
     
     if (balanceMtv) {
-        const mtv = Math.floor(userBalance.mini / 100);
-        const mini = userBalance.mini % 100;
-        balanceMtv.textContent = mtv + '.' + mini.toString().padStart(2, '0');
+        const mtv = Math.ceil(userBalance.mini / 100);
+        balanceMtv.textContent = mtv;
     }
     
     if (balanceMini) {
@@ -817,9 +816,8 @@ function updateProfileDisplay() {
 
 // Format MTV amount
 function formatMTV(mini) {
-    const mtv = Math.floor(mini / 100);
-    const miniPart = mini % 100;
-    return `${mtv}.${miniPart.toString().padStart(2, '0')}`;
+    const mtv = Math.ceil(mini / 100);
+    return `${mtv}`;
 }
 
 function logout() {
@@ -1451,7 +1449,7 @@ async function updateTONPrice() {
         
         if (data && data['the-open-network'] && data['the-open-network'].usd) {
             tonToUsdRate = data['the-open-network'].usd;
-            tonToMtvRate = Math.floor(tonToUsdRate); // 1 USDT = 1 MTV, so TON rate = TON price in USD
+            tonToMtvRate = Math.ceil(tonToUsdRate); // Round up in our favor
             
             // Update rate display in profile
             const rateElements = document.querySelectorAll('[data-en="1 TON ≈ 100 ɱ"]');
@@ -1746,7 +1744,7 @@ const tonAmountInput = document.getElementById('ton-amount');
 if (tonAmountInput) {
     tonAmountInput.addEventListener('input', (e) => {
         const tonAmount = parseFloat(e.target.value) || 0;
-        const mtvAmount = Math.floor(tonAmount * tonToMtvRate);
+        const mtvAmount = Math.ceil(tonAmount * tonToMtvRate);
         document.getElementById('ton-amount-mtv').textContent = mtvAmount;
     });
 }
@@ -1756,7 +1754,7 @@ const usdtAmountInput = document.getElementById('usdt-amount');
 if (usdtAmountInput) {
     usdtAmountInput.addEventListener('input', (e) => {
         const usdtAmount = parseFloat(e.target.value) || 0;
-        const mtvAmount = Math.floor(usdtAmount * 1);
+        const mtvAmount = Math.ceil(usdtAmount * 1);
         document.getElementById('usdt-amount-mtv').textContent = mtvAmount;
     });
 }
@@ -1834,13 +1832,13 @@ if (tonDepositBtn) {
             await saveTransaction({
                 userId: currentUser.id,
                 type: 'deposit',
-                amount: Math.floor(amount * tonToMtvRate),
+                amount: Math.ceil(amount * tonToMtvRate),
                 currency: 'TON',
                 txHash: result.boc
             });
             
             // Update balance
-            userBalance.mini += Math.floor(amount * tonToMtvRate);
+            userBalance.mini += Math.ceil(amount * tonToMtvRate);
             localStorage.setItem('mcrew_balance_' + currentUser.id, JSON.stringify(userBalance));
             updateProfileDisplay();
             
@@ -1884,7 +1882,7 @@ if (usdtConfirmBtn) {
             await saveTransaction({
                 userId: currentUser.id,
                 type: 'deposit',
-                amount: Math.floor(amount * 1),
+                amount: Math.ceil(amount * 1),
                 currency: 'USDT',
                 status: 'pending'
             });

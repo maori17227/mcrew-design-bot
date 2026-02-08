@@ -99,9 +99,8 @@ function updateProfileUI() {
     }
     
     if (balanceMtv) {
-        const mtv = Math.floor(userBalance.mini / 100);
-        const mini = userBalance.mini % 100;
-        balanceMtv.textContent = mtv + '.' + mini.toString().padStart(2, '0');
+        const mtv = Math.ceil(userBalance.mini / 100);
+        balanceMtv.textContent = mtv;
     }
     
     if (balanceMini) {
@@ -111,9 +110,8 @@ function updateProfileUI() {
 
 // Format MTV amount
 function formatMTV(mini) {
-    const mtv = Math.floor(mini / 100);
-    const miniPart = mini % 100;
-    return `${mtv}.${miniPart.toString().padStart(2, '0')}`;
+    const mtv = Math.ceil(mini / 100);
+    return `${mtv}`;
 }
 
 // Handle app closing - play close sound
@@ -1990,7 +1988,7 @@ async function updateTONPrice() {
         
         if (data && data['the-open-network'] && data['the-open-network'].usd) {
             tonToUsdRate = data['the-open-network'].usd;
-            tonToMtvRate = Math.floor(tonToUsdRate); // 1 USDT = 1 MTV, so TON rate = TON price in USD
+            tonToMtvRate = Math.ceil(tonToUsdRate); // Round up in our favor
             
             // Update rate display
             const rateElement = document.getElementById('ton-rate-miniapp');
@@ -2160,7 +2158,7 @@ function setupCryptoPaymentListeners() {
     if (tonCustomInput) {
         tonCustomInput.addEventListener('input', (e) => {
             const amount = parseFloat(e.target.value) || 0;
-            const mtv = Math.floor(amount * tonToMtvRate);
+            const mtv = Math.ceil(amount * tonToMtvRate);
             document.getElementById('ton-mtv-preview').textContent = mtv;
             selectedAmount = amount;
             
@@ -2174,7 +2172,7 @@ function setupCryptoPaymentListeners() {
     if (usdtCustomInput) {
         usdtCustomInput.addEventListener('input', (e) => {
             const amount = parseFloat(e.target.value) || 0;
-            const mtv = Math.floor(amount * 1);
+            const mtv = Math.ceil(amount * 1);
             document.getElementById('usdt-mtv-preview').textContent = mtv;
             selectedAmount = amount;
             
@@ -2215,7 +2213,7 @@ function setupCryptoPaymentListeners() {
                             payload: btoa(JSON.stringify({
                                 userId: currentUser.id,
                                 type: 'deposit',
-                                amount: Math.floor(selectedAmount * tonToMtvRate)
+                                amount: Math.ceil(selectedAmount * tonToMtvRate)
                             }))
                         }
                     ]
@@ -2227,14 +2225,14 @@ function setupCryptoPaymentListeners() {
                 await saveTransactionMiniapp({
                     userId: currentUser.id,
                     type: 'deposit',
-                    amount: Math.floor(selectedAmount * tonToMtvRate),
+                    amount: Math.ceil(selectedAmount * tonToMtvRate),
                     currency: 'TON',
                     txHash: result.boc,
                     status: 'completed'
                 });
                 
                 // Update balance
-                userBalance.mini += Math.floor(selectedAmount * tonToMtvRate);
+                userBalance.mini += Math.ceil(selectedAmount * tonToMtvRate);
                 localStorage.setItem('mcrew_balance', JSON.stringify(userBalance));
                 updateProfileUI();
                 
@@ -2275,7 +2273,7 @@ function setupCryptoPaymentListeners() {
                 await saveTransactionMiniapp({
                     userId: currentUser.id,
                     type: 'deposit',
-                    amount: Math.floor(selectedAmount * 1),
+                    amount: Math.ceil(selectedAmount * 1),
                     currency: 'USDT',
                     status: 'pending'
                 });
