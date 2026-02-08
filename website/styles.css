@@ -2167,20 +2167,35 @@ section {
     letter-spacing: 0.5px;
 }
 
-/* Balance Card */
+/* Balance Card - Portfolio Style */
 .profile-balance-section {
-    margin-bottom: 30px;
+    margin-bottom: 40px;
 }
 
 .mcbank-card {
     position: relative;
     width: 100%;
-    max-width: 500px;
+    max-width: 600px;
     aspect-ratio: 1.586;
     border-radius: 24px;
     overflow: hidden;
-    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     margin: 0 auto;
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: default;
+}
+
+[data-theme="light"] .mcbank-card {
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.mcbank-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
 }
 
 .mcbank-bg {
@@ -2190,6 +2205,11 @@ section {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.mcbank-card:hover .mcbank-bg {
+    transform: scale(1.05);
 }
 
 .mcbank-overlay {
@@ -2198,7 +2218,7 @@ section {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 100%);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.05) 100%);
 }
 
 .mcbank-content {
@@ -2289,15 +2309,6 @@ section {
     width: 20px;
     height: 20px;
 }
-
-.buy-mtv-button {
-    width: 100%;
-    padding: 18px;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50px;
-    color: #ffffff;
     font-size: 16px;
     font-weight: 600;
     letter-spacing: 1px;

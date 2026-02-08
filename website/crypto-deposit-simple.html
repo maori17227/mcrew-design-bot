@@ -1,0 +1,52 @@
+<!-- Simple USDT Deposit Modal -->
+<div class="crypto-deposit-container">
+    <div class="crypto-info-banner">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <circle cx="16" cy="16" r="16" fill="#26A17B"/>
+            <path d="M17.922 17.383v-.002c-.11.008-.677.042-1.942.042-1.01 0-1.721-.03-1.971-.042v.003c-3.888-.171-6.79-.848-6.79-1.658 0-.809 2.902-1.486 6.79-1.66v2.644c.254.018.982.061 1.988.061 1.207 0 1.812-.05 1.925-.06v-2.643c3.88.173 6.775.85 6.775 1.658 0 .81-2.895 1.485-6.775 1.657m0-3.59v-2.366h5.414V7.819H8.595v3.608h5.414v2.365c-4.4.202-7.709 1.074-7.709 2.118 0 1.044 3.309 1.915 7.709 2.118v7.582h3.913v-7.584c4.393-.202 7.694-1.073 7.694-2.116 0-1.043-3.301-1.914-7.694-2.117" fill="white"/>
+        </svg>
+        <div class="crypto-banner-text">
+            <h3>USDT (TRC-20)</h3>
+            <p>1 USDT = 1 ɱ</p>
+        </div>
+    </div>
+
+    <div class="crypto-instructions">
+        <h4 data-en="How to deposit:" data-ru="Как пополнить:">How to deposit:</h4>
+        <ol>
+            <li data-en="Copy the address below or scan QR code" data-ru="Скопируйте адрес ниже или отсканируйте QR код">Copy the address below or scan QR code</li>
+            <li data-en="Send USDT (TRC-20 network only!)" data-ru="Отправьте USDT (только сеть TRC-20!)">Send USDT (TRC-20 network only!)</li>
+            <li data-en="Wait for confirmation (usually 1-3 minutes)" data-ru="Дождитесь подтверждения (обычно 1-3 минуты)">Wait for confirmation (usually 1-3 minutes)</li>
+            <li data-en="Balance will be updated automatically" data-ru="Баланс обновится автоматически">Balance will be updated automatically</li>
+        </ol>
+    </div>
+
+    <div class="crypto-address-section">
+        <label data-en="Deposit Address (TRC-20)" data-ru="Адрес для пополнения (TRC-20)">Deposit Address (TRC-20)</label>
+        <div class="crypto-address-box">
+            <code id="usdt-address-display">TJDENsfBJs4RFETt1X1W8wMDc8M5XnJhCe</code>
+            <button class="crypto-copy-btn" onclick="copyUSDTAddress()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                <span data-en="Copy" data-ru="Копировать">Copy</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="crypto-qr-section">
+        <div class="qr-code-container" id="usdt-qr-code">
+            <canvas id="qr-canvas"></canvas>
+        </div>
+    </div>
+
+    <div class="crypto-warning">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        <p data-en="⚠️ Only send USDT via TRC-20 network! Other networks will result in loss of funds." data-ru="⚠️ Отправляйте только USDT через сеть TRC-20! Другие сети приведут к потере средств.">⚠️ Only send USDT via TRC-20 network! Other networks will result in loss of funds.</p>
+    </div>
+</div>

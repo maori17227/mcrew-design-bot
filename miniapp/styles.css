@@ -1208,6 +1208,10 @@ body {
 /* Balance Card */
 .profile-balance-card {
     margin: 20px 0;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
 }
 
 .mcbank-card {
@@ -1318,35 +1322,6 @@ body {
 .mcbank-btn svg {
     width: 18px;
     height: 18px;
-}
-
-.profile-balance-card {
-    background: linear-gradient(135deg, rgba(255, 0, 0, 0.9) 0%, rgba(200, 0, 0, 0.8) 100%);
-    border-radius: 20px;
-    padding: 25px;
-    margin-bottom: 20px;
-    box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
-}
-
-.balance-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.balance-label {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.8);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.balance-currency {
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.6);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
 .balance-amount {
