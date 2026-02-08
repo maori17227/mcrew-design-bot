@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCREW</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <img src="https://raw.githubusercontent.com/maori17227/mcrew-design-bot/main/miniapp/MLOGO.svg" alt="MCREW" class="nav-logo">
+            
+            <div class="nav-actions">
+                <button id="theme-toggle" class="icon-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
+                
+                <div class="lang-toggle">
+                    <span class="lang-label">EN</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="lang-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="lang-label">RU</span>
+                </div>
+                
+                <button id="login-btn" class="btn-login" data-en="Login" data-ru="Войти">Login</button>
+                <div id="user-menu" class="user-menu hidden">
+                    <img id="user-avatar" class="user-avatar" alt="User">
+                    <span id="user-name"></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main App Container -->
+    <div id="app" class="app">
+        
+        <!-- Home Screen -->
+        <div id="home-screen" class="screen active">
+            <div class="hero">
+                <img src="https://raw.githubusercontent.com/maori17227/mcrew-design-bot/main/miniapp/MLOGO.svg" alt="MCREW" class="logo-main">
+            </div>
+
+            <div class="menu-grid">
+                <div class="menu-item" data-screen="services">
+                    <h3 data-en="Services" data-ru="Услуги">Services</h3>
+                    <p data-en="View our services" data-ru="Посмотреть услуги">View our services</p>
+                </div>
+
+                <div class="menu-item" data-screen="portfolio">
+                    <h3 data-en="Portfolio" data-ru="Портфолио">Portfolio</h3>
+                    <p data-en="Our works" data-ru="Наши работы">Our works</p>
+                </div>
+
+                <div class="menu-item" data-screen="contact">
+                    <h3 data-en="Contact" data-ru="Контакты">Contact</h3>
+                    <p data-en="Get in touch" data-ru="Связаться с нами">Get in touch</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Services Screen -->
+        <div id="services-screen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h2 data-en="Services" data-ru="Услуги">Services</h2>
+            </div>
+
+            <div class="pricelist-container">
+                <img src="https://raw.githubusercontent.com/maori17227/mcrew-design-bot/main/miniapp/pricelist.jpg" alt="Price List" class="pricelist-img">
+            </div>
+
+            <div class="services-list">
+                <div class="service-category" data-category="graphic">
+                    <h3 data-en="Graphic Design" data-ru="Графический дизайн">Graphic Design</h3>
+                </div>
+                <div class="service-category" data-category="ui">
+                    <h3 data-en="UI/UX Design" data-ru="UI/UX дизайн">UI/UX Design</h3>
+                </div>
+                <div class="service-category" data-category="print">
+                    <h3 data-en="Print/Publishing" data-ru="Печать/Издательство">Print/Publishing</h3>
+                </div>
+                <div class="service-category" data-category="video">
+                    <h3 data-en="Editing & VFX" data-ru="Монтаж и VFX">Editing & VFX</h3>
+                </div>
+                <div class="service-category" data-category="motion">
+                    <h3 data-en="Motion Design" data-ru="Моушн дизайн">Motion Design</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Details Screen -->
+        <div id="service-details-screen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h2 id="service-title">Service</h2>
+            </div>
+
+            <div id="service-content" class="service-content"></div>
+        </div>
+
+        <!-- Portfolio Screen -->
+        <div id="portfolio-screen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h2 data-en="Portfolio" data-ru="Портфолио">Portfolio</h2>
+            </div>
+
+            <div class="portfolio-grid">
+                <div class="portfolio-item" data-portfolio="covers">
+                    <img src="https://raw.githubusercontent.com/maori17227/mcrew-design-bot/main/miniapp/covers.jpg" alt="Track Covers">
+                    <div class="portfolio-caption">
+                        <h4 data-en="Track Covers" data-ru="Обложки треков">Track Covers</h4>
+                        <p data-en="Cover art & visuals" data-ru="Обложки и визуалы">Cover art & visuals</p>
+                    </div>
+                </div>
+
+                <div class="portfolio-item" data-portfolio="posters">
+                    <img src="https://raw.githubusercontent.com/maori17227/mcrew-design-bot/main/miniapp/posters.jpg" alt="Posters">
+                    <div class="portfolio-caption">
+                        <h4 data-en="Posters & Flyers" data-ru="Постеры и афиши">Posters & Flyers</h4>
+                        <p data-en="Event materials" data-ru="Материалы для событий">Event materials</p>
+                    </div>
+                </div>
+
+                <div class="portfolio-item" data-portfolio="motion">
+                    <video src="https://raw.githubusercontent.com/maori17227/mcrew-design-bot/main/miniapp/motion.mp4" muted loop playsinline></video>
+                    <div class="portfolio-caption">
+                        <h4 data-en="Motion Design" data-ru="Моушн дизайн">Motion Design</h4>
+                        <p data-en="Animations & visuals" data-ru="Анимация и визуалы">Animations & visuals</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Portfolio Detail Screen -->
+        <div id="portfolio-detail-screen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h2 id="portfolio-detail-title">Portfolio</h2>
+            </div>
+
+            <div id="portfolio-detail-grid" class="portfolio-detail-grid"></div>
+        </div>
+
+        <!-- Contact Screen -->
+        <div id="contact-screen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h2 data-en="Contact" data-ru="Контакты">Contact</h2>
+            </div>
+
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3 data-en="Let's work together" data-ru="Давайте работать вместе">Let's work together</h3>
+                    <p data-en="Have a project in mind? Contact us via Telegram" data-ru="Есть проект? Свяжитесь с нами в Telegram">Have a project in mind? Contact us via Telegram</p>
+                    
+                    <a href="https://t.me/mcrew_bot" class="contact-method">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.901-.903-1.056-.692-1.653-1.123-2.678-1.799-1.185-.781-.417-1.21.258-1.911.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.062 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.752-.244-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.831-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635.099-.002.321.023.465.141.121.099.155.232.171.326.016.094.036.308.02.475z"/>
+                        </svg>
+                        <span>@mcrew_bot</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <h2 data-en="Login with Telegram" data-ru="Войти через Telegram">Login with Telegram</h2>
+            <p data-en="Connect your Telegram account" data-ru="Подключите ваш Telegram аккаунт">Connect your Telegram account</p>
+            <div id="telegram-login-container"></div>
+        </div>
+    </div>
+
+    <script src="https://telegram.org/js/telegram-widget.js?22"></script>
+    <script src="app.js"></script>
+</body>
+</html>
